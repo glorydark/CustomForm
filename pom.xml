@@ -40,7 +40,7 @@
             <artifactId>Tips</artifactId>
             <version>2.1.1</version>
             <scope>provided</scope>
-			<systemPath>${basedir}/dependence/Tips_v2.1.1.jar</systemPath>
+			<systemPath>${pom.basedir}/dependence/Tips_v2.1.1.jar</systemPath>
         </dependency>
              
         <dependency>
@@ -48,7 +48,7 @@
             <artifactId>PlayerPoints</artifactId>
             <version>1.8</version>
             <scope>provided</scope>
-			<systemPath>${basedir}/dependence/PlayerPoints_v1.1.6.jar</systemPath>
+			<systemPath>${pom.basedir}/dependence/PlayerPoints_v1.1.6.jar</systemPath>
         </dependency>
     </dependencies>
     <build>
