@@ -3,8 +3,6 @@ package glorydark.customform.utils;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-@Description("Original Author: SmallAsWater") //引用若水的NBT物品保存代码
-
 public class Inventory {
 
     private static byte[] hexStringToBytes(String hexString) {
