@@ -12,33 +12,6 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
-	
-    <repositories>
-        <repository>
-            <id>opencollab-repo-release</id>
-            <url>https://repo.opencollab.dev/maven-releases/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>opencollab-repo-snapshot</id>
-            <url>https://repo.opencollab.dev/maven-snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>repo-lanink-cn</id>
-            <url>https://repo.lanink.cn/</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
@@ -67,6 +40,7 @@
             <artifactId>Tips</artifactId>
             <version>2.1.1</version>
             <scope>provided</scope>
+			<systemPath>${project.basedir}/dependence/Tips_v2.1.1.jar</systemPath>
         </dependency>
              
         <dependency>
@@ -74,6 +48,7 @@
             <artifactId>PlayerPoints</artifactId>
             <version>1.8</version>
             <scope>provided</scope>
+			<systemPath>${project.basedir}/dependence/PlayerPoints_v1.1.6.jar</systemPath>
         </dependency>
     </dependencies>
     <build>
