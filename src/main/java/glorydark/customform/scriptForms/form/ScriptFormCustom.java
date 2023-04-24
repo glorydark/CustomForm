@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.form.element.*;
 import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseCustom;
-import cn.nukkit.form.response.FormResponseData;
 import cn.nukkit.form.window.FormWindowCustom;
 import glorydark.customform.CustomFormMain;
 import glorydark.customform.scriptForms.data.SoundData;
@@ -86,44 +85,11 @@ public class ScriptFormCustom implements ScriptForm {
 
     public FormWindowCustom getWindow(Player player){
         if(CustomFormMain.enableTips){
-<<<<<<< HEAD
             FormWindowCustom custom_temp = this.getModifiableWindow();
             int elementId = 0;
+            //test
             custom_temp.setTitle(Api.strReplace(custom_temp.getTitle(), player));
             for(Element element: custom_temp.getElements()){
-                if(enableTipsVariableReplacement.get(elementId)){
-                    if(element instanceof ElementLabel){
-                        ((ElementLabel) element).setText(Api.strReplace(((ElementLabel) element).getText(), player));
-                        custom_temp.getElements().set(elementId, element);
-                    }else if(element instanceof ElementInput){
-                        ElementInput input =  ((ElementInput) element);
-                        input.setDefaultText(Api.strReplace(input.getDefaultText(), player));
-                        input.setText(Api.strReplace(input.getDefaultText(), player));
-                        input.setPlaceHolder(Api.strReplace(input.getDefaultText(), player));
-                        custom_temp.getElements().set(elementId, input);
-                    }else if(element instanceof ElementDropdown){
-                        ElementDropdown dropdown = ((ElementDropdown) element);
-                        dropdown.setText(Api.strReplace(dropdown.getText(), player));
-                        dropdown.getOptions().replaceAll(string -> Api.strReplace(string, player));
-                        custom_temp.getElements().set(elementId, dropdown);
-                    }else if(element instanceof ElementToggle){
-                        ((ElementToggle) element).setText(Api.strReplace(((ElementToggle) element).getText(), player));
-                        custom_temp.getElements().set(elementId, element);
-                    }else if(element instanceof ElementSlider){
-                        ((ElementSlider) element).setText(Api.strReplace(((ElementSlider) element).getText(), player));
-                        custom_temp.getElements().set(elementId, element);
-                    }else if(element instanceof ElementStepSlider){
-                        ElementStepSlider stepSlider = ((ElementStepSlider) element);
-                        stepSlider.setText(Api.strReplace(stepSlider.getText(), player));
-                        stepSlider.getSteps().replaceAll(string -> Api.strReplace(string, player));
-                        custom_temp.getElements().set(elementId, stepSlider);
-                    }
-=======
-            FormWindowCustom custom = this.getModifiableWindow();
-            int elementId = 0;
-            //test
-            custom.setTitle(Api.strReplace(custom.getTitle(), player));
-            for(Element element: custom.getElements()){
                 if(element instanceof ElementLabel){
                     ((ElementLabel) element).setText(Api.strReplace(((ElementLabel) element).getText(), player));
                 }else if(element instanceof ElementInput){
@@ -144,7 +110,6 @@ public class ScriptFormCustom implements ScriptForm {
                     stepSlider.setText(Api.strReplace(stepSlider.getText(), player));
                     stepSlider.getSteps().replaceAll(string -> Api.strReplace(string, player));
                     window.getElements().set(elementId, stepSlider);
->>>>>>> 5b9b489146228480aba780692efc9cdcdac90836
                 }
                 elementId++;
             }
