@@ -32,6 +32,8 @@ public class ScriptFormCustom implements ScriptForm {
 
     private List<String> globalMessages = new ArrayList<>();
 
+    private List<Boolean> enableTipsVariableReplacement = new ArrayList<>();
+
     public ScriptFormCustom(Map<String, Object> config, List<ResponseExecuteData> data, SoundData openSound){
         this.config = config;
         this.data = data;
@@ -63,17 +65,16 @@ public class ScriptFormCustom implements ScriptForm {
                 Server.getInstance().dispatchCommand(player, command);
             }
         });
-        responsesMap.forEach((key1, value) -> {
-            int key = key1;
+        responsesMap.forEach((key, value) -> {
             if (window.getElements().get(key) instanceof ElementDropdown) {
-                FormResponseData formResponseData = responseCustom.getDropdownResponse(key);
-                if(formResponseData != null) {
-                    data.get(key).execute(player, formResponseData.getElementID(), formResponseData.getElementContent());
-                }
+                int elementDropdownResponseId = Integer.parseInt(((FormResponseCustom) response).getResponse(key).toString());
+                ElementDropdown dropdown = ((ElementDropdown) window.getElements().get(key));
+                data.get(key).execute(player, elementDropdownResponseId, dropdown.getOptions().get(elementDropdownResponseId));
             } else {
-                if(window.getElements().get(0) instanceof ElementStepSlider){
-                    FormResponseData formResponseData = responseCustom.getStepSliderResponse(key);
-                    data.get(key).execute(player, formResponseData.getElementID(), formResponseData.getElementContent());
+                if(window.getElements().get(key) instanceof ElementStepSlider){
+                    int stepSliderResponseId = Integer.parseInt(((FormResponseCustom) response).getResponse(key).toString());
+                    ElementStepSlider stepSlider = ((ElementStepSlider) window.getElements().get(key));
+                    data.get(key).execute(player, stepSliderResponseId, stepSlider.getSteps().get(stepSliderResponseId));
                 }else{
                     if(responseCustom.getResponse(key) != null) {
                         data.get(key).execute(player, 0, responseCustom.getResponse(key));
@@ -85,14 +86,41 @@ public class ScriptFormCustom implements ScriptForm {
 
     public FormWindowCustom getWindow(Player player){
         if(CustomFormMain.enableTips){
-            FormWindowCustom custom = this.getModifiableWindow();
-            custom.setTitle(Api.strReplace(custom.getTitle(), player));
-            for(Element element: custom.getElements()){
-                if(element instanceof ElementLabel){
-                    ((ElementLabel) element).setText(Api.strReplace(((ElementLabel) element).getText(), player));
+            FormWindowCustom custom_temp = this.getModifiableWindow();
+            int elementId = 0;
+            custom_temp.setTitle(Api.strReplace(custom_temp.getTitle(), player));
+            for(Element element: custom_temp.getElements()){
+                if(enableTipsVariableReplacement.get(elementId)){
+                    if(element instanceof ElementLabel){
+                        ((ElementLabel) element).setText(Api.strReplace(((ElementLabel) element).getText(), player));
+                        custom_temp.getElements().set(elementId, element);
+                    }else if(element instanceof ElementInput){
+                        ElementInput input =  ((ElementInput) element);
+                        input.setDefaultText(Api.strReplace(input.getDefaultText(), player));
+                        input.setText(Api.strReplace(input.getDefaultText(), player));
+                        input.setPlaceHolder(Api.strReplace(input.getDefaultText(), player));
+                        custom_temp.getElements().set(elementId, input);
+                    }else if(element instanceof ElementDropdown){
+                        ElementDropdown dropdown = ((ElementDropdown) element);
+                        dropdown.setText(Api.strReplace(dropdown.getText(), player));
+                        dropdown.getOptions().replaceAll(string -> Api.strReplace(string, player));
+                        custom_temp.getElements().set(elementId, dropdown);
+                    }else if(element instanceof ElementToggle){
+                        ((ElementToggle) element).setText(Api.strReplace(((ElementToggle) element).getText(), player));
+                        custom_temp.getElements().set(elementId, element);
+                    }else if(element instanceof ElementSlider){
+                        ((ElementSlider) element).setText(Api.strReplace(((ElementSlider) element).getText(), player));
+                        custom_temp.getElements().set(elementId, element);
+                    }else if(element instanceof ElementStepSlider){
+                        ElementStepSlider stepSlider = ((ElementStepSlider) element);
+                        stepSlider.setText(Api.strReplace(stepSlider.getText(), player));
+                        stepSlider.getSteps().replaceAll(string -> Api.strReplace(string, player));
+                        custom_temp.getElements().set(elementId, stepSlider);
+                    }
                 }
+                elementId++;
             }
-            return custom;
+            return custom_temp;
         }
         return this.getWindow();
     }
@@ -110,6 +138,7 @@ public class ScriptFormCustom implements ScriptForm {
         FormWindowCustom custom;
         custom = new FormWindowCustom(replace((String) config.getOrDefault("title", "")));
         for(Map<String, Object> component: (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
+            enableTipsVariableReplacement.add((Boolean) component.getOrDefault("enable_tips_variable", true));
             switch ((String) component.getOrDefault("type", "")){
                 case "Input":
                     custom.addElement(new ElementInput((String) component.getOrDefault("text", ""), (String) component.getOrDefault("placeholder", ""), (String) component.getOrDefault("default", "")));
