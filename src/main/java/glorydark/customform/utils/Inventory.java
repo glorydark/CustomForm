@@ -2,9 +2,6 @@ package glorydark.customform.utils;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
-import com.sun.org.glassfish.gmbal.Description;
-
-@Description("Original Author: SmallAsWater") //引用若水的NBT物品保存代码
 
 public class Inventory {
 
