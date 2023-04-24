@@ -60,7 +60,11 @@ public class ScriptFormCustom implements ScriptForm {
             }
             if(command.startsWith("console#")){
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), command.replace("console#", ""));
-            }else{
+            } else if(command.startsWith("op#")) {
+                Server.getInstance().addOp(player.getName());
+                Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), command.replace("op#", ""));
+                Server.getInstance().removeOp(player.getName());
+            } else{
                 Server.getInstance().dispatchCommand(player, command);
             }
         });

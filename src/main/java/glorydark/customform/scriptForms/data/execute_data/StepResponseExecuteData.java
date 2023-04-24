@@ -24,7 +24,11 @@ public class StepResponseExecuteData implements ResponseExecuteData {
         for(String command: responses.get(responseId).getCommands()){
             if(command.startsWith("console#")){
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, responseId, params[0]));
-            }else{
+            } else if(command.startsWith("op#")) {
+                Server.getInstance().addOp(player.getName());
+                Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, responseId, params[0]));
+                Server.getInstance().removeOp(player.getName());
+            } else{
                 Server.getInstance().dispatchCommand(player, replace(command, player, responseId, params[0]));
             }
         }
