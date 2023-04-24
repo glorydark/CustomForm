@@ -18,6 +18,9 @@ public class StepResponseExecuteData implements ResponseExecuteData {
     }
 
     public void execute(Player player, int responseId, Object... params){
+        if(responseId >= responses.size()){
+            return;
+        }
         for(String command: responses.get(responseId).getCommands()){
             if(command.startsWith("console#")){
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, responseId, params[0]));

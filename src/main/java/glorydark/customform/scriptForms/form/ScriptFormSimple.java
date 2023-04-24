@@ -27,6 +27,8 @@ public class ScriptFormSimple implements ScriptForm {
 
     private SoundData openSound;
 
+    private List<Boolean> enableTipsVariableReplacement = new ArrayList<>();
+
     public ScriptFormSimple(Map<String, Object> config, List<SimpleResponseExecuteData> data, SoundData openSound){
         this.config = config;
         this.data = data;
@@ -83,6 +85,7 @@ public class ScriptFormSimple implements ScriptForm {
             simple = new FormWindowSimple(replace((String) config.getOrDefault("title", "")), content);
         }
         for(Map<String, Object> component: (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
+            enableTipsVariableReplacement.add((Boolean) component.getOrDefault("enable_tips_variable", true));
             String picPath = (String) component.getOrDefault("pic", "");
             if (picPath.equals("")) {
                 simple.addButton(new ElementButton(replace((String) component.getOrDefault("text", ""))));
