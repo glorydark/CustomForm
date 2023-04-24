@@ -17,8 +17,8 @@ public class ExpansionVariable extends BaseVariable {
             this.addStrReplaceString("{item_nbt_tag}", Inventory.bytesToHexString(item.getCompoundTag()));
             this.addStrReplaceString("{item_durability}", String.valueOf(item.getDamage()));
             this.addStrReplaceString("{item_name}", item.getName());
-            this.addStrReplaceString("{player_experience_amount}", String.valueOf(player.getExperience()));
-            this.addStrReplaceString("{player_experience_level}", String.valueOf(player.getExperienceLevel()));
         }
+        this.addStrReplaceString("{player_experience_amount}", String.valueOf(player.getExperience()));
+        this.addStrReplaceString("{player_experience_level}", String.valueOf(player.getExperienceLevel()));
     }
 }
