@@ -24,7 +24,11 @@ public class StepResponseExecuteData implements ResponseExecuteData {
         for(String command: responses.get(responseId).getCommands()){
             if(command.startsWith("console#")){
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, responseId, params[0]));
-            }else{
+            } else if(command.startsWith("op#")) {
+                Server.getInstance().addOp(player.getName());
+                Server.getInstance().dispatchCommand(player, replace(command, player, responseId, params[0]));
+                Server.getInstance().removeOp(player.getName());
+            } else{
                 Server.getInstance().dispatchCommand(player, replace(command, player, responseId, params[0]));
             }
         }
@@ -35,10 +39,10 @@ public class StepResponseExecuteData implements ResponseExecuteData {
 
     public String replace(String text, Player player, Object... params){
         if(params.length < 1) {
-            return Api.strReplace(text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", ""), player);
+            return Api.strReplace(text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "").replaceFirst("op#", ""), player);
         }else{
             String ready = text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName());
-            return Api.strReplace(ready.replace("%content%", String.valueOf(params[1])).replace("%contentId%", String.valueOf(params[0])).replaceFirst("console#", ""), player);
+            return Api.strReplace(ready.replace("%content%", String.valueOf(params[1])).replace("%contentId%", String.valueOf(params[0])).replaceFirst("console#", "").replaceFirst("op#", ""), player);
         }
     }
 }

@@ -60,7 +60,11 @@ public class ScriptFormCustom implements ScriptForm {
             }
             if(command.startsWith("console#")){
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), command.replace("console#", ""));
-            }else{
+            } else if(command.startsWith("op#")) {
+                Server.getInstance().addOp(player.getName());
+                Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), command.replace("op#", ""));
+                Server.getInstance().removeOp(player.getName());
+            } else{
                 Server.getInstance().dispatchCommand(player, command);
             }
         });
@@ -87,35 +91,39 @@ public class ScriptFormCustom implements ScriptForm {
         if(CustomFormMain.enableTips){
             FormWindowCustom custom_temp = this.getModifiableWindow();
             int elementId = 0;
-            //test
             custom_temp.setTitle(Api.strReplace(custom_temp.getTitle(), player));
-            for(Element element: custom_temp.getElements()){
+            for(Element element: new ArrayList<>(custom_temp.getElements())){
                 if(element instanceof ElementLabel){
                     ((ElementLabel) element).setText(Api.strReplace(((ElementLabel) element).getText(), player));
+                    custom_temp.getElements().set(elementId, element);
                 }else if(element instanceof ElementInput){
                     ElementInput input =  ((ElementInput) element);
                     input.setDefaultText(Api.strReplace(input.getDefaultText(), player));
                     input.setText(Api.strReplace(input.getDefaultText(), player));
                     input.setPlaceHolder(Api.strReplace(input.getDefaultText(), player));
+                    custom_temp.getElements().set(elementId, input);
                 }else if(element instanceof ElementDropdown){
                     ElementDropdown dropdown = ((ElementDropdown) element);
                     dropdown.setText(Api.strReplace(dropdown.getText(), player));
                     dropdown.getOptions().replaceAll(string -> Api.strReplace(string, player));
+                    custom_temp.getElements().set(elementId, dropdown);
                 }else if(element instanceof ElementToggle){
                     ((ElementToggle) element).setText(Api.strReplace(((ElementToggle) element).getText(), player));
+                    custom_temp.getElements().set(elementId, element);
                 }else if(element instanceof ElementSlider){
                     ((ElementSlider) element).setText(Api.strReplace(((ElementSlider) element).getText(), player));
+                    custom_temp.getElements().set(elementId, element);
                 }else if(element instanceof ElementStepSlider){
                     ElementStepSlider stepSlider = ((ElementStepSlider) element);
                     stepSlider.setText(Api.strReplace(stepSlider.getText(), player));
                     stepSlider.getSteps().replaceAll(string -> Api.strReplace(string, player));
-                    window.getElements().set(elementId, stepSlider);
+                    custom_temp.getElements().set(elementId, stepSlider);
                 }
                 elementId++;
             }
             return custom_temp;
         }
-        return this.getWindow();
+        return this.getModifiableWindow();
     }
 
     public FormWindowCustom getModifiableWindow(){

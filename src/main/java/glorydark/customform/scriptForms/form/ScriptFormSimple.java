@@ -50,25 +50,22 @@ public class ScriptFormSimple implements ScriptForm {
 
     public FormWindowSimple getWindow(Player player){
         if(CustomFormMain.enableTips){
-            FormWindowSimple simple = getModifiableWindow(window.getButtons());
-            List<ElementButton> buttons = new ArrayList<>();
-            for(ElementButton element: simple.getButtons()){
-                if(element.getImage() != null) {
-                    buttons.add(new ElementButton(Api.strReplace(element.getText(), player), element.getImage()));
-                }else{
-                    buttons.add(new ElementButton(Api.strReplace(element.getText(), player)));
-                }
+            FormWindowSimple simple_temp = this.getModifiableWindow();
+            int elementId = 0;
+            for(ElementButton button: new ArrayList<>(simple_temp.getButtons())){
+                button.setText(Api.strReplace(button.getText(), player));
+                simple_temp.getButtons().set(elementId, button);
+                elementId++;
             }
-            simple = getModifiableWindow(buttons);
-            simple.setContent(Api.strReplace(simple.getContent(), player));
-            simple.setTitle(Api.strReplace(simple.getTitle(), player));
-            return simple;
+            simple_temp.setContent(Api.strReplace(simple_temp.getContent(), player));
+            simple_temp.setTitle(Api.strReplace(simple_temp.getTitle(), player));
+            return simple_temp;
         }
-        return this.getWindow();
+        return this.getModifiableWindow();
     }
 
-    public FormWindowSimple getModifiableWindow(List<ElementButton> buttons){
-        return new FormWindowSimple(window.getTitle(), window.getContent(), buttons);
+    public FormWindowSimple getModifiableWindow(){
+        return new FormWindowSimple(window.getTitle(), window.getContent(), window.getButtons());
     }
 
     @Override
@@ -96,7 +93,7 @@ public class ScriptFormSimple implements ScriptForm {
                     if (picPath.startsWith("url#")) {
                         simple.addButton(new ElementButton(replace((String) component.getOrDefault("text", "")), new ElementButtonImageData("url", picPath.replaceFirst("url#", ""))));
                     }else{
-                        return null;
+                        simple.addButton(new ElementButton(replace((String) component.getOrDefault("text", "")))); //格式都不对则取消
                     }
                 }
             }

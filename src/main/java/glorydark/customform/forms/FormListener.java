@@ -36,6 +36,9 @@ public class FormListener implements Listener {
         if (p == null) {
             return;
         }
+        if (response==null){
+            return;
+        }
         String pName = p.getName();
         FormType formType = FormCreator.UI_CACHE.containsKey(pName) ? FormCreator.UI_CACHE.get(pName).getType() : null;
         if(formType == null){

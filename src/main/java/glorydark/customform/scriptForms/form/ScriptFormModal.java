@@ -57,12 +57,12 @@ public class ScriptFormModal implements ScriptForm {
 
     public FormWindowModal getWindow(Player player){
         if(CustomFormMain.enableTips){
-            FormWindowModal modal = getModifiableWindow();
+            FormWindowModal modal = this.getModifiableWindow();
             modal.setContent(Api.strReplace(modal.getContent(), player));
             modal.setTitle(Api.strReplace(modal.getTitle(), player));
             return modal;
         }
-        return this.getWindow();
+        return this.getModifiableWindow();
     }
 
     public FormWindowModal getModifiableWindow(){
