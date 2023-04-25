@@ -123,7 +123,7 @@ public class ScriptFormCustom implements ScriptForm {
             }
             return custom_temp;
         }
-        return this.getWindow();
+        return this.getModifiableWindow();
     }
 
     public FormWindowCustom getModifiableWindow(){
