@@ -119,9 +119,13 @@ public class Requirements {
             if(command.startsWith("console#")){
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
             } else if(command.startsWith("op#")) {
-                Server.getInstance().addOp(player.getName());
-                Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
-                Server.getInstance().removeOp(player.getName());
+                if(player.isOp()){
+                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
+                }else{
+                    Server.getInstance().addOp(player.getName());
+                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
+                    Server.getInstance().removeOp(player.getName());
+                }
             } else{
                 Server.getInstance().dispatchCommand(player, replace(command, player));
             }
@@ -136,9 +140,13 @@ public class Requirements {
             if(command.startsWith("console#")){
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
             } else if(command.startsWith("op#")) {
-                Server.getInstance().addOp(player.getName());
-                Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
-                Server.getInstance().removeOp(player.getName());
+                if(player.isOp()){
+                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
+                }else{
+                    Server.getInstance().addOp(player.getName());
+                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
+                    Server.getInstance().removeOp(player.getName());
+                }
             } else{
                 Server.getInstance().dispatchCommand(player, replace(command, player));
             }
