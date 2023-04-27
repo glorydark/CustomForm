@@ -1,12 +1,14 @@
 package glorydark.customform.forms;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.form.window.FormWindowModal;
 import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.network.protocol.ModalFormRequestPacket;
 import glorydark.customform.CustomFormMain;
+import glorydark.customform.event.FormPreOpenEvent;
 import glorydark.customform.scriptForms.data.SoundData;
 import glorydark.customform.scriptForms.data.execute_data.ResponseExecuteData;
 import glorydark.customform.scriptForms.data.execute_data.SimpleResponseExecuteData;
@@ -74,6 +76,7 @@ public class FormCreator {
     public static void showScriptForm(Player player, String identifier){
         if(formScripts.containsKey(identifier)){
             ScriptForm script = formScripts.get(identifier);
+            Server.getInstance().getPluginManager().callEvent(new FormPreOpenEvent(script, player));
             FormWindow window = script.getWindow(player);
             if(script.getOpenSound() != null){
                 script.getOpenSound().addSound(player);
@@ -87,6 +90,7 @@ public class FormCreator {
             if(window instanceof FormWindowCustom) {
                 showFormToPlayer(player, FormType.ScriptCustom, identifier);
             }
+            Server.getInstance().getPluginManager().callEvent(new FormPreOpenEvent(script, player));
         }
     }
 
