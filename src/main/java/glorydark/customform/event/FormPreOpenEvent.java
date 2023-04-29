@@ -1,11 +1,13 @@
 package glorydark.customform.event;
 
 import cn.nukkit.Player;
+import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.player.PlayerEvent;
 import glorydark.customform.scriptForms.form.ScriptForm;
 
 public class FormPreOpenEvent extends PlayerEvent {
 
+    private static final HandlerList handlers = new HandlerList();
     ScriptForm scriptForm;
 
     Player player;
@@ -13,6 +15,10 @@ public class FormPreOpenEvent extends PlayerEvent {
     public FormPreOpenEvent(ScriptForm scriptForm, Player player){
         this.scriptForm = scriptForm;
         this.player = player;
+    }
+
+    public static HandlerList getHandlers() {
+        return handlers;
     }
 
     @Override

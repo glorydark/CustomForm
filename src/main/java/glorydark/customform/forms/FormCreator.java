@@ -7,7 +7,13 @@ import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.form.window.FormWindowModal;
 import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.network.protocol.ModalFormRequestPacket;
+import cn.nukkit.utils.Config;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import glorydark.customform.CustomFormMain;
+import glorydark.customform.GsonAdapter;
 import glorydark.customform.event.FormPreOpenEvent;
 import glorydark.customform.scriptForms.data.SoundData;
 import glorydark.customform.scriptForms.data.execute_data.ResponseExecuteData;
@@ -25,6 +31,8 @@ import glorydark.customform.scriptForms.form.ScriptFormModal;
 import glorydark.customform.scriptForms.form.ScriptFormSimple;
 import lombok.Data;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class FormCreator {
@@ -263,5 +271,32 @@ public class FormCreator {
                 break;
         }
         return false;
+    }
+
+    public static Map<String, Object> convertConfigToMap(File file){
+        if(file.getName().endsWith(".json")){
+            InputStream stream;
+            try {
+                stream = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            InputStreamReader streamReader = new InputStreamReader(stream, StandardCharsets.UTF_8); //一定要以utf-8读取
+            JsonReader reader = new JsonReader(streamReader);
+            Gson gson = new GsonBuilder().registerTypeAdapter(new TypeToken<Map<String, Object>>() {}.getType(), new GsonAdapter()).create();
+            Map<String, Object> mainMap = gson.fromJson(reader, new TypeToken<Map<String, Object>>(){}.getType());
+            try {
+                reader.close();
+                streamReader.close();
+                stream.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return mainMap;
+        }
+        if(file.getName().endsWith(".yml")){
+            return new Config(file, Config.YAML).getAll();
+        }
+        return new HashMap<>();
     }
 }

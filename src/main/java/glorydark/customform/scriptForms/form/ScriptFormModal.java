@@ -41,7 +41,25 @@ public class ScriptFormModal implements ScriptForm {
 
     public FormWindowModal initWindow(){
         FormWindowModal modal;
-        String content = (String) config.getOrDefault("content", "");
+        Object object = config.getOrDefault("content", "");
+        String content = "";
+        if(!object.equals("")) {
+            if (object instanceof String) {
+                content = replace((String) object);
+            } else if (object instanceof ArrayList) {
+                StringBuilder tempStr = new StringBuilder();
+                List<String> stringListTemp = (List<String>) object;
+                if (stringListTemp.size() > 0) {
+                    for (int i = 0; i < stringListTemp.size(); i++) {
+                        tempStr.append(stringListTemp.get(i));
+                        if (i < stringListTemp.size() - 1) {
+                            tempStr.append("\n");
+                        }
+                    }
+                }
+                content = replace(tempStr.toString());
+            }
+        }
         List<Map<String, Object>> buttons = (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>());
         if(buttons.size() != 2){
             return null;

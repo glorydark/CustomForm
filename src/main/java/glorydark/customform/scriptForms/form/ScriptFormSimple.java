@@ -75,7 +75,25 @@ public class ScriptFormSimple implements ScriptForm {
 
     public FormWindowSimple initWindow(){
         FormWindowSimple simple;
-        String content = replace((String) config.getOrDefault("content", ""));
+        Object object = config.getOrDefault("content", "");
+        String content = "";
+        if(!object.equals("")) {
+            if (object instanceof String) {
+                content = replace((String) object);
+            } else if (object instanceof ArrayList) {
+                StringBuilder tempStr = new StringBuilder();
+                List<String> stringListTemp = (List<String>) object;
+                if (stringListTemp.size() > 0) {
+                    for (int i = 0; i < stringListTemp.size(); i++) {
+                        tempStr.append(stringListTemp.get(i));
+                        if (i < stringListTemp.size() - 1) {
+                            tempStr.append("\n");
+                        }
+                    }
+                }
+                content = replace(tempStr.toString());
+            }
+        }
         if(content.equals("")) {
             simple = new FormWindowSimple(replace((String) config.getOrDefault("title", "")), "");
         }else{
