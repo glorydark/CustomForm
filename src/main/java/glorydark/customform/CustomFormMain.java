@@ -8,16 +8,11 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.TextFormat;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 import glorydark.customform.forms.FormCreator;
 import glorydark.customform.forms.FormListener;
 import tip.utils.Api;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.File;
 import java.util.Map;
 import java.util.Objects;
 
@@ -100,40 +95,12 @@ public class CustomFormMain extends PluginBase {
         FormCreator.UI_CACHE.clear();
         File dic = new File(path+"/forms/");
         for(File file: Objects.requireNonNull(dic.listFiles())){
-            if(file.getName().endsWith(".json")){
-                InputStream stream;
-                try {
-                    stream = new FileInputStream(file);
-                } catch (FileNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-                InputStreamReader streamReader = new InputStreamReader(stream, StandardCharsets.UTF_8); //一定要以utf-8读取
-                JsonReader reader = new JsonReader(streamReader);
-                Gson gson = new GsonBuilder().registerTypeAdapter(new TypeToken<Map<String, Object>>() {}.getType(), new GsonAdapter()).create();
-                Map<String, Object> mainMap = gson.fromJson(reader, new TypeToken<Map<String, Object>>(){}.getType());
-
-                String identifier = file.getName().replace(".json","");
-                if(FormCreator.loadForm(identifier, mainMap)){
-                    this.getLogger().info(language.translateString(null, "form_loaded", identifier));
-                }else{
-                    this.getLogger().error(language.translateString(null, "form_loaded_failed", identifier));
-                }
-                try {
-                    reader.close();
-                    streamReader.close();
-                    stream.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            if(file.getName().endsWith(".yml")){
-                String identifier = file.getName().replace(".yml","");
-                Map<String, Object> mainMap = new Config(file, Config.YAML).getAll();
-                if(FormCreator.loadForm(identifier, mainMap)){
-                    this.getLogger().info(language.translateString(null, "form_loaded", identifier));
-                }else{
-                    this.getLogger().error(language.translateString(null, "form_loaded_failed", identifier));
-                }
+            Map<String, Object> mainMap = FormCreator.convertConfigToMap(file);
+            String identifier = file.getName().replace(".json","").replace(".yml", "");
+            if(FormCreator.loadForm(identifier, mainMap)){
+                this.getLogger().info(language.translateString(null, "form_loaded", identifier));
+            }else{
+                this.getLogger().error(language.translateString(null, "form_loaded_failed", identifier));
             }
         }
         this.getLogger().info(language.translateString(null, "form_loaded_in_total", FormCreator.formScripts.keySet().size()));

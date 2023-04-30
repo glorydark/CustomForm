@@ -14,15 +14,16 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import glorydark.customform.CustomFormMain;
 import glorydark.customform.GsonAdapter;
+import glorydark.customform.annotations.Api;
 import glorydark.customform.event.FormPreOpenEvent;
 import glorydark.customform.scriptForms.data.SoundData;
 import glorydark.customform.scriptForms.data.execute_data.ResponseExecuteData;
 import glorydark.customform.scriptForms.data.execute_data.SimpleResponseExecuteData;
 import glorydark.customform.scriptForms.data.execute_data.StepResponseExecuteData;
 import glorydark.customform.scriptForms.data.execute_data.ToggleResponseExecuteData;
+import glorydark.customform.scriptForms.data.requirement.Requirements;
 import glorydark.customform.scriptForms.data.requirement.economy.EconomyRequirementData;
 import glorydark.customform.scriptForms.data.requirement.economy.EconomyRequirementType;
-import glorydark.customform.scriptForms.data.requirement.Requirements;
 import glorydark.customform.scriptForms.data.requirement.tips.TipsRequirementData;
 import glorydark.customform.scriptForms.data.requirement.tips.TipsRequirementType;
 import glorydark.customform.scriptForms.form.ScriptForm;
@@ -53,10 +54,20 @@ public class FormCreator {
 
         private String script;
 
+        // This is provided to customize your form more easily.
+        private ScriptForm customizedScriptForm;
+
         public WindowInfo(FormType type, String script){
             this.type = type;
             this.script = script;
         }
+
+        public WindowInfo(FormType type, String script, ScriptForm customizedScriptForm){
+            this.type = type;
+            this.script = script;
+            this.customizedScriptForm = customizedScriptForm;
+        }
+
     }
 
     /*
@@ -65,17 +76,23 @@ public class FormCreator {
         Especially thanks to lt-name(LT-name)!
     */
     public static void showFormToPlayer(Player player, FormType formType, String identifier) {
+        showFormToPlayer(player, formType, FormCreator.formScripts.get(identifier), identifier);
+    }
+
+    @Api
+    // You can show your own scriptForm without former registry by defining a certain scriptForm.
+    public static void showFormToPlayer(Player player, FormType formType, ScriptForm scriptForm, String identifier) {
         if(player.namedTag.contains("lastFormRequestMillis") && System.currentTimeMillis() - player.namedTag.getLong("lastFormRequestMillis") < CustomFormMain.coolDownMillis) {
             player.sendMessage(CustomFormMain.language.translateString(player, "operation_so_fast"));
             return;
         }
-        FormWindow window = formScripts.get(identifier).getWindow(player);
+        FormWindow window = scriptForm.getWindow(player);
         ModalFormRequestPacket packet = new ModalFormRequestPacket();
         packet.formId = formId;
         packet.data = window.getJSONData();
         player.dataPacket(packet);
         player.namedTag.putLong("lastFormRequestMillis", System.currentTimeMillis());
-        UI_CACHE.put(player.getName(), new WindowInfo(formType, identifier));
+        UI_CACHE.put(player.getName(), new WindowInfo(formType, identifier, scriptForm));
     }
 
     /*
@@ -84,22 +101,28 @@ public class FormCreator {
     public static void showScriptForm(Player player, String identifier){
         if(formScripts.containsKey(identifier)){
             ScriptForm script = formScripts.get(identifier);
-            Server.getInstance().getPluginManager().callEvent(new FormPreOpenEvent(script, player));
-            FormWindow window = script.getWindow(player);
-            if(script.getOpenSound() != null){
-                script.getOpenSound().addSound(player);
-            }
-            if(window instanceof FormWindowSimple) {
-                showFormToPlayer(player, FormType.ScriptSimple, identifier);
-            }
-            if(window instanceof FormWindowModal) {
-                showFormToPlayer(player, FormType.ScriptModal, identifier);
-            }
-            if(window instanceof FormWindowCustom) {
-                showFormToPlayer(player, FormType.ScriptCustom, identifier);
-            }
-            Server.getInstance().getPluginManager().callEvent(new FormPreOpenEvent(script, player));
+            showScriptForm(player, script, identifier);
         }
+    }
+
+    @Api
+    // This function can use as a way to customize your form.
+    public static void showScriptForm(Player player, ScriptForm script, String identifier){
+        Server.getInstance().getPluginManager().callEvent(new FormPreOpenEvent(script, player));
+        FormWindow window = script.getWindow(player);
+        if(script.getOpenSound() != null){
+            script.getOpenSound().addSound(player);
+        }
+        if(window instanceof FormWindowSimple) {
+            showFormToPlayer(player, FormType.ScriptSimple, script, identifier);
+        }
+        if(window instanceof FormWindowModal) {
+            showFormToPlayer(player, FormType.ScriptModal, script, identifier);
+        }
+        if(window instanceof FormWindowCustom) {
+            showFormToPlayer(player, FormType.ScriptCustom, script, identifier);
+        }
+        Server.getInstance().getPluginManager().callEvent(new FormPreOpenEvent(script, player));
     }
 
     /*
@@ -184,6 +207,18 @@ public class FormCreator {
         0: simple  1: custom  2: modal
      */
     public static boolean loadForm(String identifier, Map<String, Object> config){
+        ScriptForm scriptForm = getScriptFormByMap(config);
+        if(scriptForm != null){
+            FormCreator.formScripts.put(identifier, scriptForm);
+            return true;
+        }else{
+            CustomFormMain.plugin.getLogger().warning("Can not load scriptForm: "+ identifier);
+        }
+        return false;
+    }
+
+    @Api
+    public static ScriptForm getScriptFormByMap(Map<String, Object> config){
         switch ((int) config.get("type")){
             case 0:
                 //simple
@@ -208,8 +243,7 @@ public class FormCreator {
                     simple.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
                 }
                 if (simple.getWindow() != null) {
-                    formScripts.put(identifier, simple);
-                    return true;
+                    return simple;
                 }
                 break;
             case 1:
@@ -248,8 +282,7 @@ public class FormCreator {
                     custom.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
                 }
                 if(custom.getWindow() != null){
-                    formScripts.put(identifier, custom);
-                    return true;
+                    return custom;
                 }
                 break;
             case 2:
@@ -265,14 +298,14 @@ public class FormCreator {
                     modal.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
                 }
                 if (modal.getWindow() != null) {
-                    formScripts.put(identifier, modal);
-                    return true;
+                    return modal;
                 }
                 break;
         }
-        return false;
+        return null;
     }
 
+    @Api
     public static Map<String, Object> convertConfigToMap(File file){
         if(file.getName().endsWith(".json")){
             InputStream stream;
@@ -285,6 +318,8 @@ public class FormCreator {
             JsonReader reader = new JsonReader(streamReader);
             Gson gson = new GsonBuilder().registerTypeAdapter(new TypeToken<Map<String, Object>>() {}.getType(), new GsonAdapter()).create();
             Map<String, Object> mainMap = gson.fromJson(reader, new TypeToken<Map<String, Object>>(){}.getType());
+
+            // Remember to close the streamReader after your implementation.
             try {
                 reader.close();
                 streamReader.close();
@@ -293,8 +328,7 @@ public class FormCreator {
                 throw new RuntimeException(e);
             }
             return mainMap;
-        }
-        if(file.getName().endsWith(".yml")){
+        }else if(file.getName().endsWith(".yml")){
             return new Config(file, Config.YAML).getAll();
         }
         return new HashMap<>();

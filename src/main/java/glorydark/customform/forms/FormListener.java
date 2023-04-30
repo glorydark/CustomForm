@@ -47,6 +47,9 @@ public class FormListener implements Listener {
         }
         String script = FormCreator.UI_CACHE.get(pName).getScript();
         ScriptForm form = FormCreator.formScripts.get(script);
+        if(form == null){
+            form = FormCreator.UI_CACHE.get(pName).getCustomizedScriptForm();
+        }
         if (translateResponse(response.trim(), form.getWindow(p)) == null) {
             return;
         }

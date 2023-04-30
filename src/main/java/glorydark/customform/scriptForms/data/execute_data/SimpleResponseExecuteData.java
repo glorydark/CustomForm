@@ -11,7 +11,7 @@ import java.util.List;
 
 // Concerning: Button, Input, Slider
 @Data
-public class SimpleResponseExecuteData implements ResponseExecuteData{
+public class SimpleResponseExecuteData implements ResponseExecuteData {
     List<String> commands;
     List<String> messages;
     List<String> failed_commands;

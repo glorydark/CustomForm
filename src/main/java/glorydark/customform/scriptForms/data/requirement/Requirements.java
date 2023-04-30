@@ -57,8 +57,8 @@ public class Requirements {
     }
 
     /*
-                                    Check if player can meet the all requirements or so-called conditions here.
-                                 */
+        Check if player can meet the all requirements or so-called conditions here.
+    */
     public boolean isAllQualified(Player player, Object... params){
         // Deal with ConditionData
         for(EconomyRequirementData datum: economyRequirementData){
