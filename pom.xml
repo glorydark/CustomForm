@@ -6,7 +6,7 @@
 
     <groupId>org.example</groupId>
     <artifactId>CustomForm</artifactId>
-    <version>1.0.6C2</version>
+    <version>1.0.6Candidate3</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
