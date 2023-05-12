@@ -16,6 +16,7 @@ import lombok.Data;
 import tip.utils.Api;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -138,17 +139,19 @@ public class ScriptFormSimple implements ScriptForm {
         if(CustomFormMain.enableRsNPCX){
             try {
                 Field field1 = VariableManage.class.getDeclaredField("VARIABLE_CLASS");
+                field1.setAccessible(true);
                 ConcurrentHashMap<String, BaseVariable> v1_classes = (ConcurrentHashMap<String, BaseVariable>) field1.get(new ConcurrentHashMap<>());
                 for(BaseVariable v1: v1_classes.values()){
                     string = v1.stringReplace(player, string);
                 }
                 Field field2 = VariableManage.class.getDeclaredField("VARIABLE_V2_CLASS");
+                field2.setAccessible(true);
                 ConcurrentHashMap<String, BaseVariableV2> v2_classes = (ConcurrentHashMap<String, BaseVariableV2>) field2.get(new ConcurrentHashMap<>());
                 for(BaseVariableV2 v2: v2_classes.values()){
                     string = v2.stringReplace(string);
                 }
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                throw new RuntimeException(e);
+            } catch (NoSuchFieldException | IllegalAccessException ignored) {
+
             }
         }
         if(replaceBreak){
