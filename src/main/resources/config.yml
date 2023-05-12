@@ -1,3 +1,5 @@
 coolDown: 200
 default_language: zh_cn
 enable_expansion_variable: true
+enable_tips: true
+enable_rsNPCX: true

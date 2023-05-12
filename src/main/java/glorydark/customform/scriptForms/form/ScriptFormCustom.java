@@ -6,15 +6,20 @@ import cn.nukkit.form.element.*;
 import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseCustom;
 import cn.nukkit.form.window.FormWindowCustom;
+import com.smallaswater.npc.variable.BaseVariable;
+import com.smallaswater.npc.variable.BaseVariableV2;
+import com.smallaswater.npc.variable.VariableManage;
 import glorydark.customform.CustomFormMain;
 import glorydark.customform.scriptForms.data.SoundData;
 import glorydark.customform.scriptForms.data.execute_data.ResponseExecuteData;
 import lombok.Data;
 import tip.utils.Api;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Data
 public class ScriptFormCustom implements ScriptForm {
@@ -95,32 +100,32 @@ public class ScriptFormCustom implements ScriptForm {
         if(CustomFormMain.enableTips){
             FormWindowCustom custom_temp = this.getModifiableWindow();
             int elementId = 0;
-            custom_temp.setTitle(Api.strReplace(custom_temp.getTitle(), player));
+            custom_temp.setTitle(replace(custom_temp.getTitle(), player));
             for(Element element: new ArrayList<>(custom_temp.getElements())){
                 if(element instanceof ElementLabel){
-                    ((ElementLabel) element).setText(Api.strReplace(((ElementLabel) element).getText(), player));
+                    ((ElementLabel) element).setText(replace(((ElementLabel) element).getText(), player));
                     custom_temp.getElements().set(elementId, element);
                 }else if(element instanceof ElementInput){
                     ElementInput input =  ((ElementInput) element);
-                    input.setDefaultText(Api.strReplace(input.getDefaultText(), player));
-                    input.setText(Api.strReplace(input.getDefaultText(), player));
-                    input.setPlaceHolder(Api.strReplace(input.getDefaultText(), player));
+                    input.setDefaultText(replace(input.getDefaultText(), player));
+                    input.setText(replace(input.getDefaultText(), player));
+                    input.setPlaceHolder(replace(input.getDefaultText(), player));
                     custom_temp.getElements().set(elementId, input);
                 }else if(element instanceof ElementDropdown){
                     ElementDropdown dropdown = ((ElementDropdown) element);
-                    dropdown.setText(Api.strReplace(dropdown.getText(), player));
-                    dropdown.getOptions().replaceAll(string -> Api.strReplace(string, player));
+                    dropdown.setText(replace(dropdown.getText(), player));
+                    dropdown.getOptions().replaceAll(string -> replace(string, player));
                     custom_temp.getElements().set(elementId, dropdown);
                 }else if(element instanceof ElementToggle){
-                    ((ElementToggle) element).setText(Api.strReplace(((ElementToggle) element).getText(), player));
+                    ((ElementToggle) element).setText(replace(((ElementToggle) element).getText(), player));
                     custom_temp.getElements().set(elementId, element);
                 }else if(element instanceof ElementSlider){
-                    ((ElementSlider) element).setText(Api.strReplace(((ElementSlider) element).getText(), player));
+                    ((ElementSlider) element).setText(replace(((ElementSlider) element).getText(), player));
                     custom_temp.getElements().set(elementId, element);
                 }else if(element instanceof ElementStepSlider){
                     ElementStepSlider stepSlider = ((ElementStepSlider) element);
-                    stepSlider.setText(Api.strReplace(stepSlider.getText(), player));
-                    stepSlider.getSteps().replaceAll(string -> Api.strReplace(string, player));
+                    stepSlider.setText(replace(stepSlider.getText(), player));
+                    stepSlider.getSteps().replaceAll(string -> replace(string, player));
                     custom_temp.getElements().set(elementId, stepSlider);
                 }
                 elementId++;
@@ -141,7 +146,7 @@ public class ScriptFormCustom implements ScriptForm {
 
     public FormWindowCustom initWindow(){
         FormWindowCustom custom;
-        custom = new FormWindowCustom(replace((String) config.getOrDefault("title", "")));
+        custom = new FormWindowCustom(replaceBreak((String) config.getOrDefault("title", "")));
         for(Map<String, Object> component: (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
             enableTipsVariableReplacement.add((Boolean) component.getOrDefault("enable_tips_variable", true));
             switch ((String) component.getOrDefault("type", "")){
@@ -168,7 +173,37 @@ public class ScriptFormCustom implements ScriptForm {
         return custom;
     }
 
-    public String replace(String string){
+    public String replaceBreak(String string){
         return string.replace("\\n", "\n");
+    }
+
+    public String replace(String string, Player player) {
+        return replace(string, player, false);
+    }
+
+    public String replace(String string, Player player, boolean replaceBreak){
+        if(CustomFormMain.enableTips){
+            string = Api.strReplace(string, player);
+        }
+        if(CustomFormMain.enableRsNPCX){
+            try {
+                Field field1 = VariableManage.class.getDeclaredField("VARIABLE_CLASS");
+                ConcurrentHashMap<String, BaseVariable> v1_classes = (ConcurrentHashMap<String, BaseVariable>) field1.get(new ConcurrentHashMap<>());
+                for(BaseVariable v1: v1_classes.values()){
+                    string = v1.stringReplace(player, string);
+                }
+                Field field2 = VariableManage.class.getDeclaredField("VARIABLE_V2_CLASS");
+                ConcurrentHashMap<String, BaseVariableV2> v2_classes = (ConcurrentHashMap<String, BaseVariableV2>) field2.get(new ConcurrentHashMap<>());
+                for(BaseVariableV2 v2: v2_classes.values()){
+                    string = v2.stringReplace(string);
+                }
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if(replaceBreak){
+            string = replaceBreak(string);
+        }
+        return string;
     }
 }

@@ -30,6 +30,8 @@ public class CustomFormMain extends PluginBase {
     */
     public static boolean enableTips = false;
 
+    public static boolean enableRsNPCX = false;
+
     public static boolean enableEconomyAPI = false;
 
     public static boolean enablePoints = false;
@@ -51,20 +53,21 @@ public class CustomFormMain extends PluginBase {
         Config config = new Config(path+"/config.yml",Config.YAML);
         coolDownMillis = config.getLong("coolDown", 200L);
         language = new Language(config.getString("default_lang", "zh_cn"), path+"/languages/", path+"/languages/playerLanguageCache.yml");
+        enableTips = checkSoftDepend("Tips")  && config.getBoolean("enable_tips", true);
+        enableDCurrency = checkSoftDepend("DCurrency");
+        enableEconomyAPI = checkSoftDepend("EconomyAPI");
+        enablePoints = checkSoftDepend("playerPoints");
+        enableRsNPCX = checkSoftDepend("RsNPC") && config.getBoolean("enable_rsNPCX", true);
+        if(enableTips){
+            if(config.getBoolean("enable_expansion_variable", true)){
+                Api.registerVariables("CustomFormVariableExpansion", ExpansionVariable.class); // Register ExpansionVariable.class
+            }
+        }
         File formDic = new File(path+"/forms/");
         if(!formDic.exists()){
             if(!formDic.mkdirs()){
                 this.getLogger().warning(language.translateString(null, "plugin_dictionary_created_failed"));
                 this.setEnabled(false);
-            }
-        }
-        enableTips = checkSoftDepend("Tips");
-        enableDCurrency = checkSoftDepend("DCurrency");
-        enableEconomyAPI = checkSoftDepend("EconomyAPI");
-        enablePoints = checkSoftDepend("playerPoints");
-        if(enableTips){
-            if(config.getBoolean("enable_expansion_variable", true)){
-                Api.registerVariables("CustomFormVariableExpansion", ExpansionVariable.class); // Register ExpansionVariable.class
             }
         }
         this.loadScriptWindows();

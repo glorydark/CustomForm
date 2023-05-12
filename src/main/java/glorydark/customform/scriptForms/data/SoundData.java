@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.level.Sound;
 
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.Optional;
 
 public class SoundData {
