@@ -38,6 +38,8 @@ public class ScriptFormCustom implements ScriptForm {
 
     private List<Boolean> enableTipsVariableReplacement = new ArrayList<>();
 
+    private List<Boolean> enableRsNPCXVariableReplacement = new ArrayList<>();
+
     private long startMillis = -1L;
 
     private long expiredMillis = -1L;
@@ -150,6 +152,7 @@ public class ScriptFormCustom implements ScriptForm {
         custom = new FormWindowCustom((String) config.getOrDefault("title", ""));
         for(Map<String, Object> component: (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
             enableTipsVariableReplacement.add((Boolean) component.getOrDefault("enable_tips_variable", true));
+            enableRsNPCXVariableReplacement.add((Boolean) component.getOrDefault("enable_rsNPCX_variable", true));
             switch ((String) component.getOrDefault("type", "")){
                 case "Input":
                     custom.addElement(new ElementInput((String) component.getOrDefault("text", ""), (String) component.getOrDefault("placeholder", ""), (String) component.getOrDefault("default", "")));

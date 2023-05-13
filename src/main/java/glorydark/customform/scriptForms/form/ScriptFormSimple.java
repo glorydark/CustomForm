@@ -16,7 +16,6 @@ import lombok.Data;
 import tip.utils.Api;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +33,8 @@ public class ScriptFormSimple implements ScriptForm {
     private SoundData openSound;
 
     private List<Boolean> enableTipsVariableReplacement = new ArrayList<>();
+
+    private List<Boolean> enableRsNPCXVariableReplacement = new ArrayList<>();
 
     private long startMillis = -1L;
 
@@ -59,7 +60,8 @@ public class ScriptFormSimple implements ScriptForm {
         int elementId = 0;
         for(ElementButton button: new ArrayList<>(simple_temp.getButtons())){
             boolean tipsEnabled = enableTipsVariableReplacement.get(elementId);
-            button.setText(replace(button.getText(), player, true, tipsEnabled, true));
+            boolean rsNPCXEnabled = enableRsNPCXVariableReplacement.get(elementId);
+            button.setText(replace(button.getText(), player, true, rsNPCXEnabled, tipsEnabled));
             simple_temp.getButtons().set(elementId, button);
             elementId++;
         }
@@ -105,6 +107,7 @@ public class ScriptFormSimple implements ScriptForm {
         }
         for(Map<String, Object> component: (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
             enableTipsVariableReplacement.add((Boolean) component.getOrDefault("enable_tips_variable", true));
+            enableRsNPCXVariableReplacement.add((Boolean) component.getOrDefault("enable_rsNPCX_variable", true));
             String picPath = (String) component.getOrDefault("pic", "");
             if (picPath.equals("")) {
                 simple.addButton(new ElementButton((String) component.getOrDefault("text", "")));
