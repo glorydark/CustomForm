@@ -35,6 +35,10 @@ public class ScriptFormSimple implements ScriptForm {
 
     private List<Boolean> enableTipsVariableReplacement = new ArrayList<>();
 
+    private long startMillis = -1L;
+
+    private long expiredMillis = -1L;
+
     public ScriptFormSimple(Map<String, Object> config, List<SimpleResponseExecuteData> data, SoundData openSound){
         this.config = config;
         this.data = data;
@@ -51,19 +55,17 @@ public class ScriptFormSimple implements ScriptForm {
     }
 
     public FormWindowSimple getWindow(Player player){
-        if(CustomFormMain.enableTips){
-            FormWindowSimple simple_temp = this.getModifiableWindow();
-            int elementId = 0;
-            for(ElementButton button: new ArrayList<>(simple_temp.getButtons())){
-                button.setText(replace(button.getText(), player));
-                simple_temp.getButtons().set(elementId, button);
-                elementId++;
-            }
-            simple_temp.setContent(replace(simple_temp.getContent(), player));
-            simple_temp.setTitle(replace(simple_temp.getTitle(), player));
-            return simple_temp;
+        FormWindowSimple simple_temp = this.getModifiableWindow();
+        int elementId = 0;
+        for(ElementButton button: new ArrayList<>(simple_temp.getButtons())){
+            boolean tipsEnabled = enableTipsVariableReplacement.get(elementId);
+            button.setText(replace(button.getText(), player, true, tipsEnabled, true));
+            simple_temp.getButtons().set(elementId, button);
+            elementId++;
         }
-        return this.getModifiableWindow();
+        simple_temp.setContent(replace(simple_temp.getContent(), player, true));
+        simple_temp.setTitle(replace(simple_temp.getTitle(), player));
+        return simple_temp;
     }
 
     public FormWindowSimple getModifiableWindow(){
@@ -81,7 +83,7 @@ public class ScriptFormSimple implements ScriptForm {
         String content = "";
         if(!object.equals("")) {
             if (object instanceof String) {
-                content = replaceBreak((String) object);
+                content = (String) object;
             } else if (object instanceof ArrayList) {
                 StringBuilder tempStr = new StringBuilder();
                 List<String> stringListTemp = (List<String>) object;
@@ -93,27 +95,27 @@ public class ScriptFormSimple implements ScriptForm {
                         }
                     }
                 }
-                content = replaceBreak(tempStr.toString());
+                content = tempStr.toString();
             }
         }
         if(content.equals("")) {
-            simple = new FormWindowSimple(replaceBreak((String) config.getOrDefault("title", "")), "");
+            simple = new FormWindowSimple((String) config.getOrDefault("title", ""), "");
         }else{
-            simple = new FormWindowSimple(replaceBreak((String) config.getOrDefault("title", "")), content);
+            simple = new FormWindowSimple((String) config.getOrDefault("title", ""), content);
         }
         for(Map<String, Object> component: (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
             enableTipsVariableReplacement.add((Boolean) component.getOrDefault("enable_tips_variable", true));
             String picPath = (String) component.getOrDefault("pic", "");
             if (picPath.equals("")) {
-                simple.addButton(new ElementButton(replaceBreak((String) component.getOrDefault("text", ""))));
+                simple.addButton(new ElementButton((String) component.getOrDefault("text", "")));
             } else {
                 if (picPath.startsWith("path#")) {
-                    simple.addButton(new ElementButton(replaceBreak((String) component.getOrDefault("text", "")), new ElementButtonImageData("path", picPath.replaceFirst("path#", ""))));
+                    simple.addButton(new ElementButton((String) component.getOrDefault("text", ""), new ElementButtonImageData("path", picPath.replaceFirst("path#", ""))));
                 }else {
                     if (picPath.startsWith("url#")) {
-                        simple.addButton(new ElementButton(replaceBreak((String) component.getOrDefault("text", "")), new ElementButtonImageData("url", picPath.replaceFirst("url#", ""))));
+                        simple.addButton(new ElementButton((String) component.getOrDefault("text", ""), new ElementButtonImageData("url", picPath.replaceFirst("url#", ""))));
                     }else{
-                        simple.addButton(new ElementButton(replaceBreak((String) component.getOrDefault("text", "")))); //格式都不对则取消
+                        simple.addButton(new ElementButton((String) component.getOrDefault("text", ""))); //格式都不对则取消
                     }
                 }
             }
@@ -126,17 +128,22 @@ public class ScriptFormSimple implements ScriptForm {
     }
 
     public String replace(String string, Player player) {
-        return replace(string, player, false);
+        return this.replace(string, player, false);
     }
 
     /**
      * Refracted in order to expand the usages easily.
      */
+
     public String replace(String string, Player player, boolean replaceBreak){
-        if(CustomFormMain.enableTips){
+        return this.replace(string, player, replaceBreak, true, true);
+    }
+
+    public String replace(String string, Player player, boolean replaceBreak, boolean enableRsNPCX, boolean enableTips){
+        if(CustomFormMain.enableTips && enableTips){
             string = Api.strReplace(string, player);
         }
-        if(CustomFormMain.enableRsNPCX){
+        if(CustomFormMain.enableRsNPCX && enableRsNPCX){
             try {
                 Field field1 = VariableManage.class.getDeclaredField("VARIABLE_CLASS");
                 field1.setAccessible(true);

@@ -11,4 +11,8 @@ public interface ScriptForm {
     FormWindow getWindow(Player player);
 
     SoundData getOpenSound();
+
+    long getStartMillis();
+
+    long getExpiredMillis();
 }

@@ -16,7 +16,6 @@ import lombok.Data;
 import tip.utils.Api;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +37,10 @@ public class ScriptFormCustom implements ScriptForm {
     private List<String> globalMessages = new ArrayList<>();
 
     private List<Boolean> enableTipsVariableReplacement = new ArrayList<>();
+
+    private long startMillis = -1L;
+
+    private long expiredMillis = -1L;
 
     public ScriptFormCustom(Map<String, Object> config, List<ResponseExecuteData> data, SoundData openSound){
         this.config = config;
@@ -98,42 +101,39 @@ public class ScriptFormCustom implements ScriptForm {
     }
 
     public FormWindowCustom getWindow(Player player){
-        if(CustomFormMain.enableTips){
-            FormWindowCustom custom_temp = this.getModifiableWindow();
-            int elementId = 0;
-            custom_temp.setTitle(replace(custom_temp.getTitle(), player));
-            for(Element element: new ArrayList<>(custom_temp.getElements())){
-                if(element instanceof ElementLabel){
-                    ((ElementLabel) element).setText(replace(((ElementLabel) element).getText(), player));
-                    custom_temp.getElements().set(elementId, element);
-                }else if(element instanceof ElementInput){
-                    ElementInput input =  ((ElementInput) element);
-                    input.setDefaultText(replace(input.getDefaultText(), player));
-                    input.setText(replace(input.getDefaultText(), player));
-                    input.setPlaceHolder(replace(input.getDefaultText(), player));
-                    custom_temp.getElements().set(elementId, input);
-                }else if(element instanceof ElementDropdown){
-                    ElementDropdown dropdown = ((ElementDropdown) element);
-                    dropdown.setText(replace(dropdown.getText(), player));
-                    dropdown.getOptions().replaceAll(string -> replace(string, player));
-                    custom_temp.getElements().set(elementId, dropdown);
-                }else if(element instanceof ElementToggle){
-                    ((ElementToggle) element).setText(replace(((ElementToggle) element).getText(), player));
-                    custom_temp.getElements().set(elementId, element);
-                }else if(element instanceof ElementSlider){
-                    ((ElementSlider) element).setText(replace(((ElementSlider) element).getText(), player));
-                    custom_temp.getElements().set(elementId, element);
-                }else if(element instanceof ElementStepSlider){
-                    ElementStepSlider stepSlider = ((ElementStepSlider) element);
-                    stepSlider.setText(replace(stepSlider.getText(), player));
-                    stepSlider.getSteps().replaceAll(string -> replace(string, player));
-                    custom_temp.getElements().set(elementId, stepSlider);
-                }
-                elementId++;
+        FormWindowCustom custom_temp = this.getModifiableWindow();
+        int elementId = 0;
+        custom_temp.setTitle(replace(custom_temp.getTitle(), player));
+        for(Element element: new ArrayList<>(custom_temp.getElements())){
+            if(element instanceof ElementLabel){
+                ((ElementLabel) element).setText(replace(((ElementLabel) element).getText(), player));
+                custom_temp.getElements().set(elementId, element);
+            }else if(element instanceof ElementInput){
+                ElementInput input =  ((ElementInput) element);
+                input.setDefaultText(replace(input.getDefaultText(), player));
+                input.setText(replace(input.getDefaultText(), player));
+                input.setPlaceHolder(replace(input.getDefaultText(), player));
+                custom_temp.getElements().set(elementId, input);
+            }else if(element instanceof ElementDropdown){
+                ElementDropdown dropdown = ((ElementDropdown) element);
+                dropdown.setText(replace(dropdown.getText(), player));
+                dropdown.getOptions().replaceAll(string -> replace(string, player));
+                custom_temp.getElements().set(elementId, dropdown);
+            }else if(element instanceof ElementToggle){
+                ((ElementToggle) element).setText(replace(((ElementToggle) element).getText(), player));
+                custom_temp.getElements().set(elementId, element);
+            }else if(element instanceof ElementSlider){
+                ((ElementSlider) element).setText(replace(((ElementSlider) element).getText(), player));
+                custom_temp.getElements().set(elementId, element);
+            }else if(element instanceof ElementStepSlider){
+                ElementStepSlider stepSlider = ((ElementStepSlider) element);
+                stepSlider.setText(replace(stepSlider.getText(), player));
+                stepSlider.getSteps().replaceAll(string -> replace(string, player));
+                custom_temp.getElements().set(elementId, stepSlider);
             }
-            return custom_temp;
+            elementId++;
         }
-        return this.getModifiableWindow();
+        return custom_temp;
     }
 
     public FormWindowCustom getModifiableWindow(){
@@ -147,7 +147,7 @@ public class ScriptFormCustom implements ScriptForm {
 
     public FormWindowCustom initWindow(){
         FormWindowCustom custom;
-        custom = new FormWindowCustom(replaceBreak((String) config.getOrDefault("title", "")));
+        custom = new FormWindowCustom((String) config.getOrDefault("title", ""));
         for(Map<String, Object> component: (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
             enableTipsVariableReplacement.add((Boolean) component.getOrDefault("enable_tips_variable", true));
             switch ((String) component.getOrDefault("type", "")){

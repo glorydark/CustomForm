@@ -82,6 +82,12 @@ public class FormCreator {
     @Api
     // You can show your own scriptForm without former registry by defining a certain scriptForm.
     public static void showFormToPlayer(Player player, FormType formType, ScriptForm scriptForm, String identifier) {
+        if(scriptForm.getStartMillis() != -1L || scriptForm.getExpiredMillis() != -1L){
+            if(scriptForm.getStartMillis() < System.currentTimeMillis() && scriptForm.getExpiredMillis() < System.currentTimeMillis()){
+                player.sendMessage("This form is expired!");
+                return;
+            }
+        }
         if(player.namedTag.contains("lastFormRequestMillis") && System.currentTimeMillis() - player.namedTag.getLong("lastFormRequestMillis") < CustomFormMain.coolDownMillis) {
             player.sendMessage(CustomFormMain.language.translateString(player, "operation_so_fast"));
             return;
@@ -242,6 +248,8 @@ public class FormCreator {
                     Map<String, Object> openSoundMap = (Map<String, Object>) config.get("open_sound");
                     simple.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
                 }
+                simple.setStartMillis((Long) config.getOrDefault("startMillis", -1L));
+                simple.setExpiredMillis((Long) config.getOrDefault("expiredMillis", -1L));
                 if (simple.getWindow() != null) {
                     return simple;
                 }
@@ -281,6 +289,8 @@ public class FormCreator {
                     Map<String, Object> openSoundMap = (Map<String, Object>) config.get("open_sound");
                     custom.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
                 }
+                custom.setStartMillis((Long) config.getOrDefault("startMillis", -1L));
+                custom.setExpiredMillis((Long) config.getOrDefault("expiredMillis", -1L));
                 if(custom.getWindow() != null){
                     return custom;
                 }
@@ -297,6 +307,8 @@ public class FormCreator {
                     Map<String, Object> openSoundMap = (Map<String, Object>) config.get("open_sound");
                     modal.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
                 }
+                modal.setStartMillis((Long) config.getOrDefault("startMillis", -1L));
+                modal.setExpiredMillis((Long) config.getOrDefault("expiredMillis", -1L));
                 if (modal.getWindow() != null) {
                     return modal;
                 }

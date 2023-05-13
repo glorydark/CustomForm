@@ -30,6 +30,10 @@ public class ScriptFormModal implements ScriptForm {
 
     private FormWindowModal window;
 
+    private long startMillis = -1L;
+
+    private long expiredMillis = -1L;
+
     public ScriptFormModal(Map<String, Object> config, List<SimpleResponseExecuteData> data, SoundData openSound){
         this.config = config;
         this.data = data;
@@ -51,7 +55,7 @@ public class ScriptFormModal implements ScriptForm {
         String content = "";
         if(!object.equals("")) {
             if (object instanceof String) {
-                content = replaceBreak((String) object);
+                content = (String) object;
             } else if (object instanceof ArrayList) {
                 StringBuilder tempStr = new StringBuilder();
                 List<String> stringListTemp = (List<String>) object;
@@ -63,7 +67,7 @@ public class ScriptFormModal implements ScriptForm {
                         }
                     }
                 }
-                content = replaceBreak(tempStr.toString());
+                content = tempStr.toString();
             }
         }
         List<Map<String, Object>> buttons = (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>());
@@ -71,18 +75,18 @@ public class ScriptFormModal implements ScriptForm {
             return null;
         }
         if(content.equals("")) {
-            modal = new FormWindowModal(replaceBreak((String) config.getOrDefault("title", "")), "", (String) buttons.get(0).get("text"), (String) buttons.get(1).get("text"));
+            modal = new FormWindowModal((String) config.getOrDefault("title", ""), "", (String) buttons.get(0).get("text"), (String) buttons.get(1).get("text"));
         }else{
-            modal = new FormWindowModal(replaceBreak((String) config.getOrDefault("title", "")), content, (String) buttons.get(0).get("text"), (String) buttons.get(1).get("text"));
+            modal = new FormWindowModal((String) config.getOrDefault("title", ""), content, (String) buttons.get(0).get("text"), (String) buttons.get(1).get("text"));
         }
 
         return modal;
     }
 
     public FormWindowModal getWindow(Player player){
-        if(CustomFormMain.enableTips){
+        if(CustomFormMain.enableTips || CustomFormMain.enableRsNPCX){
             FormWindowModal modal = this.getModifiableWindow();
-            modal.setContent(replace(modal.getContent(), player));
+            modal.setContent(replace(modal.getContent(), player, true));
             modal.setTitle(replace(modal.getTitle(), player));
             return modal;
         }
