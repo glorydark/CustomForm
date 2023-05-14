@@ -10,7 +10,6 @@ import cn.nukkit.utils.Config;
 import cn.nukkit.utils.TextFormat;
 import glorydark.customform.chestMenu.ChestMenuListener;
 import glorydark.customform.chestMenu.ChestMenuMain;
-import glorydark.customform.chestMenu.MinecartChestMenu;
 import glorydark.customform.forms.FormCreator;
 import glorydark.customform.forms.FormListener;
 import tip.utils.Api;
@@ -111,6 +110,12 @@ public class CustomFormMain extends PluginBase {
     }
 
     public void loadScriptMineCartWindows(){
+        ChestMenuMain.mineCartChests.clear();
+        ChestMenuMain.chestMenus.clear();
+        ChestMenuMain.mineCartChests.forEach((player, playerMineCartChestTempData) -> {
+            player.removeWindow(playerMineCartChestTempData.getEntityMinecartChest().getInventory());
+            ChestMenuMain.closeDoubleChestInventory(player);
+        });
         File dic = new File(path+"/minecart_chest_window/");
         for(File file: Objects.requireNonNull(dic.listFiles())){
             Map<String, Object> mainMap = FormCreator.convertConfigToMap(file);
@@ -129,6 +134,8 @@ public class CustomFormMain extends PluginBase {
      * and converted it to a ScriptForm-type variable.
      **/
     public void loadScriptWindows(){
+        FormCreator.UI_CACHE.clear();
+        FormCreator.formScripts.clear();
         File dic = new File(path+"/forms/");
         for(File file: Objects.requireNonNull(dic.listFiles())){
             Map<String, Object> mainMap = FormCreator.convertConfigToMap(file);
@@ -155,6 +162,7 @@ public class CustomFormMain extends PluginBase {
                 case "reload":
                     if(commandSender.isOp() || !commandSender.isPlayer()){
                         loadScriptWindows();
+                        loadScriptMineCartWindows();
                         commandSender.sendMessage(language.translateString(commandSender.isPlayer()? (Player) commandSender : null, "plugin_reloaded"));
                     }else{
                         commandSender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", s));
