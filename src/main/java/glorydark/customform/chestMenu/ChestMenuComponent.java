@@ -1,0 +1,116 @@
+package glorydark.customform.chestMenu;
+
+import cn.nukkit.Player;
+import cn.nukkit.Server;
+import cn.nukkit.block.Block;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
+import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+public class ChestMenuComponent {
+
+    private String name;
+    private String description;
+    private Item item;
+    private boolean isEnchanted;
+
+    protected List<String> successCommands = new ArrayList<>();
+
+    protected List<String> successMessages = new ArrayList<>();
+
+    protected List<String> failedCommands = new ArrayList<>();
+
+    protected List<String> failedMessages = new ArrayList<>();
+
+    public ChestMenuComponent(String name, String description, String item, boolean isEnchanted) {
+        this.name = name;
+        this.description = description;
+        this.isEnchanted = isEnchanted;
+        /* Deal with item String*/
+        String[] strings = item.split(":");
+        switch (strings.length) {
+            case 1:
+                this.item = Block.get(Integer.parseInt(strings[0])).toItem();
+                break;
+            case 2:
+                this.item = Block.get(Integer.parseInt(strings[0]), Integer.parseInt(strings[1])).toItem();
+                break;
+            default:
+                this.item = Block.get(1).toItem();
+                break;
+        }
+        this.item.setLore(description.replace("\\n", "\n"));
+        this.item.setCustomName(name);
+        if(isEnchanted){
+            this.item.addEnchantment(Enchantment.get(Enchantment.ID_DURABILITY).setLevel(1));
+        }
+    }
+
+    public void setSuccessMessages(List<String> successMessages) {
+        this.successMessages = successMessages;
+    }
+
+    public void setSuccessCommands(List<String> successCommands) {
+        this.successCommands = successCommands;
+    }
+
+    public void setFailedMessages(List<String> failedMessages) {
+        this.failedMessages = failedMessages;
+    }
+
+    public void setFailedCommands(List<String> failedCommands) {
+        this.failedCommands = failedCommands;
+    }
+
+    public void execute(Player player, boolean success){
+        if(success){
+            for (String failedCommand : failedCommands) {
+                if(failedCommand.startsWith("console#")){
+                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(failedCommand, player));
+                } else if(failedCommand.startsWith("op#")) {
+                    if(player.isOp()){
+                        Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
+                    }else{
+                        Server.getInstance().addOp(player.getName());
+                        Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
+                        Server.getInstance().removeOp(player.getName());
+                    }
+                } else{
+                    Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
+                }
+            }
+
+            for (String failedMessage : failedMessages) {
+                player.sendMessage(failedMessage);
+            }
+        }else{
+            for (String successCommand : successCommands) {
+                if(successCommand.startsWith("console#")){
+                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(successCommand, player));
+                } else if(successCommand.startsWith("op#")) {
+                    if(player.isOp()){
+                        Server.getInstance().dispatchCommand(player, replace(successCommand, player));
+                    }else{
+                        Server.getInstance().addOp(player.getName());
+                        Server.getInstance().dispatchCommand(player, replace(successCommand, player));
+                        Server.getInstance().removeOp(player.getName());
+                    }
+                } else{
+                    Server.getInstance().dispatchCommand(player, replace(successCommand, player));
+                }
+            }
+
+            for (String successMessage : successMessages) {
+                player.sendMessage(successMessage);
+            }
+        }
+    }
+
+    public String replace(String text, Player player){
+        return text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "").replaceFirst("op#", "");
+    }
+}

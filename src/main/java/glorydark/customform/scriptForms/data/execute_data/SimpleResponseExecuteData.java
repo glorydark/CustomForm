@@ -62,13 +62,13 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
                         one.executeSuccessCommand(player);
                         for (String command : commands) {
                             if (command.startsWith("console#")) {
-                                Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
+                                Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, params));
                             } else if(command.startsWith("op#")) {
                                 if(player.isOp()){
-                                    Server.getInstance().dispatchCommand(player, replace(command, player));
+                                    Server.getInstance().dispatchCommand(player, replace(command, player, params));
                                 }else{
                                     Server.getInstance().addOp(player.getName());
-                                    Server.getInstance().dispatchCommand(player, replace(command, player));
+                                    Server.getInstance().dispatchCommand(player, replace(command, player, params));
                                     Server.getInstance().removeOp(player.getName());
                                 }
                             } else {
@@ -88,13 +88,13 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
             if(!temp){
                 for(String command: failed_commands){
                     if(command.startsWith("console#")){
-                        Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
+                        Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, params));
                     } else if(command.startsWith("op#")) {
                         if(player.isOp()){
-                            Server.getInstance().dispatchCommand(player, replace(command, player));
+                            Server.getInstance().dispatchCommand(player, replace(command, player, params));
                         }else{
                             Server.getInstance().addOp(player.getName());
-                            Server.getInstance().dispatchCommand(player, replace(command, player));
+                            Server.getInstance().dispatchCommand(player, replace(command, player, params));
                             Server.getInstance().removeOp(player.getName());
                         }
                     } else{
@@ -108,13 +108,13 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
         }else{
             for(String command: commands){
                 if(command.startsWith("console#")){
-                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
+                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, params));
                 } else if(command.startsWith("op#")) {
                     if(player.isOp()){
-                        Server.getInstance().dispatchCommand(player, replace(command, player));
+                        Server.getInstance().dispatchCommand(player, replace(command, player, params));
                     }else{
                         Server.getInstance().addOp(player.getName());
-                        Server.getInstance().dispatchCommand(player, replace(command, player));
+                        Server.getInstance().dispatchCommand(player, replace(command, player, params));
                         Server.getInstance().removeOp(player.getName());
                     }
                 } else{

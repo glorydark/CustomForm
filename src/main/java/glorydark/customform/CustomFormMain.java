@@ -8,6 +8,9 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.TextFormat;
+import glorydark.customform.chestMenu.ChestMenuListener;
+import glorydark.customform.chestMenu.ChestMenuMain;
+import glorydark.customform.chestMenu.MinecartChestMenu;
 import glorydark.customform.forms.FormCreator;
 import glorydark.customform.forms.FormListener;
 import tip.utils.Api;
@@ -70,15 +73,33 @@ public class CustomFormMain extends PluginBase {
                 this.setEnabled(false);
             }
         }
+
+        File minecartChestWindowDic = new File(path+"/minecart_chest_window/");
+        if(!minecartChestWindowDic.exists()){
+            if(!minecartChestWindowDic.mkdirs()){
+                this.getLogger().warning(language.translateString(null, "plugin_dictionary_created_failed"));
+                this.setEnabled(false);
+            }
+        }
+        this.loadScriptMineCartWindows();
         this.loadScriptWindows();
         this.getLogger().info("CustomForm onLoad");
         this.getServer().getCommandMap().register("", new Commands("form"));
         this.getServer().getPluginManager().registerEvents(new FormListener(), this);
+        this.getServer().getPluginManager().registerEvents(new ChestMenuListener(), this);
     }
 
-    /*
-        This method is to check whether a soft dependence is loaded or not.
-     */
+    @Override
+    public void onDisable() {
+        ChestMenuMain.mineCartChests.forEach((player, playerMineCartChestTempData) -> {
+            player.removeWindow(playerMineCartChestTempData.getEntityMinecartChest().getInventory());
+            ChestMenuMain.closeDoubleChestInventory(player);
+        });
+    }
+
+    /**
+     * This method is to check whether a soft dependence is loaded or not.
+     **/
     public boolean checkSoftDepend(String pluginName){
         Plugin pl = this.getServer().getPluginManager().getPlugin(pluginName);
         if(pl != null){
@@ -89,13 +110,25 @@ public class CustomFormMain extends PluginBase {
         return (pl != null);
     }
 
-    /*
-        This method is to read the script forms configuration,
-        and converted it to a ScriptForm-type variable.
-     */
+    public void loadScriptMineCartWindows(){
+        File dic = new File(path+"/minecart_chest_window/");
+        for(File file: Objects.requireNonNull(dic.listFiles())){
+            Map<String, Object> mainMap = FormCreator.convertConfigToMap(file);
+            String identifier = file.getName().replace(".json","").replace(".yml", "");
+            if(ChestMenuMain.registerMinecartChestMenu(identifier, mainMap)){
+                this.getLogger().info(language.translateString(null, "chest_window_minecart_loaded", identifier));
+            }else{
+                this.getLogger().error(language.translateString(null, "chest_window_minecart_loaded_failed", identifier));
+            }
+        }
+        this.getLogger().info(language.translateString(null, "chest_window_minecart_loaded_in_total", ChestMenuMain.chestMenus.keySet().size()));
+    }
+
+    /**
+     * This method is to read the script forms configuration,
+     * and converted it to a ScriptForm-type variable.
+     **/
     public void loadScriptWindows(){
-        FormCreator.formScripts.clear();
-        FormCreator.UI_CACHE.clear();
         File dic = new File(path+"/forms/");
         for(File file: Objects.requireNonNull(dic.listFiles())){
             Map<String, Object> mainMap = FormCreator.convertConfigToMap(file);
