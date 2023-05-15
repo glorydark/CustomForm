@@ -2,6 +2,8 @@ package glorydark.customform.chestMenu;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.item.EntityMinecartChest;
+import glorydark.customform.forms.FormCreator;
+import glorydark.customform.scriptForms.data.requirement.Requirements;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -41,6 +43,14 @@ public class ChestMenuMain {
                 chestMenuComponent.setFailedCommands((List<String>) component.getOrDefault("failed_commands", new ArrayList<>()));
                 chestMenuComponent.setSuccessMessages((List<String>) component.getOrDefault("success_messages", new ArrayList<>()));
                 chestMenuComponent.setSuccessCommands((List<String>) component.getOrDefault("success_commands", new ArrayList<>()));
+                if(component.containsKey("requirements")){
+                    List<Requirements> conditions = new ArrayList<>();
+                    Map<String, Object> conditionData = (Map<String, Object>) component.get("conditions");
+                    for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)conditionData.get("data")){
+                        conditions.add(FormCreator.buildRequirements(object, (Boolean) conditionData.getOrDefault("chargeable", true)));
+                    }
+                    chestMenuComponent.setRequirements(conditions);
+                }
                 menu.addComponent((Integer) component.get("slot"), chestMenuComponent);
             }
             chestMenus.put(identifier, menu);

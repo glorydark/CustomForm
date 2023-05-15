@@ -50,7 +50,7 @@ public class ChestMenuListener implements Listener {
                         if(event.getSlot() < 18) {
                             int clickId = event.getSlot() + (getPage(entity) - 1) * 18;
                             ChestMenuComponent component = data.getMenu().getChestMenuComponents().get(clickId);
-                            component.execute(event.getPlayer(), true);
+                            component.execute(event.getPlayer());
                         }
                         break;
                 }

@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
+import glorydark.customform.scriptForms.data.requirement.Requirements;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ public class ChestMenuComponent {
     protected List<String> failedCommands = new ArrayList<>();
 
     protected List<String> failedMessages = new ArrayList<>();
+
+    private List<Requirements> requirements = new ArrayList<>();
 
     public ChestMenuComponent(String name, String description, String item, boolean isEnchanted) {
         this.name = name;
@@ -66,7 +69,22 @@ public class ChestMenuComponent {
         this.failedCommands = failedCommands;
     }
 
-    public void execute(Player player, boolean success){
+    public void execute(Player player){
+        // To check whether player is qualified or not
+        boolean success;
+        if(requirements.size() > 0){
+            success = false;
+            for(Requirements require: requirements){
+                if(require.isAllQualified(player)){
+                    success = true;
+                    break;
+                }
+            }
+        }else{
+            success = true;
+        }
+
+        // Execute corresponding commands and messages
         if(success){
             for (String successCommand : successCommands) {
                 if(successCommand.startsWith("console#")){
