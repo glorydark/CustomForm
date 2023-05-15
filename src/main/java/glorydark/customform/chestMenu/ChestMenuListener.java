@@ -30,28 +30,29 @@ public class ChestMenuListener implements Listener {
     @EventHandler
     public void InventoryClickEvent(InventoryClickEvent event){
         if(isCustomFormInventory(event.getInventory())){
-            for (Player viewer : event.getViewers()) {
-                viewer.sendMessage(String.valueOf(event.getSlot()));
-                if(event.getInventory() instanceof MinecartChestInventory){
-                    EntityMinecartChest entity = ((MinecartChestInventory) event.getInventory()).getHolder();
-                    int page = getPage(entity);
-                    switch (event.getSlot()){
-                        case 18:
-                            if(page > 1){
-                                setPage(event.getPlayer(), entity, page-1);
-                            }
-                            break;
-                        case 26:
+            if(event.getInventory() instanceof MinecartChestInventory){
+                EntityMinecartChest entity = ((MinecartChestInventory) event.getInventory()).getHolder();
+                ChestMenuMain.PlayerMinecartChestTempData data = ChestMenuMain.mineCartChests.get(event.getPlayer());
+                int page = getPage(entity);
+                switch (event.getSlot()){
+                    case 18:
+                        if(page > 1){
+                            setPage(event.getPlayer(), entity, page-1);
+                        }
+                        break;
+                    case 26:
+                        if(page < data.getMenu().getMaxPage()){
                             setPage(event.getPlayer(), entity, page+1);
-                            break;
-                        default:
-                            if(event.getSlot() < 18) {
-                                int clickId = event.getSlot() + (getPage(entity) - 1) * 18;
-                                ChestMenuMain.PlayerMinecartChestTempData data = ChestMenuMain.mineCartChests.get(event.getPlayer());
-                                ChestMenuComponent component = data.getMenu().getChestMenuComponents().get(clickId);
-                            }
-                            break;
-                    }
+                        }
+                        break;
+                    default:
+                        event.getPlayer().removeWindow(event.getInventory());
+                        if(event.getSlot() < 18) {
+                            int clickId = event.getSlot() + (getPage(entity) - 1) * 18;
+                            ChestMenuComponent component = data.getMenu().getChestMenuComponents().get(clickId);
+                            component.execute(event.getPlayer(), true);
+                        }
+                        break;
                 }
                 event.setCancelled(true);
             }

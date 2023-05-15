@@ -73,7 +73,7 @@ public class CustomFormMain extends PluginBase {
             }
         }
 
-        File minecartChestWindowDic = new File(path+"/minecart_chest_window/");
+        File minecartChestWindowDic = new File(path+"/minecart_chest_windows/");
         if(!minecartChestWindowDic.exists()){
             if(!minecartChestWindowDic.mkdirs()){
                 this.getLogger().warning(language.translateString(null, "plugin_dictionary_created_failed"));
@@ -116,7 +116,7 @@ public class CustomFormMain extends PluginBase {
             player.removeWindow(playerMineCartChestTempData.getEntityMinecartChest().getInventory());
             ChestMenuMain.closeDoubleChestInventory(player);
         });
-        File dic = new File(path+"/minecart_chest_window/");
+        File dic = new File(path+"/minecart_chest_windows/");
         for(File file: Objects.requireNonNull(dic.listFiles())){
             Map<String, Object> mainMap = FormCreator.convertConfigToMap(file);
             String identifier = file.getName().replace(".json","").replace(".yml", "");
@@ -172,6 +172,15 @@ public class CustomFormMain extends PluginBase {
                     if(commandSender.isPlayer()){
                         if(strings.length == 2) {
                             FormCreator.showScriptForm((Player) commandSender, strings[1]);
+                        }
+                    }else{
+                        commandSender.sendMessage(language.translateString(null, "command_use_in_game"));
+                    }
+                    break;
+                case "showminecartmenu":
+                    if(commandSender.isPlayer()){
+                        if(strings.length == 2) {
+                            ChestMenuMain.showMinecartChestMenu((Player) commandSender, strings[1]);
                         }
                     }else{
                         commandSender.sendMessage(language.translateString(null, "command_use_in_game"));

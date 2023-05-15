@@ -17,7 +17,6 @@ public class ChestMenuMain {
 
     public static void closeDoubleChestInventory(Player player){
         if(mineCartChests.containsKey(player)){
-            player.sendMessage("close");
             EntityMinecartChest chest = mineCartChests.get(player).getEntityMinecartChest();
             chest.getInventory().clearAll();
             chest.close();
@@ -29,7 +28,6 @@ public class ChestMenuMain {
         MinecartChestMenu menu = chestMenus.get(identifier);
         if(menu != null){
             menu.show(player, 1);
-
         }
     }
 
@@ -39,11 +37,11 @@ public class ChestMenuMain {
             List<Map<String, Object>> components = (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>());
             for(Map<String, Object> component: components){
                 ChestMenuComponent chestMenuComponent = new ChestMenuComponent((String) component.get("name"), (String) component.get("descriptions"), (String) component.get("item"), (Boolean) component.get("isEnchanted"));
-                menu.addComponent((Integer) component.get("slot"), chestMenuComponent);
                 chestMenuComponent.setFailedMessages((List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
                 chestMenuComponent.setFailedCommands((List<String>) component.getOrDefault("failed_commands", new ArrayList<>()));
                 chestMenuComponent.setSuccessMessages((List<String>) component.getOrDefault("success_messages", new ArrayList<>()));
                 chestMenuComponent.setSuccessCommands((List<String>) component.getOrDefault("success_commands", new ArrayList<>()));
+                menu.addComponent((Integer) component.get("slot"), chestMenuComponent);
             }
             chestMenus.put(identifier, menu);
             return true;

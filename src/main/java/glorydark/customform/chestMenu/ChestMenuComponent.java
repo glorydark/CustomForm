@@ -30,7 +30,7 @@ public class ChestMenuComponent {
         this.name = name;
         this.description = description;
         this.isEnchanted = isEnchanted;
-        /* Deal with item String*/
+        /* Deal with item String */
         String[] strings = item.split(":");
         switch (strings.length) {
             case 1:
@@ -68,26 +68,6 @@ public class ChestMenuComponent {
 
     public void execute(Player player, boolean success){
         if(success){
-            for (String failedCommand : failedCommands) {
-                if(failedCommand.startsWith("console#")){
-                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(failedCommand, player));
-                } else if(failedCommand.startsWith("op#")) {
-                    if(player.isOp()){
-                        Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
-                    }else{
-                        Server.getInstance().addOp(player.getName());
-                        Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
-                        Server.getInstance().removeOp(player.getName());
-                    }
-                } else{
-                    Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
-                }
-            }
-
-            for (String failedMessage : failedMessages) {
-                player.sendMessage(failedMessage);
-            }
-        }else{
             for (String successCommand : successCommands) {
                 if(successCommand.startsWith("console#")){
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(successCommand, player));
@@ -106,6 +86,26 @@ public class ChestMenuComponent {
 
             for (String successMessage : successMessages) {
                 player.sendMessage(successMessage);
+            }
+        }else{
+            for (String failedCommand : failedCommands) {
+                if(failedCommand.startsWith("console#")){
+                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(failedCommand, player));
+                } else if(failedCommand.startsWith("op#")) {
+                    if(player.isOp()){
+                        Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
+                    }else{
+                        Server.getInstance().addOp(player.getName());
+                        Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
+                        Server.getInstance().removeOp(player.getName());
+                    }
+                } else{
+                    Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
+                }
+            }
+
+            for (String failedMessage : failedMessages) {
+                player.sendMessage(failedMessage);
             }
         }
     }
