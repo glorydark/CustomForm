@@ -27,21 +27,23 @@ public class CustomFormMain extends PluginBase {
 
     public static Plugin plugin;
 
+    public static boolean enableDoubleCheckMenu;
+
     /*
       enableEconomyAPI  -> EconomyAPI loaded
       enablePoints -> PointsAPI loaded
       enableDCurrency -> DCurrency loaded
       enableTips -> Tips Loaded
     */
-    public static boolean enableTips = false;
+    public static boolean enableTips;
 
-    public static boolean enableRsNPCX = false;
+    public static boolean enableRsNPCX;
 
-    public static boolean enableEconomyAPI = false;
+    public static boolean enableEconomyAPI;
 
-    public static boolean enablePoints = false;
+    public static boolean enablePoints;
 
-    public static boolean enableDCurrency = false;
+    public static boolean enableDCurrency;
 
     // Set the intervals for player to open the next form.
     public static long coolDownMillis;
@@ -56,6 +58,7 @@ public class CustomFormMain extends PluginBase {
         this.saveResource("languages/zh_cn.properties", false);
         this.saveResource("languages/en_us.properties", false);
         Config config = new Config(path+"/config.yml",Config.YAML);
+        enableDoubleCheckMenu = config.getBoolean("enable_doubleCheckMenu", true);
         coolDownMillis = config.getLong("coolDown", 200L);
         language = new Language(config.getString("default_lang", "zh_cn"), path+"/languages/", path+"/languages/playerLanguageCache.yml");
         enableTips = checkSoftDepend("Tips")  && config.getBoolean("enable_tips", true);

@@ -3,10 +3,14 @@ package glorydark.customform.chestMenu;
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockGlassStained;
+import cn.nukkit.block.BlockWool;
 import cn.nukkit.entity.item.EntityMinecartChest;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBookEnchanted;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.potion.Effect;
+import cn.nukkit.utils.DyeColor;
+import glorydark.customform.CustomFormMain;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -26,7 +30,7 @@ public class MinecartChestMenu {
         this.title = title;
     }
 
-    public Map<Integer, Item> getItems(int page){
+    public Map<Integer, Item> getItems(Player player, int page){
         Map<Integer, Item> items = new HashMap<>();
         int base = (page-1)*18;
         for(int i=base; i<18*page; i++){
@@ -39,13 +43,17 @@ public class MinecartChestMenu {
             }
         }
         if(page > 1){
-            items.put(18, new BlockGlassStained(0).toItem());
+            Item previousPageButton = new BlockGlassStained(4).toItem();
+            previousPageButton.setCustomName(CustomFormMain.language.translateString(player, "item_previous_page_name"));
+            items.put(18, previousPageButton);
         }
         Item info = new BlockGlassStained(4).toItem();
-        info.setCustomName("Page: §6§l"+page +"§f / "+getMaxPage());
+        info.setCustomName(CustomFormMain.language.translateString(player, "item_info_name", page, getMaxPage()));
         items.put(22, info);
         if(page < this.getMaxPage()){
-            items.put(26, new BlockGlassStained(4).toItem());
+            Item nextPageButton = new BlockGlassStained(4).toItem();
+            nextPageButton.setCustomName(CustomFormMain.language.translateString(player, "item_next_page_name"));
+            items.put(26, nextPageButton);
         }
         return items;
     }
@@ -59,7 +67,7 @@ public class MinecartChestMenu {
         chest.namedTag.putBoolean("Invulnerable", true);
         chest.namedTag.putBoolean("CustomDisplayTile", false);
         chest.setNameTag(this.title);
-        chest.getInventory().setContents(getItems(page));
+        chest.getInventory().setContents(getItems(player, page));
         chest.setNameTagVisible(false);
         chest.setNameTagAlwaysVisible(false);
         chest.setImmobile(true);
@@ -67,6 +75,22 @@ public class MinecartChestMenu {
         chest.addEffect(Effect.getEffect(Effect.INVISIBILITY).setDuration(999999).setVisible(false));
         player.addWindow(chest.getInventory());
         ChestMenuMain.mineCartChests.put(player, new ChestMenuMain.PlayerMinecartChestTempData(chest, this));
+    }
+
+    public Map<Integer, Item> getDoubleCheckItem(Player player, int checkComponentIndex){
+        Map<Integer, Item> items = new HashMap<>();
+        Item cancelButton = new BlockWool(DyeColor.RED).toItem();
+        cancelButton.setCustomName(CustomFormMain.language.translateString(player, "item_selected_cancel"));
+        items.put(11, cancelButton);
+
+        Item ConfirmButton = new BlockWool(DyeColor.GREEN).toItem();
+        ConfirmButton.setCustomName(CustomFormMain.language.translateString(player, "item_selected_confirm"));
+        items.put(15, ConfirmButton);
+
+        Item selectedInfo = new ItemBookEnchanted();
+        selectedInfo.setCustomName(CustomFormMain.language.translateString(player, "item_selected_info", chestMenuComponents.get(checkComponentIndex).getName()));
+        items.put(22, selectedInfo);
+        return items;
     }
 
     public void addComponent(int slot, ChestMenuComponent component){
