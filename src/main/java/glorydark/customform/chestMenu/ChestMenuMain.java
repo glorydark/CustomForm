@@ -64,6 +64,10 @@ public class ChestMenuMain {
         private EntityMinecartChest entityMinecartChest;
         private MinecartChestMenu menu;
 
+        private int lastClickId = -1;
+
+        private int doubleCheckComponentId = -1;
+
         public PlayerMinecartChestTempData(EntityMinecartChest entityMinecartChest, MinecartChestMenu menu){
             this.entityMinecartChest = entityMinecartChest;
             this.menu = menu;

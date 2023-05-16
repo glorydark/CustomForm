@@ -17,6 +17,7 @@ import cn.nukkit.event.player.PlayerInteractEntityEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.MinecartChestInventory;
+import glorydark.customform.CustomFormMain;
 
 public class ChestMenuListener implements Listener {
 
@@ -34,25 +35,57 @@ public class ChestMenuListener implements Listener {
                 EntityMinecartChest entity = ((MinecartChestInventory) event.getInventory()).getHolder();
                 ChestMenuMain.PlayerMinecartChestTempData data = ChestMenuMain.mineCartChests.get(event.getPlayer());
                 int page = getPage(entity);
-                switch (event.getSlot()){
-                    case 18:
-                        if(page > 1){
-                            setPage(event.getPlayer(), entity, page-1);
-                        }
-                        break;
-                    case 26:
-                        if(page < data.getMenu().getMaxPage()){
-                            setPage(event.getPlayer(), entity, page+1);
-                        }
-                        break;
-                    default:
-                        event.getPlayer().removeWindow(event.getInventory());
-                        if(event.getSlot() < 18) {
-                            int clickId = event.getSlot() + (getPage(entity) - 1) * 18;
+                if(data.getDoubleCheckComponentId() == -1) {
+                    switch (event.getSlot()) {
+                        case 18:
+                            if (page > 1) {
+                                setPage(event.getPlayer(), entity, page - 1);
+                            }
+                            break;
+                        case 26:
+                            if (page < data.getMenu().getMaxPage()) {
+                                setPage(event.getPlayer(), entity, page + 1);
+                            }
+                            break;
+                        default:
+                            if (event.getSlot() < 18) {
+                                if(CustomFormMain.enableDoubleCheckMenu){
+                                    int clickId = event.getSlot() + (page - 1) * 18;
+                                    showConfirmPage(event.getPlayer(), entity, clickId);
+                                    event.setCancelled(true);
+                                    return;
+                                }else{
+                                    if (data.getLastClickId() == -1) {
+                                        data.setLastClickId(event.getSlot());
+                                        event.setCancelled(true);
+                                        return;
+                                    }
+                                    if (data.getLastClickId() != event.getSlot()) {
+                                        data.setLastClickId(event.getSlot());
+                                        event.setCancelled(true);
+                                        return;
+                                    }
+                                }
+                                int clickId = event.getSlot() + (page - 1) * 18;
+                                ChestMenuComponent component = data.getMenu().getChestMenuComponents().get(clickId);
+                                component.execute(event.getPlayer());
+                                event.getPlayer().removeWindow(event.getInventory());
+                            }
+                            break;
+                    }
+                }else{
+                    switch (event.getSlot()){
+                        case 11:
+                            setPage(event.getPlayer(), entity, page);
+                            data.setDoubleCheckComponentId(-1);
+                            break;
+                        case 15:
+                            int clickId = data.getDoubleCheckComponentId();
                             ChestMenuComponent component = data.getMenu().getChestMenuComponents().get(clickId);
                             component.execute(event.getPlayer());
-                        }
-                        break;
+                            event.getPlayer().removeWindow(event.getInventory());
+                            break;
+                    }
                 }
                 event.setCancelled(true);
             }
@@ -143,13 +176,25 @@ public class ChestMenuListener implements Listener {
         return 0;
     }
 
-    public void setPage(Player player, Entity entity, int page){
-        if(entity.namedTag != null){
-            if(entity.namedTag.contains("page")){
-                entity.namedTag.putInt("page", page);
-                if(entity instanceof EntityMinecartChest) {
+    public void showConfirmPage(Player player, Entity entity, int clickId){
+        if (entity instanceof EntityMinecartChest) {
+            if (entity.namedTag != null) {
+                if (entity.namedTag.contains("page")) {
                     ChestMenuMain.PlayerMinecartChestTempData tempData = ChestMenuMain.mineCartChests.get(player);
-                    ((EntityMinecartChest) entity).getInventory().setContents(tempData.getMenu().getItems(page));
+                    tempData.setDoubleCheckComponentId(clickId);
+                    ((EntityMinecartChest) entity).getInventory().setContents(tempData.getMenu().getDoubleCheckItem(player, clickId));
+                }
+            }
+        }
+    }
+
+    public void setPage(Player player, Entity entity, int page){
+        if (entity instanceof EntityMinecartChest) {
+            if (entity.namedTag != null) {
+                if (entity.namedTag.contains("page")) {
+                    entity.namedTag.putInt("page", page);
+                    ChestMenuMain.PlayerMinecartChestTempData tempData = ChestMenuMain.mineCartChests.get(player);
+                    ((EntityMinecartChest) entity).getInventory().setContents(tempData.getMenu().getItems(player, page));
                 }
             }
         }
