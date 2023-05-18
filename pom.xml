@@ -35,10 +35,6 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>repo-lanink-cn</id>
-            <url>https://repo.lanink.cn/</url>
-        </repository>
     </repositories>
 
     <dependencies>
