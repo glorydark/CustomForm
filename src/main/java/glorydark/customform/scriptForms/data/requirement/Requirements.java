@@ -81,7 +81,6 @@ public class Requirements {
                 return false;
             }
         }
-        // Deal with Tips_ConditionData
         for(TipsRequirementData datum: tipsRequirementData){
             if(!datum.isQualified(player)){
                 datum.sendFailedMsg(player, (datum.getComparedValue() instanceof Double || datum.getComparedValue() instanceof Integer), params[0]);
@@ -95,10 +94,6 @@ public class Requirements {
         for(EconomyRequirementData datum: economyRequirementData){
             datum.reduceCost(player, multiply);
         }
-    }
-
-    public List<EconomyRequirementData> getBaseConditionData() {
-        return economyRequirementData;
     }
 
     public boolean isChargeable() {

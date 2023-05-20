@@ -44,12 +44,12 @@ public class ChestMenuMain {
                 chestMenuComponent.setSuccessMessages((List<String>) component.getOrDefault("success_messages", new ArrayList<>()));
                 chestMenuComponent.setSuccessCommands((List<String>) component.getOrDefault("success_commands", new ArrayList<>()));
                 if(component.containsKey("requirements")){
-                    List<Requirements> conditions = new ArrayList<>();
-                    Map<String, Object> conditionData = (Map<String, Object>) component.get("conditions");
-                    for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)conditionData.get("data")){
-                        conditions.add(FormCreator.buildRequirements(object, (Boolean) conditionData.getOrDefault("chargeable", true)));
+                    List<Requirements> requirements = new ArrayList<>();
+                    Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
+                    for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)requirementData.get("data")){
+                        requirements.add(FormCreator.buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                     }
-                    chestMenuComponent.setRequirements(conditions);
+                    chestMenuComponent.setRequirements(requirements);
                 }
                 menu.addComponent((Integer) component.get("slot"), chestMenuComponent);
             }

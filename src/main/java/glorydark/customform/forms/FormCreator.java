@@ -132,41 +132,41 @@ public class FormCreator {
     }
 
     /*
-        By this function, you can build up a condition set.
-        A condition set consists of Tips_ConditionData and ConditionData.
-        You can see some provided method inside the Conditions.class.
+        By this function, you can build up a requirement set.
+        A requirement set consists of Tips_RequirementsData and EconomyRequirementsData.
+        You can see some provided method inside the Requirements.class.
 
-        * If you want to add a new type of condition,
-        please make some tiny modifications inside the Conditions.class.
+        * If you want to add a new type of requirement,
+        please make some tiny modifications inside the Requirement.class.
     */
-    public static Requirements buildRequirements(List<Map<String, Object>> conditionList, boolean chargeable){
+    public static Requirements buildRequirements(List<Map<String, Object>> requirementConfig, boolean chargeable){
         Requirements requirements = new Requirements(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), chargeable);
-        for(Map<String, Object> map: conditionList){
+        for(Map<String, Object> map: requirementConfig){
             String type = (String) map.get("type");
             EconomyRequirementData data = null;
             TipsRequirementData tips_data = null;
             switch (type){
                 case "EconomyAPI":
-                    // This is the way we deal with EconomyAPI-type condition
+                    // This is the way we deal with EconomyAPI-type requirements
                     data = new EconomyRequirementData(null, 0d, new Object());
                     data.setType(EconomyRequirementType.EconomyAPI);
                     data.setAmount(Double.parseDouble(map.get("cost").toString()));
                     break;
                 case "Points":
-                    // This is the way we deal with Points-type condition
+                    // This is the way we deal with Points-type requirements
                     data = new EconomyRequirementData(null, 0d, new Object());
                     data.setType(EconomyRequirementType.Points);
                     data.setAmount(Double.parseDouble(map.get("cost").toString()));
                     break;
                 case "DCurrency":
-                    // This is the way we deal with DCurrency-type condition
+                    // This is the way we deal with DCurrency-type requirements
                     data = new EconomyRequirementData(null, 0d, new Object());
                     data.setType(EconomyRequirementType.DCurrency);
                     data.setAmount(Double.parseDouble(map.get("cost").toString()));
                     data.setExtraData(new String[]{(String) map.get("currencyType")});
                     break;
                 case "Tips":
-                    // This is the way we deal with Tips-type condition
+                    // This is the way we deal with Tips-type requirements
                     String identifier = (String) map.get("identifier");
                     String comparedSign = (String) map.get("compared_sign");
                     Object comparedValue = map.get("compared_value");
@@ -233,12 +233,12 @@ public class FormCreator {
                     for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
                         SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
                         if(component.containsKey("requirements")) {
-                            List<Requirements> conditions = new ArrayList<>();
-                            Map<String, Object> conditionData = (Map<String, Object>) component.get("conditions");
-                            for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)conditionData.get("data")){
-                                conditions.add(buildRequirements(object, (Boolean) conditionData.getOrDefault("chargeable", true)));
+                            List<Requirements> requirementsList = new ArrayList<>();
+                            Map<String, Object> requirementData = (Map<String, Object>) component.get("requirementsList");
+                            for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)requirementData.get("data")){
+                                requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                             }
-                            data.setRequirements(conditions);
+                            data.setRequirements(requirementsList);
                         }
                         simpleResponseExecuteDataList.add(data);
                     }
@@ -274,9 +274,9 @@ public class FormCreator {
                             SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
                             if(component.containsKey("requirements")) {
                                 List<Requirements> requirements = new ArrayList<>();
-                                Map<String, Object> conditionData = (Map<String, Object>) component.get("conditions");
-                                for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)conditionData.get("data")){
-                                    requirements.add(buildRequirements(object, (Boolean) conditionData.getOrDefault("chargeable", true)));
+                                Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
+                                for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)requirementData.get("data")){
+                                    requirements.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                                 }
                                 data.setRequirements(requirements);
                             }
