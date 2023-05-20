@@ -16,9 +16,9 @@ import java.util.List;
 
 @Developing
 public class Requirements {
-    List<EconomyRequirementData> economyRequirementData; //条件集合
+    List<EconomyRequirementData> economyRequirementData;
 
-    List<TipsRequirementData> tipsData; //条件集合
+    List<TipsRequirementData> tipsRequirementData;
 
     List<String> messages;
 
@@ -28,12 +28,12 @@ public class Requirements {
 
     List<String> failedCommands;
 
-    boolean chargeable; //是否扣除
+    boolean chargeable;
 
-    public Requirements(List<EconomyRequirementData> economyRequirementData, List<TipsRequirementData> tipsData, List<String> commands, List<String> messages, List<String> failedCommands, List<String> failedMessages, boolean chargeable){
+    public Requirements(List<EconomyRequirementData> economyRequirementData, List<TipsRequirementData> tipsRequirementData, List<String> commands, List<String> messages, List<String> failedCommands, List<String> failedMessages, boolean chargeable){
         this.economyRequirementData = economyRequirementData;
         this.chargeable = chargeable;
-        this.tipsData = tipsData;
+        this.tipsRequirementData = tipsRequirementData;
         this.commands = commands;
         this.messages = messages;
         this.failedCommands = failedCommands;
@@ -57,10 +57,9 @@ public class Requirements {
     }
 
     /*
-        Check if player can meet the all requirements or so-called conditions here.
+        Check if player can meet the all requirements here.
     */
     public boolean isAllQualified(Player player, Object... params){
-        // Deal with ConditionData
         for(EconomyRequirementData datum: economyRequirementData){
             int multiply = params.length == 2? (int) params[1] : 1;
             BigDecimal difference;
@@ -83,7 +82,7 @@ public class Requirements {
             }
         }
         // Deal with Tips_ConditionData
-        for(TipsRequirementData datum: tipsData){
+        for(TipsRequirementData datum: tipsRequirementData){
             if(!datum.isQualified(player)){
                 datum.sendFailedMsg(player, (datum.getComparedValue() instanceof Double || datum.getComparedValue() instanceof Integer), params[0]);
                 return false;
@@ -106,12 +105,12 @@ public class Requirements {
         return chargeable;
     }
 
-    public void addCondition(EconomyRequirementData data){
+    public void addEconomyRequirements(EconomyRequirementData data){
         this.economyRequirementData.add(data);
     }
 
-    public void addTipsCondition(TipsRequirementData data){
-        this.tipsData.add(data);
+    public void addTipsRequirements(TipsRequirementData data){
+        this.tipsRequirementData.add(data);
     }
 
     public void executeSuccessCommand(Player player){

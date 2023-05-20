@@ -198,10 +198,10 @@ public class FormCreator {
                     break;
             }
             if(data != null){
-                requirements.addCondition(data);
+                requirements.addEconomyRequirements(data);
             }
             if(tips_data != null){
-                requirements.addTipsCondition(tips_data);
+                requirements.addTipsRequirements(tips_data);
             }
         }
         return requirements;
@@ -232,7 +232,7 @@ public class FormCreator {
                 if(config.containsKey("components")) {
                     for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
                         SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
-                        if(component.containsKey("conditions")) {
+                        if(component.containsKey("requirements")) {
                             List<Requirements> conditions = new ArrayList<>();
                             Map<String, Object> conditionData = (Map<String, Object>) component.get("conditions");
                             for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)conditionData.get("data")){
@@ -272,7 +272,7 @@ public class FormCreator {
                             out.add(new ToggleResponseExecuteData((List<String>) maps.get("true_commands"), (List<String>) maps.get("true_messages"), (List<String>) maps.get("false_commands"), (List<String>) maps.get("false_messages")));
                         } else {
                             SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
-                            if(component.containsKey("conditions")) {
+                            if(component.containsKey("requirements")) {
                                 List<Requirements> requirements = new ArrayList<>();
                                 Map<String, Object> conditionData = (Map<String, Object>) component.get("conditions");
                                 for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)conditionData.get("data")){
