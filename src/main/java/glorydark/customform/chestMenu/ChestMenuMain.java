@@ -41,8 +41,8 @@ public class ChestMenuMain {
                 ChestMenuComponent chestMenuComponent = new ChestMenuComponent((String) component.get("name"), (String) component.get("descriptions"), (String) component.get("item"), (Boolean) component.get("isEnchanted"));
                 chestMenuComponent.setFailedMessages((List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
                 chestMenuComponent.setFailedCommands((List<String>) component.getOrDefault("failed_commands", new ArrayList<>()));
-                chestMenuComponent.setSuccessMessages((List<String>) component.getOrDefault("success_messages", new ArrayList<>()));
-                chestMenuComponent.setSuccessCommands((List<String>) component.getOrDefault("success_commands", new ArrayList<>()));
+                chestMenuComponent.setSuccessMessages((List<String>) component.getOrDefault("messages", new ArrayList<>()));
+                chestMenuComponent.setSuccessCommands((List<String>) component.getOrDefault("commands", new ArrayList<>()));
                 if(component.containsKey("requirements")){
                     List<Requirements> requirements = new ArrayList<>();
                     Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");

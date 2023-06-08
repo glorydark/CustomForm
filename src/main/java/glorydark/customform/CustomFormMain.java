@@ -3,6 +3,7 @@ package glorydark.customform;
 import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginBase;
@@ -15,6 +16,7 @@ import glorydark.customform.forms.FormListener;
 import tip.utils.Api;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -200,6 +202,12 @@ public class CustomFormMain extends PluginBase {
                         }
                     }else{
                         commandSender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", s));
+                    }
+                    break;
+                case "list":
+                    commandSender.sendMessage(FormCreator.formScripts.keySet().size()+" form scripts loaded: ");
+                    for(String string: FormCreator.formScripts.keySet()){
+                        commandSender.sendMessage("- "+ string);
                     }
                     break;
             }
