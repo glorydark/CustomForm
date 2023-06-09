@@ -72,12 +72,13 @@ public class ChestMenuComponent {
     public void execute(Player player){
         // To check whether player is qualified or not
         boolean success;
+        Requirements successRequire = null;
         if(requirements.size() > 0){
             success = false;
             for(Requirements require: requirements){
                 if(require.isAllQualified(player)){
+                    successRequire = require;
                     success = true;
-                    break;
                 }
             }
         }else{
@@ -86,6 +87,11 @@ public class ChestMenuComponent {
 
         // Execute corresponding commands and messages
         if(success){
+            if(successRequire != null) {
+                if (successRequire.isAllQualified(player)) {
+                    successRequire.reduceAllCosts(player, 1);
+                }
+            }
             for (String successCommand : successCommands) {
                 if(successCommand.startsWith("console#")){
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(successCommand, player));

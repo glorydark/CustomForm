@@ -53,7 +53,6 @@ public class ItemRequirementData {
             if(reducing && reduce){
                 for(NeedItem cost: costItems){
                     int balance = cost.getHasItem().getCount() - cost.getFinalComparedItem().getCount();
-                    player.sendMessage(balance+"个"); //test
                     player.getInventory().remove(cost.getHasItem());
                     Item giveBalance = cost.getHasItem().clone();
                     giveBalance.setCount(balance);
