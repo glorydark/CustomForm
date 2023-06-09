@@ -55,9 +55,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
             for(Requirements one: requirements){
                 if(one.isAllQualified(player, i, multiply)){
                     temp = true;
-                    if(one.isChargeable()){
-                        one.reduceAllCosts(player, multiply);
-                    }
+                    one.reduceAllCosts(player, multiply);
                     for(int time=0; time<multiply; time++) {
                         one.executeSuccessCommand(player);
                         for (String command : commands) {

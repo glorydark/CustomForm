@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import glorydark.customform.CustomFormMain;
 import glorydark.customform.annotations.Developing;
 import glorydark.customform.scriptForms.data.requirement.economy.EconomyRequirementData;
+import glorydark.customform.scriptForms.data.requirement.item.ItemRequirementData;
 import glorydark.customform.scriptForms.data.requirement.tips.TipsRequirementData;
 import glorydark.dcurrency.CurrencyAPI;
 import me.onebone.economyapi.EconomyAPI;
@@ -20,6 +21,8 @@ public class Requirements {
 
     List<TipsRequirementData> tipsRequirementData;
 
+    List<ItemRequirementData> itemRequirementData;
+
     List<String> messages;
 
     List<String> commands;
@@ -30,10 +33,11 @@ public class Requirements {
 
     boolean chargeable;
 
-    public Requirements(List<EconomyRequirementData> economyRequirementData, List<TipsRequirementData> tipsRequirementData, List<String> commands, List<String> messages, List<String> failedCommands, List<String> failedMessages, boolean chargeable){
+    public Requirements(List<EconomyRequirementData> economyRequirementData, List<TipsRequirementData> tipsRequirementData, List<ItemRequirementData> itemRequirementData, List<String> commands, List<String> messages, List<String> failedCommands, List<String> failedMessages, boolean chargeable){
         this.economyRequirementData = economyRequirementData;
-        this.chargeable = chargeable;
         this.tipsRequirementData = tipsRequirementData;
+        this.itemRequirementData = itemRequirementData;
+        this.chargeable = chargeable;
         this.commands = commands;
         this.messages = messages;
         this.failedCommands = failedCommands;
@@ -60,8 +64,8 @@ public class Requirements {
         Check if player can meet the all requirements here.
     */
     public boolean isAllQualified(Player player, Object... params){
+        int multiply = params.length == 2? (int) params[1] : 1;
         for(EconomyRequirementData datum: economyRequirementData){
-            int multiply = params.length == 2? (int) params[1] : 1;
             BigDecimal difference;
             if(!datum.isQualified(player, multiply)){
                 switch (datum.getType()){
@@ -87,12 +91,24 @@ public class Requirements {
                 return false;
             }
         }
+        for(ItemRequirementData datum: itemRequirementData){
+            if(!datum.checkItemIsPossess(player, false, multiply)){
+                player.sendMessage("Lack of items!");
+                return false;
+            }
+        }
         return true;
     }
 
     public void reduceAllCosts(Player player, int multiply){
-        for(EconomyRequirementData datum: economyRequirementData){
-            datum.reduceCost(player, multiply);
+        if(this.isChargeable()){
+            for(EconomyRequirementData datum: economyRequirementData){
+                datum.reduceCost(player, multiply);
+            }
+        }
+
+        for(ItemRequirementData datum: itemRequirementData){
+            datum.checkItemIsPossess(player, true, multiply);
         }
     }
 
@@ -106,6 +122,10 @@ public class Requirements {
 
     public void addTipsRequirements(TipsRequirementData data){
         this.tipsRequirementData.add(data);
+    }
+
+    public void addItemRequirementData(ItemRequirementData data){
+        this.itemRequirementData.add(data);
     }
 
     public void executeSuccessCommand(Player player){

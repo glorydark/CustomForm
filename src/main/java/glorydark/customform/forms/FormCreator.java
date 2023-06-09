@@ -24,6 +24,8 @@ import glorydark.customform.scriptForms.data.execute_data.ToggleResponseExecuteD
 import glorydark.customform.scriptForms.data.requirement.Requirements;
 import glorydark.customform.scriptForms.data.requirement.economy.EconomyRequirementData;
 import glorydark.customform.scriptForms.data.requirement.economy.EconomyRequirementType;
+import glorydark.customform.scriptForms.data.requirement.item.ItemRequirementData;
+import glorydark.customform.scriptForms.data.requirement.item.NeedItem;
 import glorydark.customform.scriptForms.data.requirement.tips.TipsRequirementData;
 import glorydark.customform.scriptForms.data.requirement.tips.TipsRequirementType;
 import glorydark.customform.scriptForms.form.ScriptForm;
@@ -140,11 +142,12 @@ public class FormCreator {
         please make some tiny modifications inside the Requirement.class.
     */
     public static Requirements buildRequirements(List<Map<String, Object>> requirementConfig, boolean chargeable){
-        Requirements requirements = new Requirements(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), chargeable);
+        Requirements requirements = new Requirements(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), chargeable);
         for(Map<String, Object> map: requirementConfig){
             String type = (String) map.get("type");
             EconomyRequirementData data = null;
             TipsRequirementData tips_data = null;
+            ItemRequirementData itemRequirementData = null;
             switch (type){
                 case "EconomyAPI":
                     // This is the way we deal with EconomyAPI-type requirements
@@ -164,6 +167,18 @@ public class FormCreator {
                     data.setType(EconomyRequirementType.DCurrency);
                     data.setAmount(Double.parseDouble(map.get("cost").toString()));
                     data.setExtraData(new String[]{(String) map.get("currencyType")});
+                    break;
+                case "Item":
+                    itemRequirementData = new ItemRequirementData((boolean) map.get("reduce"));
+                    List<NeedItem> needItems = new ArrayList<>();
+                    List<Map<String, Object>> needItemMapList = (List<Map<String, Object>>) map.getOrDefault("costs", new ArrayList<>());
+                    if(needItemMapList.size() > 0){
+                        for(Map<String, Object> subMap : needItemMapList){
+                            NeedItem item = new NeedItem((String) subMap.get("item"), (List<String>) subMap.getOrDefault("alternatives", new ArrayList<>()));
+                            needItems.add(item);
+                        }
+                    }
+                    itemRequirementData.setNeedItems(needItems);
                     break;
                 case "Tips":
                     // This is the way we deal with Tips-type requirements
@@ -203,6 +218,9 @@ public class FormCreator {
             if(tips_data != null){
                 requirements.addTipsRequirements(tips_data);
             }
+            if(itemRequirementData != null){
+                requirements.addItemRequirementData(itemRequirementData);
+            }
         }
         return requirements;
     }
@@ -234,7 +252,7 @@ public class FormCreator {
                         SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
                         if(component.containsKey("requirements")) {
                             List<Requirements> requirementsList = new ArrayList<>();
-                            Map<String, Object> requirementData = (Map<String, Object>) component.get("requirementsList");
+                            Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                             for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)requirementData.get("data")){
                                 requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                             }
