@@ -6,8 +6,6 @@ import cn.nukkit.form.element.*;
 import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseCustom;
 import cn.nukkit.form.window.FormWindowCustom;
-import com.smallaswater.npc.variable.BaseVariable;
-import com.smallaswater.npc.variable.BaseVariableV2;
 import com.smallaswater.npc.variable.VariableManage;
 import glorydark.customform.CustomFormMain;
 import glorydark.customform.scriptForms.data.SoundData;
@@ -15,11 +13,9 @@ import glorydark.customform.scriptForms.data.execute_data.ResponseExecuteData;
 import lombok.Data;
 import tip.utils.Api;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Data
 public class ScriptFormCustom implements ScriptForm {
@@ -139,7 +135,33 @@ public class ScriptFormCustom implements ScriptForm {
     }
 
     public FormWindowCustom getModifiableWindow(){
-        return new FormWindowCustom(window.getTitle(), window.getElements());
+        return new FormWindowCustom(window.getTitle(), cloneElements(window.getElements()));
+    }
+
+    public List<Element> cloneElements(List<Element> elements){
+        List<Element> out = new ArrayList<>();
+        for (Element element : elements) {
+            if(element instanceof ElementDropdown){
+                ElementDropdown elementDropdown = (ElementDropdown) element;
+                out.add(new ElementDropdown(elementDropdown.getText(), new ArrayList<>(elementDropdown.getOptions()), elementDropdown.getDefaultOptionIndex()));
+            }else if(element instanceof ElementInput){
+                ElementInput input = (ElementInput) element;
+                out.add(new ElementInput(input.getText(), input.getPlaceHolder(), input.getDefaultText()));
+            }else if(element instanceof ElementLabel){
+                ElementLabel label = (ElementLabel) element;
+                out.add(new ElementLabel(label.getText()));
+            }else if(element instanceof ElementToggle){
+                ElementToggle elementToggle = (ElementToggle) element;
+                out.add(new ElementToggle(elementToggle.getText(), elementToggle.isDefaultValue()));
+            }else if(element instanceof ElementSlider){
+                ElementSlider slider = (ElementSlider) element;
+                out.add(new ElementSlider(slider.getText(), slider.getMin(), slider.getMax(), slider.getStep(), slider.getDefaultValue()));
+            }else if(element instanceof ElementStepSlider){
+                ElementStepSlider stepSlider = (ElementStepSlider) element;
+                out.add(new ElementStepSlider(stepSlider.getText(), new ArrayList<>(stepSlider.getSteps()), stepSlider.getDefaultStepIndex()));
+            }
+        }
+        return out;
     }
 
     @Override

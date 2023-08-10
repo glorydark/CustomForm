@@ -71,7 +71,7 @@ public class ScriptFormSimple implements ScriptForm {
     }
 
     public FormWindowSimple getModifiableWindow(){
-        return new FormWindowSimple(window.getTitle(), window.getContent(), window.getButtons());
+        return new FormWindowSimple(window.getTitle(), window.getContent(), cloneButtons(window.getButtons()));
     }
 
     @Override
@@ -153,5 +153,17 @@ public class ScriptFormSimple implements ScriptForm {
             string = replaceBreak(string);
         }
         return string;
+    }
+
+    public List<ElementButton> cloneButtons(List<ElementButton> elementButtons){
+        List<ElementButton> out = new ArrayList<>();
+        for (ElementButton elementButton : elementButtons) {
+            if(elementButton.getImage() == null){
+                out.add(new ElementButton(elementButton.getText()));
+            }else{
+                out.add(new ElementButton(elementButton.getText(), new ElementButtonImageData(elementButton.getImage().getType(), elementButton.getImage().getData())));
+            }
+        }
+        return out;
     }
 }
