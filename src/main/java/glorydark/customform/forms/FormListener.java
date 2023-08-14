@@ -1,6 +1,5 @@
 package glorydark.customform.forms;
 
-
 import cn.nukkit.Player;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
@@ -18,11 +17,10 @@ import glorydark.customform.scriptForms.form.ScriptForm;
 
 import java.util.HashMap;
 
-
 public class FormListener implements Listener {
 
     @EventHandler
-    public void DataPacketReceiveEvent(DataPacketReceiveEvent event){
+    public void DataPacketReceiveEvent(DataPacketReceiveEvent event) {
         if(event.getPacket() instanceof ModalFormResponsePacket) {
             ModalFormResponsePacket pk = (ModalFormResponsePacket) event.getPacket();
             if(pk.formId == FormCreator.formId) {
@@ -36,18 +34,18 @@ public class FormListener implements Listener {
         if (p == null) {
             return;
         }
-        if (response==null){
+        if (response == null) {
             return;
         }
         String pName = p.getName();
         FormType formType = FormCreator.UI_CACHE.containsKey(pName) ? FormCreator.UI_CACHE.get(pName).getType() : null;
-        if(formType == null){
+        if(formType == null) {
             FormCreator.UI_CACHE.remove(pName);
             return;
         }
         String script = FormCreator.UI_CACHE.get(pName).getScript();
         ScriptForm form = FormCreator.formScripts.get(script);
-        if(form == null){
+        if(form == null) {
             form = FormCreator.UI_CACHE.get(pName).getCustomizedScriptForm();
         }
         if (translateResponse(response.trim(), form.getWindow(p)) == null) {
@@ -74,7 +72,7 @@ public class FormListener implements Listener {
                 String replaced = string.trim().replace("[", "").replace("]", "");
                 String[] split = replaced.split(",");
                 HashMap<Integer, Object> hashMap = new HashMap<>();
-                for(int i = 0; i<split.length; i++){
+                for(int i = 0; i<split.length; i++) {
                     hashMap.put(i, split[i]);
                 }
                 return new FormResponseCustom(hashMap, new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
@@ -84,7 +82,7 @@ public class FormListener implements Listener {
             if (string.equals("null")) {
                 return null;
             } else {
-                int id = string.equals("true")? 0:1;
+                int id = string.equals("true")? 0: 1;
                 return new FormResponseModal(id, id == 0? ((FormWindowModal) window).getButton1(): ((FormWindowModal) window).getButton2());
             }
         }

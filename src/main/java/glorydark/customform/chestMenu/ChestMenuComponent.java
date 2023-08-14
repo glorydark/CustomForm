@@ -48,7 +48,7 @@ public class ChestMenuComponent {
         }
         this.item.setLore(description.replace("\\n", "\n"));
         this.item.setCustomName(name);
-        if(isEnchanted){
+        if(isEnchanted) {
             this.item.addEnchantment(Enchantment.get(Enchantment.ID_DURABILITY).setLevel(1));
         }
     }
@@ -69,14 +69,14 @@ public class ChestMenuComponent {
         this.failedCommands = failedCommands;
     }
 
-    public void execute(Player player){
+    public void execute(Player player) {
         // To check whether player is qualified or not
         boolean success;
         Requirements successRequire = null;
-        if(requirements.size() > 0){
+        if(requirements.size() > 0) {
             success = false;
-            for(Requirements require: requirements){
-                if(require.isAllQualified(player)){
+            for(Requirements require: requirements) {
+                if(require.isAllQualified(player)) {
                     successRequire = require;
                     success = true;
                 }
@@ -86,17 +86,17 @@ public class ChestMenuComponent {
         }
 
         // Execute corresponding commands and messages
-        if(success){
+        if(success) {
             if(successRequire != null) {
                 if (successRequire.isAllQualified(player)) {
                     successRequire.reduceAllCosts(player, 1);
                 }
             }
             for (String successCommand : successCommands) {
-                if(successCommand.startsWith("console#")){
+                if(successCommand.startsWith("console#")) {
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(successCommand, player));
                 } else if(successCommand.startsWith("op#")) {
-                    if(player.isOp()){
+                    if(player.isOp()) {
                         Server.getInstance().dispatchCommand(player, replace(successCommand, player));
                     }else{
                         Server.getInstance().addOp(player.getName());
@@ -113,10 +113,10 @@ public class ChestMenuComponent {
             }
         }else{
             for (String failedCommand : failedCommands) {
-                if(failedCommand.startsWith("console#")){
+                if(failedCommand.startsWith("console#")) {
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(failedCommand, player));
                 } else if(failedCommand.startsWith("op#")) {
-                    if(player.isOp()){
+                    if(player.isOp()) {
                         Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
                     }else{
                         Server.getInstance().addOp(player.getName());
@@ -134,7 +134,7 @@ public class ChestMenuComponent {
         }
     }
 
-    public String replace(String text, Player player){
+    public String replace(String text, Player player) {
         return text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "").replaceFirst("op#", "");
     }
 }

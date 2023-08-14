@@ -59,12 +59,12 @@ public class FormCreator {
         // This is provided to customize your form more easily.
         private ScriptForm customizedScriptForm;
 
-        public WindowInfo(FormType type, String script){
+        public WindowInfo(FormType type, String script) {
             this.type = type;
             this.script = script;
         }
 
-        public WindowInfo(FormType type, String script, ScriptForm customizedScriptForm){
+        public WindowInfo(FormType type, String script, ScriptForm customizedScriptForm) {
             this.type = type;
             this.script = script;
             this.customizedScriptForm = customizedScriptForm;
@@ -84,8 +84,8 @@ public class FormCreator {
     @Api
     // You can show your own scriptForm without former registry by defining a certain scriptForm.
     public static void showFormToPlayer(Player player, FormType formType, ScriptForm scriptForm, String identifier) {
-        if(scriptForm.getStartMillis() != -1L || scriptForm.getExpiredMillis() != -1L){
-            if(scriptForm.getStartMillis() < System.currentTimeMillis() && scriptForm.getExpiredMillis() < System.currentTimeMillis()){
+        if(scriptForm.getStartMillis() != -1L || scriptForm.getExpiredMillis() != -1L) {
+            if(scriptForm.getStartMillis() < System.currentTimeMillis() && scriptForm.getExpiredMillis() < System.currentTimeMillis()) {
                 player.sendMessage("This form is expired!");
                 return;
             }
@@ -106,8 +106,8 @@ public class FormCreator {
     /*
         By this function, you can show a certain form whose identifier is the same as identifier.
     */
-    public static void showScriptForm(Player player, String identifier){
-        if(formScripts.containsKey(identifier)){
+    public static void showScriptForm(Player player, String identifier) {
+        if(formScripts.containsKey(identifier)) {
             ScriptForm script = formScripts.get(identifier);
             showScriptForm(player, script, identifier);
         }
@@ -115,10 +115,10 @@ public class FormCreator {
 
     @Api
     // This function can use as a way to customize your form.
-    public static void showScriptForm(Player player, ScriptForm script, String identifier){
+    public static void showScriptForm(Player player, ScriptForm script, String identifier) {
         Server.getInstance().getPluginManager().callEvent(new FormPreOpenEvent(script, player));
         FormWindow window = script.getWindow(player);
-        if(script.getOpenSound() != null){
+        if(script.getOpenSound() != null) {
             script.getOpenSound().addSound(player);
         }
         if(window instanceof FormWindowSimple) {
@@ -141,14 +141,14 @@ public class FormCreator {
         * If you want to add a new type of requirement,
         please make some tiny modifications inside the Requirement.class.
     */
-    public static Requirements buildRequirements(List<Map<String, Object>> requirementConfig, boolean chargeable){
+    public static Requirements buildRequirements(List<Map<String, Object>> requirementConfig, boolean chargeable) {
         Requirements requirements = new Requirements(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), chargeable);
-        for(Map<String, Object> map: requirementConfig){
+        for(Map<String, Object> map: requirementConfig) {
             String type = (String) map.get("type");
             EconomyRequirementData data = null;
             TipsRequirementData tips_data = null;
             ItemRequirementData itemRequirementData = null;
-            switch (type){
+            switch (type) {
                 case "EconomyAPI":
                     // This is the way we deal with EconomyAPI-type requirements
                     data = new EconomyRequirementData(null, 0d, new Object());
@@ -172,8 +172,8 @@ public class FormCreator {
                     itemRequirementData = new ItemRequirementData((boolean) map.get("reduce"));
                     List<NeedItem> needItems = new ArrayList<>();
                     List<Map<String, Object>> needItemMapList = (List<Map<String, Object>>) map.getOrDefault("costs", new ArrayList<>());
-                    if(needItemMapList.size() > 0){
-                        for(Map<String, Object> subMap : needItemMapList){
+                    if(needItemMapList.size() > 0) {
+                        for(Map<String, Object> subMap : needItemMapList) {
                             NeedItem item = new NeedItem((String) subMap.get("item"), (List<String>) subMap.getOrDefault("alternatives", new ArrayList<>()));
                             needItems.add(item);
                         }
@@ -187,7 +187,7 @@ public class FormCreator {
                     Object comparedValue = map.get("compared_value");
                     String displayName = (String) map.get("display_name");
                     List<String> failed_messages = (List<String>) map.getOrDefault("failed_messages", new ArrayList<>());
-                    switch (comparedSign){
+                    switch (comparedSign) {
                         case ">":
                             tips_data = new TipsRequirementData(TipsRequirementType.Bigger, identifier, comparedValue, displayName, failed_messages);
                             break;
@@ -212,13 +212,13 @@ public class FormCreator {
                     requirements.setFailedMessages((List<String>) map.getOrDefault("failed_messages", new ArrayList<>()));
                     break;
             }
-            if(data != null){
+            if(data != null) {
                 requirements.addEconomyRequirements(data);
             }
-            if(tips_data != null){
+            if(tips_data != null) {
                 requirements.addTipsRequirements(tips_data);
             }
-            if(itemRequirementData != null){
+            if(itemRequirementData != null) {
                 requirements.addItemRequirementData(itemRequirementData);
             }
         }
@@ -230,9 +230,9 @@ public class FormCreator {
         And we identify the type of the form by the Integer.
         0: simple  1: custom  2: modal
      */
-    public static boolean loadForm(String identifier, Map<String, Object> config){
+    public static boolean loadForm(String identifier, Map<String, Object> config) {
         ScriptForm scriptForm = getScriptFormByMap(config);
-        if(scriptForm != null){
+        if(scriptForm != null) {
             FormCreator.formScripts.put(identifier, scriptForm);
             return true;
         }else{
@@ -242,8 +242,8 @@ public class FormCreator {
     }
 
     @Api
-    public static ScriptForm getScriptFormByMap(Map<String, Object> config){
-        switch ((int) config.get("type")){
+    public static ScriptForm getScriptFormByMap(Map<String, Object> config) {
+        switch ((int) config.get("type")) {
             case 0:
                 //simple
                 List<SimpleResponseExecuteData> simpleResponseExecuteDataList = new ArrayList<>();
@@ -253,7 +253,7 @@ public class FormCreator {
                         if(component.containsKey("requirements")) {
                             List<Requirements> requirementsList = new ArrayList<>();
                             Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
-                            for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)requirementData.get("data")){
+                            for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)requirementData.get("data")) {
                                 requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                             }
                             data.setRequirements(requirementsList);
@@ -293,7 +293,7 @@ public class FormCreator {
                             if(component.containsKey("requirements")) {
                                 List<Requirements> requirements = new ArrayList<>();
                                 Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
-                                for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)requirementData.get("data")){
+                                for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)requirementData.get("data")) {
                                     requirements.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                                 }
                                 data.setRequirements(requirements);
@@ -309,7 +309,7 @@ public class FormCreator {
                 }
                 custom.setStartMillis((Long) config.getOrDefault("startMillis", -1L));
                 custom.setExpiredMillis((Long) config.getOrDefault("expiredMillis", -1L));
-                if(custom.getWindow() != null){
+                if(custom.getWindow() != null) {
                     return custom;
                 }
                 break;
@@ -336,8 +336,8 @@ public class FormCreator {
     }
 
     @Api
-    public static Map<String, Object> convertConfigToMap(File file){
-        if(file.getName().endsWith(".json")){
+    public static Map<String, Object> convertConfigToMap(File file) {
+        if(file.getName().endsWith(".json")) {
             InputStream stream;
             try {
                 stream = new FileInputStream(file);
@@ -347,7 +347,7 @@ public class FormCreator {
             InputStreamReader streamReader = new InputStreamReader(stream, StandardCharsets.UTF_8); //一定要以utf-8读取
             JsonReader reader = new JsonReader(streamReader);
             Gson gson = new GsonBuilder().registerTypeAdapter(new TypeToken<Map<String, Object>>() {}.getType(), new GsonAdapter()).create();
-            Map<String, Object> mainMap = gson.fromJson(reader, new TypeToken<Map<String, Object>>(){}.getType());
+            Map<String, Object> mainMap = gson.fromJson(reader, new TypeToken<Map<String, Object>>() {}.getType());
 
             // Remember to close the streamReader after your implementation.
             try {
@@ -358,7 +358,7 @@ public class FormCreator {
                 throw new RuntimeException(e);
             }
             return mainMap;
-        }else if(file.getName().endsWith(".yml")){
+        } else if(file.getName().endsWith(".yml")) {
             return new Config(file, Config.YAML).getAll();
         }
         return new HashMap<>();

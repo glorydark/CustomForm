@@ -12,7 +12,7 @@ public class FormOpenEvent extends PlayerEvent {
 
     Player player;
 
-    public FormOpenEvent(ScriptForm scriptForm, Player player){
+    public FormOpenEvent(ScriptForm scriptForm, Player player) {
         this.scriptForm = scriptForm;
         this.player = player;
     }

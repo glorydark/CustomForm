@@ -12,7 +12,7 @@ public class SoundData {
     private final float pitch;
     private final boolean isPersonal;
 
-    public SoundData(String sound, float volume, float pitch, boolean isPersonal){
+    public SoundData(String sound, float volume, float pitch, boolean isPersonal) {
         Optional<Sound> find = Arrays.stream(Sound.values()).filter(get -> get.getSound().equals(sound)).findAny();
         this.sound = find.orElse(null);
         this.volume = volume;
@@ -20,8 +20,8 @@ public class SoundData {
         this.isPersonal = isPersonal;
     }
 
-    public void addSound(Player player){
-        if(sound == null){ return; }
+    public void addSound(Player player) {
+        if(sound == null) { return; }
         if(isPersonal) {
             player.getLevel().addSound(player.getLocation(), sound, volume, pitch, player);
         }else{

@@ -14,7 +14,7 @@ public class TipsRequirementData {
 
     List<String> failed_messages;
 
-    public TipsRequirementData(TipsRequirementType type, String identifier, Object comparedValue, String displayName, List<String> failed_messages){
+    public TipsRequirementData(TipsRequirementType type, String identifier, Object comparedValue, String displayName, List<String> failed_messages) {
         this.type = type;
         this.identifier = identifier;
         this.comparedValue = comparedValue;
@@ -39,11 +39,11 @@ public class TipsRequirementData {
         Variable 'type' is used to select the comparing type.
         * This method is designed specially for Tips!
      */
-    public boolean isQualified(Player player){
-        if(comparedValue instanceof Double){
+    public boolean isQualified(Player player) {
+        if(comparedValue instanceof Double) {
             double convertedCompared = Double.parseDouble(comparedValue.toString());
             double tipsValue = Double.parseDouble(Api.strReplace(identifier, player));
-            switch (type){
+            switch (type) {
                 case Equal:
                     return tipsValue == convertedCompared;
                 case Bigger:
@@ -56,15 +56,15 @@ public class TipsRequirementData {
                     return tipsValue <= convertedCompared;
             }
         } else if (comparedValue instanceof String) {
-            if(type.equals(TipsRequirementType.Equal)){
+            if(type.equals(TipsRequirementType.Equal)) {
                 String compared = comparedValue.toString();
                 String tipsValue = Api.strReplace(identifier, player);
                 return compared.equals(tipsValue);
             }
-        } else if (comparedValue instanceof Integer){
+        } else if (comparedValue instanceof Integer) {
             int convertedCompared = Integer.parseInt(comparedValue.toString());
             int tipsValue = Integer.parseInt(Api.strReplace(identifier, player).split("\\.")[0]);
-            switch (type){
+            switch (type) {
                 case Equal:
                     return tipsValue == convertedCompared;
                 case Bigger:
@@ -94,14 +94,14 @@ public class TipsRequirementData {
         | %absolute_diff%  |     the absolute value based on the difference.
         ---------------------------------------------------------------------------------------------------------------------
     */
-    public void sendFailedMsg(Player player, boolean isDoubleOrInteger, Object... params){
-        if(failed_messages.size() == 0){
+    public void sendFailedMsg(Player player, boolean isDoubleOrInteger, Object... params) {
+        if(failed_messages.size() == 0) {
             return;
         }
-        for(String msg: failed_messages){
+        for(String msg: failed_messages) {
             String get = Api.strReplace(identifier, player);
             String out = msg.replace("%get%", get).replace("%display_name%", displayName).replace("%compared_value%", comparedValue.toString());
-            if(isDoubleOrInteger){
+            if(isDoubleOrInteger) {
                 //To get the absolute value of the diff between %get% and %compared_value%
                 double convertedGet = Double.parseDouble(get);
                 double absoluteDiff = Math.abs(convertedGet - Double.parseDouble(comparedValue.toString()));

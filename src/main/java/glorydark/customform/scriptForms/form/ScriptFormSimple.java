@@ -6,8 +6,6 @@ import cn.nukkit.form.element.ElementButtonImageData;
 import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseSimple;
 import cn.nukkit.form.window.FormWindowSimple;
-import com.smallaswater.npc.variable.BaseVariable;
-import com.smallaswater.npc.variable.BaseVariableV2;
 import com.smallaswater.npc.variable.VariableManage;
 import glorydark.customform.CustomFormMain;
 import glorydark.customform.scriptForms.data.SoundData;
@@ -15,11 +13,9 @@ import glorydark.customform.scriptForms.data.execute_data.SimpleResponseExecuteD
 import lombok.Data;
 import tip.utils.Api;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Data
 public class ScriptFormSimple implements ScriptForm {
@@ -40,25 +36,25 @@ public class ScriptFormSimple implements ScriptForm {
 
     private long expiredMillis = -1L;
 
-    public ScriptFormSimple(Map<String, Object> config, List<SimpleResponseExecuteData> data, SoundData openSound){
+    public ScriptFormSimple(Map<String, Object> config, List<SimpleResponseExecuteData> data, SoundData openSound) {
         this.config = config;
         this.data = data;
         this.window = initWindow();
         this.openSound = openSound;
     }
 
-    public void execute(Player player, FormResponse response, Object... params){
+    public void execute(Player player, FormResponse response, Object... params) {
         FormResponseSimple responseSimple = (FormResponseSimple) response;
-        if(data.size() <= responseSimple.getClickedButtonId()){
+        if(data.size() <= responseSimple.getClickedButtonId()) {
             return;
         }
         data.get(responseSimple.getClickedButtonId()).execute(player, 0, params);
     }
 
-    public FormWindowSimple getWindow(Player player){
+    public FormWindowSimple getWindow(Player player) {
         FormWindowSimple simple_temp = this.getModifiableWindow();
         int elementId = 0;
-        for(ElementButton button: new ArrayList<>(simple_temp.getButtons())){
+        for(ElementButton button: new ArrayList<>(simple_temp.getButtons())) {
             boolean tipsEnabled = enableTipsVariableReplacement.get(elementId);
             boolean rsNPCXEnabled = enableRsNPCXVariableReplacement.get(elementId);
             button.setText(replace(button.getText(), player, true, rsNPCXEnabled, tipsEnabled));
@@ -70,7 +66,7 @@ public class ScriptFormSimple implements ScriptForm {
         return simple_temp;
     }
 
-    public FormWindowSimple getModifiableWindow(){
+    public FormWindowSimple getModifiableWindow() {
         return new FormWindowSimple(window.getTitle(), window.getContent(), cloneButtons(window.getButtons()));
     }
 
@@ -79,7 +75,7 @@ public class ScriptFormSimple implements ScriptForm {
         return openSound;
     }
 
-    public FormWindowSimple initWindow(){
+    public FormWindowSimple initWindow() {
         FormWindowSimple simple;
         Object object = config.getOrDefault("content", "");
         String content = "";
@@ -126,7 +122,7 @@ public class ScriptFormSimple implements ScriptForm {
         return simple;
     }
 
-    public String replaceBreak(String string){
+    public String replaceBreak(String string) {
         return string.replace("\\n", "\n");
     }
 
@@ -138,27 +134,27 @@ public class ScriptFormSimple implements ScriptForm {
      * Refracted in order to expand the usages easily.
      */
 
-    public String replace(String string, Player player, boolean replaceBreak){
+    public String replace(String string, Player player, boolean replaceBreak) {
         return this.replace(string, player, replaceBreak, true, true);
     }
 
-    public String replace(String string, Player player, boolean replaceBreak, boolean enableRsNPCX, boolean enableTips){
-        if(CustomFormMain.enableTips && enableTips){
+    public String replace(String string, Player player, boolean replaceBreak, boolean enableRsNPCX, boolean enableTips) {
+        if(CustomFormMain.enableTips && enableTips) {
             string = Api.strReplace(string, player);
         }
-        if(CustomFormMain.enableRsNPCX && enableRsNPCX){
+        if(CustomFormMain.enableRsNPCX && enableRsNPCX) {
             string = VariableManage.stringReplace(player, string, null);
         }
-        if(replaceBreak){
+        if(replaceBreak) {
             string = replaceBreak(string);
         }
         return string;
     }
 
-    public List<ElementButton> cloneButtons(List<ElementButton> elementButtons){
+    public List<ElementButton> cloneButtons(List<ElementButton> elementButtons) {
         List<ElementButton> out = new ArrayList<>();
         for (ElementButton elementButton : elementButtons) {
-            if(elementButton.getImage() == null){
+            if(elementButton.getImage() == null) {
                 out.add(new ElementButton(elementButton.getText()));
             }else{
                 out.add(new ElementButton(elementButton.getText(), new ElementButtonImageData(elementButton.getImage().getType(), elementButton.getImage().getData())));

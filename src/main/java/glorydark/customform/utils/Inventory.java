@@ -40,8 +40,8 @@ public class Inventory {
         return stringBuilder.toString();
     }
 
-    public static String saveItemToString(Item item){
-        if(item.hasCompoundTag()){
+    public static String saveItemToString(Item item) {
+        if(item.hasCompoundTag()) {
             return item.getId()+":"+item.getDamage()+":"+item.getCount()+":"+bytesToHexString(item.getCompoundTag());
         }else{
             return item.getId()+":"+item.getDamage()+":"+item.getCount()+":null";
@@ -50,7 +50,7 @@ public class Inventory {
 
     public static Item getItem(String itemString) {
         String[] a = itemString.split(":");
-        if(a.length!=4){ return null; }
+        if(a.length!=4) { return null; }
         Item item = Item.get(Integer.parseInt(a[0]), Integer.parseInt(a[1]), Integer.parseInt(a[2]));
         if (!a[3].equals("null")) {
             CompoundTag tag = Item.parseCompoundTag(hexStringToBytes(a[3]));

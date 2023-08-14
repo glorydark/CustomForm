@@ -4,8 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseModal;
 import cn.nukkit.form.window.FormWindowModal;
-import com.smallaswater.npc.variable.BaseVariable;
-import com.smallaswater.npc.variable.BaseVariableV2;
 import com.smallaswater.npc.variable.VariableManage;
 import glorydark.customform.CustomFormMain;
 import glorydark.customform.scriptForms.data.SoundData;
@@ -13,11 +11,9 @@ import glorydark.customform.scriptForms.data.execute_data.SimpleResponseExecuteD
 import lombok.Data;
 import tip.utils.Api;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Data
 public class ScriptFormModal implements ScriptForm {
@@ -33,22 +29,22 @@ public class ScriptFormModal implements ScriptForm {
 
     private long expiredMillis = -1L;
 
-    public ScriptFormModal(Map<String, Object> config, List<SimpleResponseExecuteData> data, SoundData openSound){
+    public ScriptFormModal(Map<String, Object> config, List<SimpleResponseExecuteData> data, SoundData openSound) {
         this.config = config;
         this.data = data;
         this.window = initWindow();
         this.openSound = openSound;
     }
 
-    public void execute(Player player, FormResponse response, Object... params){
+    public void execute(Player player, FormResponse response, Object... params) {
         FormResponseModal responseModal = (FormResponseModal) response;
-        if(data.size() <= (responseModal.getClickedButtonId())){
+        if(data.size() <= (responseModal.getClickedButtonId())) {
             return;
         }
         data.get(responseModal.getClickedButtonId()).execute(player, 0, params);
     }
 
-    public FormWindowModal initWindow(){
+    public FormWindowModal initWindow() {
         FormWindowModal modal;
         Object object = config.getOrDefault("content", "");
         String content = "";
@@ -70,7 +66,7 @@ public class ScriptFormModal implements ScriptForm {
             }
         }
         List<Map<String, Object>> buttons = (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>());
-        if(buttons.size() != 2){
+        if(buttons.size() != 2) {
             return null;
         }
         if(content.equals("")) {
@@ -82,8 +78,8 @@ public class ScriptFormModal implements ScriptForm {
         return modal;
     }
 
-    public FormWindowModal getWindow(Player player){
-        if(CustomFormMain.enableTips || CustomFormMain.enableRsNPCX){
+    public FormWindowModal getWindow(Player player) {
+        if(CustomFormMain.enableTips || CustomFormMain.enableRsNPCX) {
             FormWindowModal modal = this.getModifiableWindow();
             modal.setContent(replace(modal.getContent(), player, true));
             modal.setTitle(replace(modal.getTitle(), player));
@@ -92,7 +88,7 @@ public class ScriptFormModal implements ScriptForm {
         return this.getModifiableWindow();
     }
 
-    public FormWindowModal getModifiableWindow(){
+    public FormWindowModal getModifiableWindow() {
         return new FormWindowModal(window.getTitle(), window.getContent(), window.getButton1(), window.getButton2());
     }
 
@@ -101,7 +97,7 @@ public class ScriptFormModal implements ScriptForm {
         return openSound;
     }
 
-    public String replaceBreak(String string){
+    public String replaceBreak(String string) {
         return string.replace("\\n", "\n");
     }
 
@@ -112,14 +108,14 @@ public class ScriptFormModal implements ScriptForm {
     /**
      * Refracted in order to expand the usages easily.
      */
-    public String replace(String string, Player player, boolean replaceBreak){
-        if(CustomFormMain.enableTips){
+    public String replace(String string, Player player, boolean replaceBreak) {
+        if(CustomFormMain.enableTips) {
             string = Api.strReplace(string, player);
         }
-        if(CustomFormMain.enableRsNPCX){
+        if(CustomFormMain.enableRsNPCX) {
             string = VariableManage.stringReplace(player, string, null);
         }
-        if(replaceBreak){
+        if(replaceBreak) {
             string = replaceBreak(string);
         }
         return string;

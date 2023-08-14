@@ -33,7 +33,7 @@ public class Requirements {
 
     boolean chargeable;
 
-    public Requirements(List<EconomyRequirementData> economyRequirementData, List<TipsRequirementData> tipsRequirementData, List<ItemRequirementData> itemRequirementData, List<String> commands, List<String> messages, List<String> failedCommands, List<String> failedMessages, boolean chargeable){
+    public Requirements(List<EconomyRequirementData> economyRequirementData, List<TipsRequirementData> tipsRequirementData, List<ItemRequirementData> itemRequirementData, List<String> commands, List<String> messages, List<String> failedCommands, List<String> failedMessages, boolean chargeable) {
         this.economyRequirementData = economyRequirementData;
         this.tipsRequirementData = tipsRequirementData;
         this.itemRequirementData = itemRequirementData;
@@ -63,12 +63,12 @@ public class Requirements {
     /*
         Check if player can meet the all requirements here.
     */
-    public boolean isAllQualified(Player player, Object... params){
+    public boolean isAllQualified(Player player, Object... params) {
         int multiply = params.length == 2? (int) params[1] : 1;
-        for(EconomyRequirementData datum: economyRequirementData){
+        for(EconomyRequirementData datum: economyRequirementData) {
             BigDecimal difference;
-            if(!datum.isQualified(player, multiply)){
-                switch (datum.getType()){
+            if(!datum.isQualified(player, multiply)) {
+                switch (datum.getType()) {
                     case Points:
                         difference = BigDecimal.valueOf(datum.getAmount()).subtract(BigDecimal.valueOf(Point.getPoint(player.getUniqueId())).multiply(new BigDecimal(multiply)));
                         player.sendMessage(CustomFormMain.language.translateString(player, "requirements_points_not_qualified", params[0], difference));
@@ -85,14 +85,14 @@ public class Requirements {
                 return false;
             }
         }
-        for(TipsRequirementData datum: tipsRequirementData){
-            if(!datum.isQualified(player)){
+        for(TipsRequirementData datum: tipsRequirementData) {
+            if(!datum.isQualified(player)) {
                 datum.sendFailedMsg(player, (datum.getComparedValue() instanceof Double || datum.getComparedValue() instanceof Integer), params[0]);
                 return false;
             }
         }
-        for(ItemRequirementData datum: itemRequirementData){
-            if(!datum.checkItemIsPossess(player, false, multiply)){
+        for(ItemRequirementData datum: itemRequirementData) {
+            if(!datum.checkItemIsPossess(player, false, multiply)) {
                 player.sendMessage("Lack of items!");
                 return false;
             }
@@ -100,14 +100,14 @@ public class Requirements {
         return true;
     }
 
-    public void reduceAllCosts(Player player, int multiply){
-        if(this.isChargeable()){
-            for(EconomyRequirementData datum: economyRequirementData){
+    public void reduceAllCosts(Player player, int multiply) {
+        if(this.isChargeable()) {
+            for(EconomyRequirementData datum: economyRequirementData) {
                 datum.reduceCost(player, multiply);
             }
         }
 
-        for(ItemRequirementData datum: itemRequirementData){
+        for(ItemRequirementData datum: itemRequirementData) {
             datum.checkItemIsPossess(player, true, multiply);
         }
     }
@@ -116,24 +116,24 @@ public class Requirements {
         return chargeable;
     }
 
-    public void addEconomyRequirements(EconomyRequirementData data){
+    public void addEconomyRequirements(EconomyRequirementData data) {
         this.economyRequirementData.add(data);
     }
 
-    public void addTipsRequirements(TipsRequirementData data){
+    public void addTipsRequirements(TipsRequirementData data) {
         this.tipsRequirementData.add(data);
     }
 
-    public void addItemRequirementData(ItemRequirementData data){
+    public void addItemRequirementData(ItemRequirementData data) {
         this.itemRequirementData.add(data);
     }
 
-    public void executeSuccessCommand(Player player){
-        for(String command: commands){
-            if(command.startsWith("console#")){
+    public void executeSuccessCommand(Player player) {
+        for(String command: commands) {
+            if(command.startsWith("console#")) {
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
             } else if(command.startsWith("op#")) {
-                if(player.isOp()){
+                if(player.isOp()) {
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
                 }else{
                     Server.getInstance().addOp(player.getName());
@@ -144,17 +144,17 @@ public class Requirements {
                 Server.getInstance().dispatchCommand(player, replace(command, player));
             }
         }
-        for(String message: messages){
+        for(String message: messages) {
             player.sendMessage(replace(message, player));
         }
     }
 
-    public void executeFailedCommand(Player player){
-        for(String command: failedCommands){
-            if(command.startsWith("console#")){
+    public void executeFailedCommand(Player player) {
+        for(String command: failedCommands) {
+            if(command.startsWith("console#")) {
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
             } else if(command.startsWith("op#")) {
-                if(player.isOp()){
+                if(player.isOp()) {
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
                 }else{
                     Server.getInstance().addOp(player.getName());
@@ -165,12 +165,12 @@ public class Requirements {
                 Server.getInstance().dispatchCommand(player, replace(command, player));
             }
         }
-        for(String message: failedMessages){
+        for(String message: failedMessages) {
             player.sendMessage(replace(message, player));
         }
     }
 
-    public String replace(String text, Player player){
+    public String replace(String text, Player player) {
         String out = text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "");
         return Api.strReplace(out, player);
     }

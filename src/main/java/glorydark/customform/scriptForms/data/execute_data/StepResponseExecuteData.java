@@ -13,19 +13,19 @@ public class StepResponseExecuteData implements ResponseExecuteData {
 
     public List<SimpleResponseExecuteData> responses;
 
-    public StepResponseExecuteData(List<SimpleResponseExecuteData> responses){
+    public StepResponseExecuteData(List<SimpleResponseExecuteData> responses) {
         this.responses = responses;
     }
 
-    public void execute(Player player, int responseId, Object... params){
-        if(responseId >= responses.size()){
+    public void execute(Player player, int responseId, Object... params) {
+        if(responseId >= responses.size()) {
             return;
         }
-        for(String command: responses.get(responseId).getCommands()){
-            if(command.startsWith("console#")){
+        for(String command: responses.get(responseId).getCommands()) {
+            if(command.startsWith("console#")) {
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, responseId, params[0]));
             } else if(command.startsWith("op#")) {
-                if(player.isOp()){
+                if(player.isOp()) {
                     Server.getInstance().dispatchCommand(player, replace(command, player, responseId, params[0]));
                 }else{
                     Server.getInstance().addOp(player.getName());
@@ -36,12 +36,12 @@ public class StepResponseExecuteData implements ResponseExecuteData {
                 Server.getInstance().dispatchCommand(player, replace(command, player, responseId, params[0]));
             }
         }
-        for(String message: responses.get(responseId).getMessages()){
+        for(String message: responses.get(responseId).getMessages()) {
             player.sendMessage(replace(message, player, responseId, params[0]));
         }
     }
 
-    public String replace(String text, Player player, Object... params){
+    public String replace(String text, Player player, Object... params) {
         if(params.length < 1) {
             return Api.strReplace(text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "").replaceFirst("op#", ""), player);
         }else{

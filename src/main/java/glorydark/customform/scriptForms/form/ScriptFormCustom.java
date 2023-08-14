@@ -40,35 +40,35 @@ public class ScriptFormCustom implements ScriptForm {
 
     private long expiredMillis = -1L;
 
-    public ScriptFormCustom(Map<String, Object> config, List<ResponseExecuteData> data, SoundData openSound){
+    public ScriptFormCustom(Map<String, Object> config, List<ResponseExecuteData> data, SoundData openSound) {
         this.config = config;
         this.data = data;
         this.window = initWindow();
         this.openSound = openSound;
-        if(config.containsKey("global_responses")){
+        if(config.containsKey("global_responses")) {
             Map<String, List<String>> globalResponses = (Map<String, List<String>>) config.get("global_responses");
             globalCommands = globalResponses.get("commands");
             globalMessages = globalResponses.get("messages");
         }
     }
 
-    public void execute(Player player, FormResponse response, Object... params){
+    public void execute(Player player, FormResponse response, Object... params) {
         FormResponseCustom responseCustom = (FormResponseCustom) response;
         Map<Integer, Object> responsesMap = responseCustom.getResponses();
         globalMessages.forEach(message->{
-            for(int i= 0; i < responsesMap.size(); i++){
+            for(int i= 0; i < responsesMap.size(); i++) {
                 message = message.replace("%"+i+"%", responsesMap.get(i).toString());
             }
             player.sendMessage(message);
         });
         globalCommands.forEach(command->{
-            for(int i= 0; i < responsesMap.size(); i++){
+            for(int i= 0; i < responsesMap.size(); i++) {
                 command = command.replace("%"+i+"%", responsesMap.get(i).toString());
             }
-            if(command.startsWith("console#")){
+            if(command.startsWith("console#")) {
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), command.replace("console#", ""));
             } else if(command.startsWith("op#")) {
-                if(player.isOp()){
+                if(player.isOp()) {
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), command.replace("op#", ""));
                 }else{
                     Server.getInstance().addOp(player.getName());
@@ -85,7 +85,7 @@ public class ScriptFormCustom implements ScriptForm {
                 ElementDropdown dropdown = ((ElementDropdown) window.getElements().get(key));
                 data.get(key).execute(player, elementDropdownResponseId, dropdown.getOptions().get(elementDropdownResponseId));
             } else {
-                if(window.getElements().get(key) instanceof ElementStepSlider){
+                if(window.getElements().get(key) instanceof ElementStepSlider) {
                     int stepSliderResponseId = Integer.parseInt(((FormResponseCustom) response).getResponse(key).toString());
                     ElementStepSlider stepSlider = ((ElementStepSlider) window.getElements().get(key));
                     data.get(key).execute(player, stepSliderResponseId, stepSlider.getSteps().get(stepSliderResponseId));
@@ -98,32 +98,32 @@ public class ScriptFormCustom implements ScriptForm {
         });
     }
 
-    public FormWindowCustom getWindow(Player player){
+    public FormWindowCustom getWindow(Player player) {
         FormWindowCustom custom_temp = this.getModifiableWindow();
         int elementId = 0;
         custom_temp.setTitle(replace(custom_temp.getTitle(), player));
-        for(Element element: new ArrayList<>(custom_temp.getElements())){
-            if(element instanceof ElementLabel){
+        for(Element element: new ArrayList<>(custom_temp.getElements())) {
+            if(element instanceof ElementLabel) {
                 ((ElementLabel) element).setText(replace(((ElementLabel) element).getText(), player));
                 custom_temp.getElements().set(elementId, element);
-            }else if(element instanceof ElementInput){
+            }else if(element instanceof ElementInput) {
                 ElementInput input =  ((ElementInput) element);
                 input.setDefaultText(replace(input.getDefaultText(), player));
                 input.setText(replace(input.getDefaultText(), player));
                 input.setPlaceHolder(replace(input.getDefaultText(), player));
                 custom_temp.getElements().set(elementId, input);
-            }else if(element instanceof ElementDropdown){
+            }else if(element instanceof ElementDropdown) {
                 ElementDropdown dropdown = ((ElementDropdown) element);
                 dropdown.setText(replace(dropdown.getText(), player));
                 dropdown.getOptions().replaceAll(string -> replace(string, player));
                 custom_temp.getElements().set(elementId, dropdown);
-            }else if(element instanceof ElementToggle){
+            }else if(element instanceof ElementToggle) {
                 ((ElementToggle) element).setText(replace(((ElementToggle) element).getText(), player));
                 custom_temp.getElements().set(elementId, element);
-            }else if(element instanceof ElementSlider){
+            }else if(element instanceof ElementSlider) {
                 ((ElementSlider) element).setText(replace(((ElementSlider) element).getText(), player));
                 custom_temp.getElements().set(elementId, element);
-            }else if(element instanceof ElementStepSlider){
+            }else if(element instanceof ElementStepSlider) {
                 ElementStepSlider stepSlider = ((ElementStepSlider) element);
                 stepSlider.setText(replace(stepSlider.getText(), player));
                 stepSlider.getSteps().replaceAll(string -> replace(string, player));
@@ -134,29 +134,29 @@ public class ScriptFormCustom implements ScriptForm {
         return custom_temp;
     }
 
-    public FormWindowCustom getModifiableWindow(){
+    public FormWindowCustom getModifiableWindow() {
         return new FormWindowCustom(window.getTitle(), cloneElements(window.getElements()));
     }
 
-    public List<Element> cloneElements(List<Element> elements){
+    public List<Element> cloneElements(List<Element> elements) {
         List<Element> out = new ArrayList<>();
         for (Element element : elements) {
-            if(element instanceof ElementDropdown){
+            if(element instanceof ElementDropdown) {
                 ElementDropdown elementDropdown = (ElementDropdown) element;
                 out.add(new ElementDropdown(elementDropdown.getText(), new ArrayList<>(elementDropdown.getOptions()), elementDropdown.getDefaultOptionIndex()));
-            }else if(element instanceof ElementInput){
+            }else if(element instanceof ElementInput) {
                 ElementInput input = (ElementInput) element;
                 out.add(new ElementInput(input.getText(), input.getPlaceHolder(), input.getDefaultText()));
-            }else if(element instanceof ElementLabel){
+            }else if(element instanceof ElementLabel) {
                 ElementLabel label = (ElementLabel) element;
                 out.add(new ElementLabel(label.getText()));
-            }else if(element instanceof ElementToggle){
+            }else if(element instanceof ElementToggle) {
                 ElementToggle elementToggle = (ElementToggle) element;
                 out.add(new ElementToggle(elementToggle.getText(), elementToggle.isDefaultValue()));
-            }else if(element instanceof ElementSlider){
+            }else if(element instanceof ElementSlider) {
                 ElementSlider slider = (ElementSlider) element;
                 out.add(new ElementSlider(slider.getText(), slider.getMin(), slider.getMax(), slider.getStep(), slider.getDefaultValue()));
-            }else if(element instanceof ElementStepSlider){
+            }else if(element instanceof ElementStepSlider) {
                 ElementStepSlider stepSlider = (ElementStepSlider) element;
                 out.add(new ElementStepSlider(stepSlider.getText(), new ArrayList<>(stepSlider.getSteps()), stepSlider.getDefaultStepIndex()));
             }
@@ -169,13 +169,13 @@ public class ScriptFormCustom implements ScriptForm {
         return openSound;
     }
 
-    public FormWindowCustom initWindow(){
+    public FormWindowCustom initWindow() {
         FormWindowCustom custom;
         custom = new FormWindowCustom((String) config.getOrDefault("title", ""));
         for(Map<String, Object> component: (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
             enableTipsVariableReplacement.add((Boolean) component.getOrDefault("enable_tips_variable", true));
             enableRsNPCXVariableReplacement.add((Boolean) component.getOrDefault("enable_rsNPCX_variable", true));
-            switch ((String) component.getOrDefault("type", "")){
+            switch ((String) component.getOrDefault("type", "")) {
                 case "Input":
                     custom.addElement(new ElementInput((String) component.getOrDefault("text", ""), (String) component.getOrDefault("placeholder", ""), (String) component.getOrDefault("default", "")));
                     break;
@@ -199,7 +199,7 @@ public class ScriptFormCustom implements ScriptForm {
         return custom;
     }
 
-    public String replaceBreak(String string){
+    public String replaceBreak(String string) {
         return string.replace("\\n", "\n");
     }
 
@@ -210,14 +210,14 @@ public class ScriptFormCustom implements ScriptForm {
     /**
      * Refracted in order to expand the usages easily.
      */
-    public String replace(String string, Player player, boolean replaceBreak){
-        if(CustomFormMain.enableTips){
+    public String replace(String string, Player player, boolean replaceBreak) {
+        if(CustomFormMain.enableTips) {
             string = Api.strReplace(string, player);
         }
-        if(CustomFormMain.enableRsNPCX){
+        if(CustomFormMain.enableRsNPCX) {
             string = VariableManage.stringReplace(player, string, null);
         }
-        if(replaceBreak){
+        if(replaceBreak) {
             string = replaceBreak(string);
         }
         return string;

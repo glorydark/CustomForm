@@ -16,7 +16,7 @@ public class EconomyRequirementData {
     double amount;
     Object[] extraData;
 
-    public EconomyRequirementData(EconomyRequirementType type, double amount, Object... extraData){
+    public EconomyRequirementData(EconomyRequirementType type, double amount, Object... extraData) {
         this.type = type;
         this.amount = amount;
         this.extraData = extraData;
@@ -37,8 +37,8 @@ public class EconomyRequirementData {
     /*
        This method is to check whether player is qualified(here 'qualified' refers to 'affordable') or not.
      */
-    public boolean isQualified(Player player, int multiply){
-        switch (type){
+    public boolean isQualified(Player player, int multiply) {
+        switch (type) {
             case Points:
                 return Point.getPoint(player.getUniqueId()) >= amount * multiply;
             case EconomyAPI:
@@ -52,9 +52,9 @@ public class EconomyRequirementData {
     /*
         This method is to reduce the cost
      */
-    public void reduceCost(Player player, int multiply){
+    public void reduceCost(Player player, int multiply) {
         BigDecimal consumeValue = new BigDecimal(amount).multiply(new BigDecimal(multiply));
-        switch (type){
+        switch (type) {
             case Points:
                 Point.reducePoint(player.getUniqueId(), consumeValue.doubleValue());
                 player.sendMessage(CustomFormMain.language.translateString(player, "requirements_points_consume", consumeValue));
