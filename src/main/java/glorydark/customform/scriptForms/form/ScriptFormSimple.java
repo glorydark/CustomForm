@@ -6,6 +6,7 @@ import cn.nukkit.form.element.ElementButtonImageData;
 import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseSimple;
 import cn.nukkit.form.window.FormWindowSimple;
+import com.creeperface.nukkit.placeholderapi.api.PlaceholderAPI;
 import com.smallaswater.npc.variable.VariableManage;
 import glorydark.customform.CustomFormMain;
 import glorydark.customform.scriptForms.data.SoundData;
@@ -144,6 +145,9 @@ public class ScriptFormSimple implements ScriptForm {
         }
         if(CustomFormMain.enableRsNPCX && enableRsNPCX) {
             string = VariableManage.stringReplace(player, string, null);
+        }
+        if (CustomFormMain.enablePlaceHolderAPI) {
+            string = PlaceholderAPI.getInstance().translateString(string);
         }
         if(replaceBreak) {
             string = replaceBreak(string);

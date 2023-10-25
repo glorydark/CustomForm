@@ -43,6 +43,8 @@ public class CustomFormMain extends PluginBase {
 
     public static boolean enableDCurrency;
 
+    public static boolean enablePlaceHolderAPI;
+
     // Set the intervals for player to open the next form.
     public static long coolDownMillis;
 
@@ -64,6 +66,7 @@ public class CustomFormMain extends PluginBase {
         enableEconomyAPI = checkSoftDepend("EconomyAPI");
         enablePoints = checkSoftDepend("playerPoints");
         enableRsNPCX = checkSoftDepend("RsNPC") && config.getBoolean("enable_rsNPCX", true);
+        enablePlaceHolderAPI = checkSoftDepend("PlaceholderAPI");
         if(enableRsNPCX) {
             VariableManage.removeVariable("%npcName%");
             VariableManage.addVariable("%npcName%", (player, rsNpcConfig) -> {
