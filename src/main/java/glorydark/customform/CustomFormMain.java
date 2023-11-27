@@ -48,6 +48,8 @@ public class CustomFormMain extends PluginBase {
     // Set the intervals for player to open the next form.
     public static long coolDownMillis;
 
+    public static boolean enableCameraAnimation;
+
     public static Language language;
 
     @Override
@@ -58,6 +60,7 @@ public class CustomFormMain extends PluginBase {
         this.saveResource("languages/zh_cn.properties", false);
         this.saveResource("languages/en_us.properties", false);
         Config config = new Config(path+"/config.yml",Config.YAML);
+        enableCameraAnimation = config.getBoolean("enable_cameraAnimation", false);
         enableDoubleCheckMenu = config.getBoolean("enable_doubleCheckMenu", true);
         coolDownMillis = config.getLong("coolDown", 200L);
         language = new Language(config.getString("default_lang", "zh_cn"), path+"/languages/", path+"/languages/playerLanguageCache.yml");

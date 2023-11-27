@@ -18,6 +18,7 @@ import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.MinecartChestInventory;
 import glorydark.customform.CustomFormMain;
+import glorydark.customform.utils.CameraUtils;
 
 public class ChestMenuListener implements Listener {
 
@@ -114,6 +115,7 @@ public class ChestMenuListener implements Listener {
         if(ChestMenuMain.mineCartChests.containsKey(event.getPlayer())) {
             ChestMenuMain.closeDoubleChestInventory(event.getPlayer());
         }
+        CameraUtils.players.remove(event.getPlayer());
     }
 
     @EventHandler

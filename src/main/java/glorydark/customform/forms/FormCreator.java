@@ -32,6 +32,7 @@ import glorydark.customform.scriptForms.form.ScriptForm;
 import glorydark.customform.scriptForms.form.ScriptFormCustom;
 import glorydark.customform.scriptForms.form.ScriptFormModal;
 import glorydark.customform.scriptForms.form.ScriptFormSimple;
+import glorydark.customform.utils.CameraUtils;
 import lombok.Data;
 
 import java.io.*;
@@ -116,6 +117,9 @@ public class FormCreator {
     @Api
     // This function can use as a way to customize your form.
     public static void showScriptForm(Player player, ScriptForm script, String identifier) {
+        if (CustomFormMain.enableCameraAnimation) {
+            CameraUtils.sendFormOpen(player);
+        }
         Server.getInstance().getPluginManager().callEvent(new FormPreOpenEvent(script, player));
         FormWindow window = script.getWindow(player);
         if(script.getOpenSound() != null) {
