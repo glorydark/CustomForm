@@ -13,7 +13,9 @@ import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.form.window.FormWindowModal;
 import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.network.protocol.ModalFormResponsePacket;
+import glorydark.customform.CustomFormMain;
 import glorydark.customform.scriptForms.form.ScriptForm;
+import glorydark.customform.utils.CameraUtils;
 
 import java.util.HashMap;
 
@@ -33,6 +35,9 @@ public class FormListener implements Listener {
     public void dealResponse(Player p, String response) {
         if (p == null) {
             return;
+        }
+        if (CustomFormMain.enableCameraAnimation) {
+            CameraUtils.sendFormClose(p);
         }
         if (response == null) {
             return;

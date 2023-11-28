@@ -4,3 +4,4 @@ enable_expansion_variable: true
 enable_tips: true
 enable_rsNPCX: true
 enable_doubleCheckMenu: true
+enable_cameraAnimation: false
