@@ -21,10 +21,12 @@ public class SoundData {
     }
 
     public void addSound(Player player) {
-        if(sound == null) { return; }
-        if(isPersonal) {
+        if (sound == null) {
+            return;
+        }
+        if (isPersonal) {
             player.getLevel().addSound(player.getLocation(), sound, volume, pitch, player);
-        }else{
+        } else {
             player.getLevel().addSound(player.getLocation(), sound, volume, pitch);
         }
     }

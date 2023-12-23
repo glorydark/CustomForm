@@ -39,7 +39,7 @@ public class ScriptFormModal implements ScriptForm {
 
     public void execute(Player player, FormResponse response, Object... params) {
         FormResponseModal responseModal = (FormResponseModal) response;
-        if(data.size() <= (responseModal.getClickedButtonId())) {
+        if (data.size() <= (responseModal.getClickedButtonId())) {
             return;
         }
         data.get(responseModal.getClickedButtonId()).execute(player, 0, params);
@@ -49,7 +49,7 @@ public class ScriptFormModal implements ScriptForm {
         FormWindowModal modal;
         Object object = config.getOrDefault("content", "");
         String content = "";
-        if(!object.equals("")) {
+        if (!object.equals("")) {
             if (object instanceof String) {
                 content = (String) object;
             } else if (object instanceof ArrayList) {
@@ -67,12 +67,12 @@ public class ScriptFormModal implements ScriptForm {
             }
         }
         List<Map<String, Object>> buttons = (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>());
-        if(buttons.size() != 2) {
+        if (buttons.size() != 2) {
             return null;
         }
-        if(content.equals("")) {
+        if (content.equals("")) {
             modal = new FormWindowModal((String) config.getOrDefault("title", ""), "", (String) buttons.get(0).get("text"), (String) buttons.get(1).get("text"));
-        }else{
+        } else {
             modal = new FormWindowModal((String) config.getOrDefault("title", ""), content, (String) buttons.get(0).get("text"), (String) buttons.get(1).get("text"));
         }
 
@@ -80,7 +80,7 @@ public class ScriptFormModal implements ScriptForm {
     }
 
     public FormWindowModal getWindow(Player player) {
-        if(CustomFormMain.enableTips || CustomFormMain.enableRsNPCX) {
+        if (CustomFormMain.enableTips || CustomFormMain.enableRsNPCX) {
             FormWindowModal modal = this.getModifiableWindow();
             modal.setContent(replace(modal.getContent(), player, true));
             modal.setTitle(replace(modal.getTitle(), player));
@@ -110,16 +110,16 @@ public class ScriptFormModal implements ScriptForm {
      * Refracted in order to expand the usages easily.
      */
     public String replace(String string, Player player, boolean replaceBreak) {
-        if(CustomFormMain.enableTips) {
+        if (CustomFormMain.enableTips) {
             string = Api.strReplace(string, player);
         }
-        if(CustomFormMain.enableRsNPCX) {
+        if (CustomFormMain.enableRsNPCX) {
             string = VariableManage.stringReplace(player, string, null);
         }
         if (CustomFormMain.enablePlaceHolderAPI) {
             string = PlaceholderAPI.getInstance().translateString(string);
         }
-        if(replaceBreak) {
+        if (replaceBreak) {
             string = replaceBreak(string);
         }
         return string;

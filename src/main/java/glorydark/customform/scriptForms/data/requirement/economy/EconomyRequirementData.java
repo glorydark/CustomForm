@@ -16,9 +16,12 @@ public class EconomyRequirementData {
     double amount;
     Object[] extraData;
 
-    public EconomyRequirementData(EconomyRequirementType type, double amount, Object... extraData) {
+    boolean chargeable;
+
+    public EconomyRequirementData(EconomyRequirementType type, double amount, boolean chargeable, Object... extraData) {
         this.type = type;
         this.amount = amount;
+        this.chargeable = chargeable;
         this.extraData = extraData;
     }
 

@@ -16,8 +16,11 @@ public class ItemRequirementData {
 
     private List<NeedItem> needItems = new ArrayList<>();
 
-    public ItemRequirementData(boolean reduce) {
+    private boolean checkTag;
+
+    public ItemRequirementData(boolean reduce, boolean checkTag) {
         this.reduce = reduce;
+        this.checkTag = checkTag;
     }
 
     public boolean checkItemIsPossess(Player player, boolean reducing, int multiply) {
@@ -26,18 +29,18 @@ public class ItemRequirementData {
             for (NeedItem s : needItems) {
                 boolean b = false;
                 Item avail = getAvailableItem(player, s.getItem());
-                if(avail != null) {
-                    if(avail.getCount() >= s.getItem().getCount() * multiply) {
+                if (avail != null) {
+                    if (avail.getCount() >= s.getItem().getCount() * multiply) {
                         b = true;
                         s.setHasItem(avail);
                         s.setFinalComparedItem(s.getItem());
                         costItems.add(s);
                     }
-                }else{
-                    for(Item alternative : s.getAlternatives()) {
+                } else {
+                    for (Item alternative : s.getAlternatives()) {
                         avail = getAvailableItem(player, alternative);
-                        if(avail != null) {
-                            if(avail.getCount() >= alternative.getCount() * multiply) {
+                        if (avail != null) {
+                            if (avail.getCount() >= alternative.getCount() * multiply) {
                                 b = true;
                                 s.setHasItem(avail);
                                 s.setFinalComparedItem(s.getItem());
@@ -46,12 +49,12 @@ public class ItemRequirementData {
                         }
                     }
                 }
-                if(!b) {
+                if (!b) {
                     return false;
                 }
             }
-            if(reducing && reduce) {
-                for(NeedItem cost: costItems) {
+            if (reducing && reduce) {
+                for (NeedItem cost : costItems) {
                     int balance = cost.getHasItem().getCount() - cost.getFinalComparedItem().getCount();
                     player.getInventory().remove(cost.getHasItem());
                     Item giveBalance = cost.getHasItem().clone();
@@ -64,19 +67,28 @@ public class ItemRequirementData {
     }
 
     public Item getAvailableItem(Player player, Item item) {
-        if(player.getInventory().contains(item)) {
+        if (player.getInventory().contains(item)) {
             Item output = item.clone();
             output.setCount(0);
-            for(Map.Entry<Integer, Item> mapEntry : player.getInventory().getContents().entrySet()) {
+            for (Map.Entry<Integer, Item> mapEntry : player.getInventory().getContents().entrySet()) {
                 Item entryValue = mapEntry.getValue();
-                if(entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage() && Arrays.equals(entryValue.getCompoundTag(), item.getCompoundTag())) {
-                    output.setCount(output.getCount()+entryValue.getCount());
+                if (isCheckTag()) {
+                    if (entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage() && Arrays.equals(entryValue.getCompoundTag(), item.getCompoundTag())) {
+                        output.setCount(output.getCount() + entryValue.getCount());
+                    }
+                } else {
+                    if (entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage()) {
+                        output.setCount(output.getCount() + entryValue.getCount());
+                    }
                 }
             }
             return output;
-        }else{
+        } else {
             return null;
         }
     }
 
+    public boolean isCheckTag() {
+        return checkTag;
+    }
 }

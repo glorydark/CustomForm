@@ -23,19 +23,19 @@ public class ChestMenuListener implements Listener {
 
     @EventHandler
     public void InventoryPickupItemEvent(InventoryPickupItemEvent event) {
-        if(isCustomFormInventory(event.getInventory())) {
+        if (isCustomFormInventory(event.getInventory())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void InventoryClickEvent(InventoryClickEvent event) {
-        if(isCustomFormInventory(event.getInventory())) {
-            if(event.getInventory() instanceof MinecartChestInventory) {
+        if (isCustomFormInventory(event.getInventory())) {
+            if (event.getInventory() instanceof MinecartChestInventory) {
                 EntityMinecartChest entity = ((MinecartChestInventory) event.getInventory()).getHolder();
                 ChestMenuMain.PlayerMinecartChestTempData data = ChestMenuMain.mineCartChests.get(event.getPlayer());
                 int page = getPage(entity);
-                if(data.getDoubleCheckComponentId() == -1) {
+                if (data.getDoubleCheckComponentId() == -1) {
                     switch (event.getSlot()) {
                         case 18:
                             if (page > 1) {
@@ -49,12 +49,12 @@ public class ChestMenuListener implements Listener {
                             break;
                         default:
                             if (event.getSlot() < 18) {
-                                if(CustomFormMain.enableDoubleCheckMenu) {
+                                if (CustomFormMain.enableDoubleCheckMenu) {
                                     int clickId = event.getSlot() + (page - 1) * 18;
                                     showConfirmPage(event.getPlayer(), entity, clickId);
                                     event.setCancelled(true);
                                     return;
-                                }else{
+                                } else {
                                     if (data.getLastClickId() == -1) {
                                         data.setLastClickId(event.getSlot());
                                         event.setCancelled(true);
@@ -73,7 +73,7 @@ public class ChestMenuListener implements Listener {
                             }
                             break;
                     }
-                }else{
+                } else {
                     switch (event.getSlot()) {
                         case 11:
                             setPage(event.getPlayer(), entity, page);
@@ -94,16 +94,16 @@ public class ChestMenuListener implements Listener {
 
     @EventHandler
     public void InventoryMoveItemEvent(InventoryMoveItemEvent event) {
-        if(isCustomFormInventory(event.getInventory())) {
+        if (isCustomFormInventory(event.getInventory())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void InventoryCloseEvent(InventoryCloseEvent event) {
-        if(ChestMenuMain.mineCartChests.containsKey(event.getPlayer())) {
+        if (ChestMenuMain.mineCartChests.containsKey(event.getPlayer())) {
             EntityMinecartChest chest = ChestMenuMain.mineCartChests.get(event.getPlayer()).getEntityMinecartChest();
-            if(event.getInventory().getHolder().equals(chest)) {
+            if (event.getInventory().getHolder().equals(chest)) {
                 ChestMenuMain.closeDoubleChestInventory(event.getPlayer());
             }
         }
@@ -111,48 +111,48 @@ public class ChestMenuListener implements Listener {
 
     @EventHandler
     public void PlayerQuitEvent(PlayerQuitEvent event) {
-        if(ChestMenuMain.mineCartChests.containsKey(event.getPlayer())) {
+        if (ChestMenuMain.mineCartChests.containsKey(event.getPlayer())) {
             ChestMenuMain.closeDoubleChestInventory(event.getPlayer());
         }
     }
 
     @EventHandler
     public void EntityDamageEvent(EntityDamageEvent event) {
-        if(isCustomFormEntity(event.getEntity())) {
+        if (isCustomFormEntity(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void EntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-        if(isCustomFormEntity(event.getEntity())) {
+        if (isCustomFormEntity(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void EntityDamageByBlockEvent(EntityDamageByBlockEvent event) {
-        if(isCustomFormEntity(event.getEntity())) {
+        if (isCustomFormEntity(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void EntityDamageByChildEntityEvent(EntityDamageByChildEntityEvent event) {
-        if(isCustomFormEntity(event.getEntity())) {
+        if (isCustomFormEntity(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void PlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
-        if(isCustomFormEntity(event.getEntity())) {
+        if (isCustomFormEntity(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
     public boolean isCustomFormInventory(Inventory inventory) {
-        if(inventory instanceof MinecartChestInventory) {
+        if (inventory instanceof MinecartChestInventory) {
             EntityMinecartChest e = ((MinecartChestInventory) inventory).getHolder();
             return e.namedTag.contains("custom_form_entity");
         }
@@ -160,7 +160,7 @@ public class ChestMenuListener implements Listener {
     }
 
     public boolean isCustomFormEntity(Entity entity) {
-        if(entity instanceof EntityMinecartChest) {
+        if (entity instanceof EntityMinecartChest) {
             EntityMinecartChest e = (EntityMinecartChest) entity;
             return e.namedTag.contains("custom_form_entity");
         }
@@ -168,8 +168,8 @@ public class ChestMenuListener implements Listener {
     }
 
     public int getPage(Entity entity) {
-        if(entity.namedTag != null) {
-            if(entity.namedTag.contains("page")) {
+        if (entity.namedTag != null) {
+            if (entity.namedTag.contains("page")) {
                 return entity.namedTag.getInt("page");
             }
         }

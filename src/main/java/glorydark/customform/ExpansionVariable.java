@@ -2,7 +2,7 @@ package glorydark.customform;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import glorydark.customform.utils.Inventory;
+import glorydark.customform.utils.InventoryUtils;
 import tip.utils.variables.BaseVariable;
 
 public class ExpansionVariable extends BaseVariable {
@@ -13,8 +13,8 @@ public class ExpansionVariable extends BaseVariable {
     @Override
     public void strReplace() {
         Item item = player.getInventory().getItemInHand();
-        if(item != null) {
-            this.addStrReplaceString("{item_nbt_tag}", Inventory.bytesToHexString(item.getCompoundTag()));
+        if (item != null) {
+            this.addStrReplaceString("{item_nbt_tag}", InventoryUtils.bytesToHexString(item.getCompoundTag()));
             this.addStrReplaceString("{item_durability}", String.valueOf(item.getDamage()));
             this.addStrReplaceString("{item_name}", item.getName());
         }

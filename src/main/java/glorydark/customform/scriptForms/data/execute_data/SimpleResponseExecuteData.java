@@ -2,69 +2,74 @@ package glorydark.customform.scriptForms.data.execute_data;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import glorydark.customform.annotations.Developing;
+import cn.nukkit.utils.Config;
+import glorydark.customform.CustomFormMain;
+import glorydark.customform.scriptForms.data.execute_data.config.ConfigModification;
 import glorydark.customform.scriptForms.data.requirement.Requirements;
+import glorydark.customform.utils.ConfigUtils;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 // Concerning: Button, Input, Slider
 @Data
 public class SimpleResponseExecuteData implements ResponseExecuteData {
+
     List<String> commands;
+
     List<String> messages;
+
     List<String> failed_commands;
+
     List<String> failed_messages;
+
     List<Requirements> requirements;
 
-    @Developing
-    public SimpleResponseExecuteData(List<String> commands, List<String> messages, List<String> failed_commands, List<String> failed_messages, List<Requirements> requirements) {
+    List<ConfigModification> configModifications;
+
+    public SimpleResponseExecuteData(List<String> commands, List<String> messages, List<String> failed_commands, List<String> failed_messages, List<Requirements> requirements, List<ConfigModification> configModifications) {
         this.commands = commands;
         this.messages = messages;
         this.failed_commands = failed_commands;
         this.failed_messages = failed_messages;
         this.requirements = requirements;
-    }
-
-    public SimpleResponseExecuteData(List<String> commands, List<String> messages, List<String> failed_commands, List<String> failed_messages) {
-        this(commands, messages, failed_commands, failed_messages, new ArrayList<>());
+        this.configModifications = configModifications;
     }
 
     public void execute(Player player, int responseId, Object... params) {
-        if(requirements.size() > 0) {
-            boolean temp = false;
+        if (requirements.size() > 0) {
+            boolean success = false;
             int i = 1;
             int multiply = 1;
-            try{
-                if(params.length > 0) {
+            try {
+                if (params.length > 0) {
                     multiply = -1;
                     String stringInput = ((String) params[0]).replace("\"", "");
-                    if(stringInput.contains(".")) {
+                    if (stringInput.contains(".")) {
                         multiply = Float.floatToIntBits(Float.parseFloat(stringInput));
-                    }else {
-                        multiply = Integer.parseInt(stringInput+".0");
+                    } else {
+                        multiply = Integer.parseInt(stringInput + ".0");
                     }
                 }
-            }catch (NumberFormatException | ClassCastException ignored) {
+            } catch (NumberFormatException | ClassCastException ignored) {
             }
-            if(multiply <= 0) {
+            if (multiply <= 0) {
                 player.sendMessage("§c填入格式不符：请输入正确的数量！");
                 return;
             }
-            for(Requirements one: requirements) {
-                if(one.isAllQualified(player, i, multiply)) {
-                    temp = true;
+            for (Requirements one : requirements) {
+                if (one.isAllQualified(player, i, multiply)) {
+                    success = true;
                     one.reduceAllCosts(player, multiply);
-                    for(int time=0; time<multiply; time++) {
+                    for (int time = 0; time < multiply; time++) {
                         one.executeSuccessCommand(player);
                         for (String command : commands) {
                             if (command.startsWith("console#")) {
                                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, params));
-                            } else if(command.startsWith("op#")) {
-                                if(player.isOp()) {
+                            } else if (command.startsWith("op#")) {
+                                if (player.isOp()) {
                                     Server.getInstance().dispatchCommand(player, replace(command, player, params));
-                                }else{
+                                } else {
                                     Server.getInstance().addOp(player.getName());
                                     Server.getInstance().dispatchCommand(player, replace(command, player, params));
                                     Server.getInstance().removeOp(player.getName());
@@ -77,58 +82,147 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
                             player.sendMessage(replace(message, player, params));
                         }
                     }
+                    executeConfigModification(player);
                     break;
-                }else{
+                } else {
                     one.executeFailedCommand(player);
                 }
                 i++;
             }
-            if(!temp) {
-                for(String command: failed_commands) {
-                    if(command.startsWith("console#")) {
+            if (!success) {
+                for (String command : failed_commands) {
+                    if (command.startsWith("console#")) {
                         Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, params));
-                    } else if(command.startsWith("op#")) {
-                        if(player.isOp()) {
+                    } else if (command.startsWith("op#")) {
+                        if (player.isOp()) {
                             Server.getInstance().dispatchCommand(player, replace(command, player, params));
-                        }else{
+                        } else {
                             Server.getInstance().addOp(player.getName());
                             Server.getInstance().dispatchCommand(player, replace(command, player, params));
                             Server.getInstance().removeOp(player.getName());
                         }
-                    } else{
+                    } else {
                         Server.getInstance().dispatchCommand(player, replace(command, player, params));
                     }
                 }
-                for(String message: failed_messages) {
+                for (String message : failed_messages) {
                     player.sendMessage(replace(message, player, params));
                 }
             }
-        }else{
-            for(String command: commands) {
-                if(command.startsWith("console#")) {
+        } else {
+            for (String command : commands) {
+                if (command.startsWith("console#")) {
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, params));
-                } else if(command.startsWith("op#")) {
-                    if(player.isOp()) {
+                } else if (command.startsWith("op#")) {
+                    if (player.isOp()) {
                         Server.getInstance().dispatchCommand(player, replace(command, player, params));
-                    }else{
+                    } else {
                         Server.getInstance().addOp(player.getName());
                         Server.getInstance().dispatchCommand(player, replace(command, player, params));
                         Server.getInstance().removeOp(player.getName());
                     }
-                } else{
+                } else {
                     Server.getInstance().dispatchCommand(player, replace(command, player, params));
                 }
             }
-            for(String message: messages) {
+            for (String message : messages) {
                 player.sendMessage(replace(message, player, params));
+            }
+            executeConfigModification(player);
+        }
+    }
+
+    public void executeConfigModification(Player player) {
+        for (ConfigModification configModification : configModifications) {
+            Config config;
+            Object modificationValue = configModification.getValue();
+            switch (configModification.getConfigType()) {
+                case 0:
+                    config = new Config(ConfigUtils.getConfig(player), Config.YAML);
+                    String keyName = configModification.getKeyName();
+                    switch (configModification.getType()) {
+                        case ADD:
+                            Object param = config.get(keyName);
+                            if (param == null) {
+                                param = 0;
+                            }
+                            if (modificationValue instanceof Double) {
+                                double convertedParam = (double) param;
+                                config.set(keyName, convertedParam + Double.parseDouble(modificationValue.toString()));
+                            } else if (modificationValue instanceof Integer) {
+                                int convertedParam = (int) param;
+                                config.set(keyName, convertedParam + Integer.parseInt(modificationValue.toString()));
+                            }
+                            break;
+                        case SET:
+                            config.set(keyName, config.get(keyName));
+                            break;
+                        case DEDUCT:
+                            param = config.get(player.getName());
+                            if (param == null) {
+                                param = 0;
+                            }
+                            if (modificationValue instanceof Double) {
+                                double convertedParam = (double) param;
+                                config.set(keyName, convertedParam - Double.parseDouble(modificationValue.toString()));
+                            } else if (modificationValue instanceof Integer) {
+                                int convertedParam = (int) param;
+                                config.set(keyName, convertedParam - Integer.parseInt(modificationValue.toString()));
+                            }
+                            break;
+                        case REMOVE:
+                            config.remove(keyName);
+                            break;
+                    }
+                    config.save();
+                    break;
+                case 1:
+                    config = new Config(ConfigUtils.getConfig(configModification.getConfigName()), Config.YAML);
+                    keyName = player.getName();
+                    switch (configModification.getType()) {
+                        case ADD:
+                            Object param = config.get(keyName);
+                            if (param == null) {
+                                param = 0;
+                            }
+                            if (modificationValue instanceof Double) {
+                                double convertedParam = (double) param;
+                                config.set(keyName, convertedParam + Double.parseDouble(modificationValue.toString()));
+                            } else if (modificationValue instanceof Integer) {
+                                int convertedParam = (int) param;
+                                config.set(keyName, convertedParam + Integer.parseInt(modificationValue.toString()));
+                            }
+                            break;
+                        case SET:
+                            config.set(keyName, config.get(keyName));
+                            break;
+                        case DEDUCT:
+                            param = config.get(player.getName());
+                            if (param == null) {
+                                param = 0;
+                            }
+                            if (modificationValue instanceof Double) {
+                                double convertedParam = (double) param;
+                                config.set(keyName, convertedParam - Double.parseDouble(modificationValue.toString()));
+                            } else if (modificationValue instanceof Integer) {
+                                int convertedParam = (int) param;
+                                config.set(keyName, convertedParam - Integer.parseInt(modificationValue.toString()));
+                            }
+                            break;
+                        case REMOVE:
+                            config.remove(keyName);
+                            break;
+                    }
+                    config.save();
+                    break;
             }
         }
     }
 
     public String replace(String text, Player player, Object... params) {
-        if(params.length < 1) {
+        if (params.length < 1) {
             return text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "").replaceFirst("op#", "");
-        }else{
+        } else {
             String ready = text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName());
             return ready.replace("%get%", String.valueOf(params[0])).replaceFirst("console#", "").replaceFirst("op#", "");
         }
