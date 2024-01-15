@@ -3,7 +3,6 @@ package glorydark.customform.scriptForms.data.execute_data;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.utils.Config;
-import glorydark.customform.CustomFormMain;
 import glorydark.customform.scriptForms.data.execute_data.config.ConfigModification;
 import glorydark.customform.scriptForms.data.requirement.Requirements;
 import glorydark.customform.utils.ConfigUtils;

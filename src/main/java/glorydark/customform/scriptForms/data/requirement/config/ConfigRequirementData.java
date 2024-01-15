@@ -2,7 +2,6 @@ package glorydark.customform.scriptForms.data.requirement.config;
 
 import cn.nukkit.Player;
 import cn.nukkit.utils.Config;
-import glorydark.customform.CustomFormMain;
 import glorydark.customform.utils.ConfigUtils;
 
 import java.util.List;

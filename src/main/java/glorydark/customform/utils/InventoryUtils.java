@@ -1,7 +1,6 @@
 package glorydark.customform.utils;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.nbt.tag.CompoundTag;
 
 public class InventoryUtils {
 
@@ -49,15 +48,6 @@ public class InventoryUtils {
     }
 
     public static Item toItem(String itemString) {
-        String[] a = itemString.split(":");
-        if (a.length != 4) {
-            return null;
-        }
-        Item item = Item.get(Integer.parseInt(a[0]), Integer.parseInt(a[1]), Integer.parseInt(a[2]));
-        if (!a[3].equals("null")) {
-            CompoundTag tag = Item.parseCompoundTag(hexStringToBytes(a[3]));
-            item.setNamedTag(tag);
-        }
-        return item;
+        return Item.fromString(itemString);
     }
 }
