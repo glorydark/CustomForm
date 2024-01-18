@@ -32,7 +32,7 @@ public class ItemRequirementData {
                     if(avail.getCount() >= s.getItem().getCount() * multiply) {
                         b = true;
                         s.setHasItem(avail);
-                        s.setFinalComparedItem(s.getItem().clone());
+                        s.setFinalComparedItem(s.getItem());
                         costItems.add(s);
                     }
                 }else{
@@ -42,7 +42,7 @@ public class ItemRequirementData {
                             if(avail.getCount() >= alternative.getCount() * multiply) {
                                 b = true;
                                 s.setHasItem(avail);
-                                s.setFinalComparedItem(s.getItem().clone());
+                                s.setFinalComparedItem(s.getItem());
                                 costItems.add(s);
                             }
                         }
