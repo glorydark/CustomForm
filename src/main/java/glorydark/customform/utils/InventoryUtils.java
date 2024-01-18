@@ -1,11 +1,12 @@
 package glorydark.customform.utils;
 
 import cn.nukkit.item.Item;
+import glorydark.customform.CustomFormMain;
 
 public class InventoryUtils {
 
     private static byte[] hexStringToBytes(String hexString) {
-        if (hexString == null || hexString.equals("")) {
+        if (hexString == null || hexString.equals("null")) {
             return null;
         }
         hexString = hexString.toUpperCase();
@@ -48,6 +49,18 @@ public class InventoryUtils {
     }
 
     public static Item toItem(String itemString) {
-        return Item.fromString(itemString);
+        String[] strings = itemString.split(":");
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < strings.length - 1; i++) {
+            builder.append(strings[i]);
+            if (i != strings.length - 2) {
+                builder.append(":");
+            }
+        }
+        // CustomFormMain.plugin.getLogger().info(builder.toString());
+        // CustomFormMain.plugin.getLogger().info(itemString.replace(builder.toString(), ""));
+        Item item = Item.fromString(builder.toString());
+        item.setCompoundTag(hexStringToBytes(itemString.replace(builder.toString(), "").replace(":", "")));
+        return item;
     }
 }

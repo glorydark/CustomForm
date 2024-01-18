@@ -104,7 +104,6 @@ public class Requirements {
 
         for (ItemRequirementData datum : itemRequirementData) {
             if (!datum.checkItemIsPossess(player, false, multiply)) {
-                player.sendMessage(CustomFormMain.language.translateString(player, "requirements_item_not_qualified"));
                 return false;
             }
         }

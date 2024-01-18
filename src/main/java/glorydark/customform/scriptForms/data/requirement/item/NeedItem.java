@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class NeedItem {
+public class NeedItem implements Cloneable {
 
     private Item item;
 
@@ -18,11 +18,14 @@ public class NeedItem {
 
     private Item hasItem;
 
+    public NeedItem(Item item) {
+        this.item = item;
+    }
+
     public NeedItem(String item, List<String> alternatives) {
         this.item = InventoryUtils.toItem(item);
         for (String s : alternatives) {
             this.alternatives.add(InventoryUtils.toItem(s));
         }
     }
-
 }

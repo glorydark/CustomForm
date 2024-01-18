@@ -2,6 +2,7 @@ package glorydark.customform.scriptForms.data.requirement.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import glorydark.customform.CustomFormMain;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -50,6 +51,12 @@ public class ItemRequirementData {
                     }
                 }
                 if (!b) {
+                    StringBuilder builder = new StringBuilder();
+                    builder.append(s.getItem().getName()).append("*").append(s.getItem().getCount());
+                    for (Item alternative : s.getAlternatives()) {
+                        builder.append("/").append(alternative.getName()).append("*").append(s.getItem().getCount());
+                    }
+                    player.sendMessage(CustomFormMain.language.translateString(player, "requirements_item_not_qualified", builder.toString()));
                     return false;
                 }
             }
