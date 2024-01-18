@@ -1,5 +1,6 @@
 package glorydark.customform.utils;
 
+import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.item.Item;
 import glorydark.customform.CustomFormMain;
 
@@ -50,17 +51,50 @@ public class InventoryUtils {
 
     public static Item toItem(String itemString) {
         String[] strings = itemString.split(":");
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < strings.length - 1; i++) {
-            builder.append(strings[i]);
-            if (i != strings.length - 2) {
-                builder.append(":");
+        boolean isNumericId = false;
+        try {
+            int test = Integer.parseInt(strings[0]);
+            isNumericId = true;
+        } catch (Exception ignored) {
+
+        }
+        if (isNumericId) {
+            Item item = Item.get(Integer.parseInt(strings[0]), Integer.parseInt(strings[1]), Integer.parseInt(strings[2]));
+            item.setCompoundTag(hexStringToBytes(strings[3]));
+            return item;
+        } else {
+            if (strings.length == 5) {
+                // minecraft:test:0:1:null
+                int countIndex = strings.length - 2;
+                StringBuilder identifierAndMeta = new StringBuilder();
+                for (int i = 0; i < strings.length - 2; i++) {
+                    identifierAndMeta.append(strings[i]);
+                    if (i != strings.length - 3) {
+                        identifierAndMeta.append(":");
+                    }
+                }
+                Item item = Item.fromString(identifierAndMeta.toString());
+                item.setCount(Integer.parseInt(strings[countIndex]));
+                item.setCompoundTag(hexStringToBytes(strings[countIndex+1]));
+                // CustomFormMain.plugin.getLogger().info(item.toString());
+                return item;
+            } else if (strings.length == 4) {
+                // minecraft:test:1:null
+                int countIndex = strings.length - 2;
+                StringBuilder identifierAndMeta = new StringBuilder();
+                for (int i = 0; i < strings.length - 2; i++) {
+                    identifierAndMeta.append(strings[i]);
+                    if (i != strings.length - 3) {
+                        identifierAndMeta.append(":");
+                    }
+                }
+                Item item = Item.fromString(identifierAndMeta.toString());
+                item.setCount(Integer.parseInt(strings[countIndex]));
+                item.setCompoundTag(hexStringToBytes(strings[countIndex+1]));
+                // CustomFormMain.plugin.getLogger().info(item.toString());
+                return item;
             }
         }
-        // CustomFormMain.plugin.getLogger().info(builder.toString());
-        // CustomFormMain.plugin.getLogger().info(itemString.replace(builder.toString(), ""));
-        Item item = Item.fromString(builder.toString());
-        item.setCompoundTag(hexStringToBytes(itemString.replace(builder.toString(), "").replace(":", "")));
-        return item;
+        return new BlockUnknown(999).toItem();
     }
 }

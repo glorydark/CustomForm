@@ -2,6 +2,7 @@ package glorydark.customform.scriptForms.data.requirement.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.nbt.tag.CompoundTag;
 import glorydark.customform.CustomFormMain;
 import lombok.Data;
 
@@ -31,7 +32,7 @@ public class ItemRequirementData {
                     if(avail.getCount() >= s.getItem().getCount() * multiply) {
                         b = true;
                         s.setHasItem(avail);
-                        s.setFinalComparedItem(s.getItem());
+                        s.setFinalComparedItem(s.getItem().clone());
                         costItems.add(s);
                     }
                 }else{
@@ -41,7 +42,7 @@ public class ItemRequirementData {
                             if(avail.getCount() >= alternative.getCount() * multiply) {
                                 b = true;
                                 s.setHasItem(avail);
-                                s.setFinalComparedItem(s.getItem());
+                                s.setFinalComparedItem(s.getItem().clone());
                                 costItems.add(s);
                             }
                         }
@@ -59,8 +60,8 @@ public class ItemRequirementData {
             }
             if(reducing && reduce) {
                 for(NeedItem cost: costItems) {
-                    int balance = cost.getHasItem().getCount() - cost.getFinalComparedItem().getCount();
-                    player.getInventory().remove(cost.getHasItem());
+                    int balance = cost.getHasItem().getCount() - cost.getItem().getCount();
+                    player.getInventory().removeItem(cost.getHasItem().clone());
                     Item giveBalance = cost.getHasItem().clone();
                     giveBalance.setCount(balance);
                     player.getInventory().addItem(giveBalance);
@@ -76,7 +77,10 @@ public class ItemRequirementData {
             output.setCount(0);
             for(Map.Entry<Integer, Item> mapEntry : player.getInventory().getContents().entrySet()) {
                 Item entryValue = mapEntry.getValue();
-                if(entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage() && Arrays.equals(entryValue.getCompoundTag(), item.getCompoundTag())) {
+                CompoundTag c1 = entryValue.getNamedTag();
+                CompoundTag c2 = item.getNamedTag();
+                boolean tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
+                if (entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage() && tagEqual) {
                     output.setCount(output.getCount()+entryValue.getCount());
                 }
             }
