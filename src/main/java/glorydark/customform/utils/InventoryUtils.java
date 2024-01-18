@@ -8,7 +8,7 @@ public class InventoryUtils {
 
     private static byte[] hexStringToBytes(String hexString) {
         if (hexString == null || hexString.equals("null")) {
-            return null;
+            return new byte[0];
         }
         hexString = hexString.toUpperCase();
         int length = hexString.length() / 2;
@@ -28,7 +28,7 @@ public class InventoryUtils {
     public static String bytesToHexString(byte[] src) {
         StringBuilder stringBuilder = new StringBuilder();
         if (src == null || src.length <= 0) {
-            return null;
+            return "null";
         }
         for (byte aSrc : src) {
             int v = aSrc & 0xFF;
