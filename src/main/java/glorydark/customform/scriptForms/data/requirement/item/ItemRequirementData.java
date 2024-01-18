@@ -36,7 +36,7 @@ public class ItemRequirementData {
                     if (avail.getCount() >= s.getItem().getCount() * multiply) {
                         b = true;
                         s.setHasItem(avail);
-                        s.setFinalComparedItem(s.getItem().clone());
+                        s.setFinalComparedItem(s.getItem());
                         costItems.add(s);
                     }
                 } else {
@@ -46,7 +46,7 @@ public class ItemRequirementData {
                             if (avail.getCount() >= alternative.getCount() * multiply) {
                                 b = true;
                                 s.setHasItem(avail);
-                                s.setFinalComparedItem(s.getItem().clone());
+                                s.setFinalComparedItem(s.getItem());
                                 costItems.add(s);
                             }
                         }
@@ -65,7 +65,7 @@ public class ItemRequirementData {
             if (reducing && reduce) {
                 for (NeedItem cost : costItems) {
                     int balance = cost.getHasItem().getCount() - cost.getItem().getCount();
-                    player.getInventory().removeItem(cost.getHasItem().clone());
+                    player.getInventory().removeItem(cost.getHasItem());
                     Item giveBalance = cost.getHasItem().clone();
                     giveBalance.setCount(balance);
                     player.getInventory().addItem(giveBalance);
