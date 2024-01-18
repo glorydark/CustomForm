@@ -1,12 +1,12 @@
 package glorydark.customform.utils;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.nbt.tag.CompoundTag;
+import glorydark.customform.CustomFormMain;
 
-public class Inventory {
+public class InventoryUtils {
 
     private static byte[] hexStringToBytes(String hexString) {
-        if (hexString == null || hexString.equals("")) {
+        if (hexString == null || hexString.equals("null")) {
             return null;
         }
         hexString = hexString.toUpperCase();
@@ -41,21 +41,26 @@ public class Inventory {
     }
 
     public static String saveItemToString(Item item) {
-        if(item.hasCompoundTag()) {
-            return item.getId()+":"+item.getDamage()+":"+item.getCount()+":"+bytesToHexString(item.getCompoundTag());
-        }else{
-            return item.getId()+":"+item.getDamage()+":"+item.getCount()+":null";
+        if (item.hasCompoundTag()) {
+            return item.getId() + ":" + item.getDamage() + ":" + item.getCount() + ":" + bytesToHexString(item.getCompoundTag());
+        } else {
+            return item.getId() + ":" + item.getDamage() + ":" + item.getCount() + ":null";
         }
     }
 
-    public static Item getItem(String itemString) {
-        String[] a = itemString.split(":");
-        if(a.length!=4) { return null; }
-        Item item = Item.get(Integer.parseInt(a[0]), Integer.parseInt(a[1]), Integer.parseInt(a[2]));
-        if (!a[3].equals("null")) {
-            CompoundTag tag = Item.parseCompoundTag(hexStringToBytes(a[3]));
-            item.setNamedTag(tag);
+    public static Item toItem(String itemString) {
+        String[] strings = itemString.split(":");
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < strings.length - 1; i++) {
+            builder.append(strings[i]);
+            if (i != strings.length - 2) {
+                builder.append(":");
+            }
         }
+        // CustomFormMain.plugin.getLogger().info(builder.toString());
+        // CustomFormMain.plugin.getLogger().info(itemString.replace(builder.toString(), ""));
+        Item item = Item.fromString(builder.toString());
+        item.setCompoundTag(hexStringToBytes(itemString.replace(builder.toString(), "").replace(":", "")));
         return item;
     }
 }

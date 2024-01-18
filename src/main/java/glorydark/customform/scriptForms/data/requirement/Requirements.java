@@ -93,7 +93,6 @@ public class Requirements {
         }
         for(ItemRequirementData datum: itemRequirementData) {
             if(!datum.checkItemIsPossess(player, false, multiply)) {
-                player.sendMessage("Lack of items!");
                 return false;
             }
         }
