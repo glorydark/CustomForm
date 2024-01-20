@@ -44,11 +44,10 @@
     <dependencies>
         <dependency>
             <groupId>cn.nukkit</groupId>
-            <artifactId>nukkit</artifactId>
+            <artifactId>Nukkit</artifactId>
             <version>MOT-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>com.creeperface.nukkit.placeholderapi</groupId>
             <artifactId>PlaceholderAPI</artifactId>
