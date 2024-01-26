@@ -102,6 +102,7 @@ public class FormCreator {
             for (Requirements openRequirement : script.getOpenRequirements()) {
                 if (openRequirement.isAllQualified(player)) {
                     b = true;
+                    openRequirement.reduceAllCosts(player, 1);
                     break;
                 }
             }
@@ -352,7 +353,6 @@ public class FormCreator {
                     for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
                         openRequirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                     }
-
                 }
                 ScriptFormSimple simple = new ScriptFormSimple(config, simpleResponseExecuteDataList, new SoundData("", 1f, 0f, true), openRequirementsList);
                 if (config.containsKey("open_sound")) {
@@ -455,7 +455,6 @@ public class FormCreator {
                     for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
                         openRequirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                     }
-
                 }
                 ScriptFormCustom custom = new ScriptFormCustom(config, out, new SoundData("", 1f, 0f, true), openRequirementsList);
                 if (config.containsKey("open_sound")) {
@@ -481,7 +480,6 @@ public class FormCreator {
                     for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
                         openRequirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                     }
-
                 }
                 ScriptFormModal modal = new ScriptFormModal(config, simpleResponseExecuteDataList, new SoundData("", 1f, 0f, true), openRequirementsList);
                 if (config.containsKey("open_sound")) {
