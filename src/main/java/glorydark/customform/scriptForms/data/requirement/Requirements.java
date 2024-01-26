@@ -71,7 +71,7 @@ public class Requirements {
     */
     public boolean isAllQualified(Player player, Object... params) {
 
-        int multiply = params.length == 2 ? (int) params[1] : 1;
+        int multiply = params.length == 1 ? (int) params[0] : 1;
 
         // Deal with different kinds of requirementData
         for (EconomyRequirementData datum : economyRequirementData) {

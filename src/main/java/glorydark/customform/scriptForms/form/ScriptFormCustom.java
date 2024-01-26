@@ -11,6 +11,7 @@ import com.smallaswater.npc.variable.VariableManage;
 import glorydark.customform.CustomFormMain;
 import glorydark.customform.scriptForms.data.SoundData;
 import glorydark.customform.scriptForms.data.execute_data.ResponseExecuteData;
+import glorydark.customform.scriptForms.data.requirement.Requirements;
 import lombok.Data;
 import tip.utils.Api;
 
@@ -41,7 +42,9 @@ public class ScriptFormCustom implements ScriptForm {
 
     private long expiredMillis = -1L;
 
-    public ScriptFormCustom(Map<String, Object> config, List<ResponseExecuteData> data, SoundData openSound) {
+    private List<Requirements> openRequirements;
+
+    public ScriptFormCustom(Map<String, Object> config, List<ResponseExecuteData> data, SoundData openSound, List<Requirements> openRequirements) {
         this.config = config;
         this.data = data;
         this.window = initWindow();
@@ -51,6 +54,7 @@ public class ScriptFormCustom implements ScriptForm {
             globalCommands = globalResponses.get("commands");
             globalMessages = globalResponses.get("messages");
         }
+        this.openRequirements = openRequirements;
     }
 
     public void execute(Player player, FormResponse response, Object... params) {

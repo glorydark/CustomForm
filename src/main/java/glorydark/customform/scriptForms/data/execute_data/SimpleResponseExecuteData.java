@@ -38,7 +38,6 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
     public void execute(Player player, int responseId, Object... params) {
         if (requirements.size() > 0) {
             boolean success = false;
-            int i = 1;
             int multiply = 1;
             try {
                 if (params.length > 0) {
@@ -57,7 +56,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
                 return;
             }
             for (Requirements one : requirements) {
-                if (one.isAllQualified(player, i, multiply)) {
+                if (one.isAllQualified(player, multiply)) {
                     success = true;
                     one.reduceAllCosts(player, multiply);
                     for (int time = 0; time < multiply; time++) {
@@ -86,7 +85,6 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
                 } else {
                     one.executeFailedCommand(player);
                 }
-                i++;
             }
             if (!success) {
                 for (String command : failed_commands) {

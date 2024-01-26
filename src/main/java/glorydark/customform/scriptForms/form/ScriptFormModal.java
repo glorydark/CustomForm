@@ -9,6 +9,7 @@ import com.smallaswater.npc.variable.VariableManage;
 import glorydark.customform.CustomFormMain;
 import glorydark.customform.scriptForms.data.SoundData;
 import glorydark.customform.scriptForms.data.execute_data.SimpleResponseExecuteData;
+import glorydark.customform.scriptForms.data.requirement.Requirements;
 import lombok.Data;
 import tip.utils.Api;
 
@@ -30,11 +31,14 @@ public class ScriptFormModal implements ScriptForm {
 
     private long expiredMillis = -1L;
 
-    public ScriptFormModal(Map<String, Object> config, List<SimpleResponseExecuteData> data, SoundData openSound) {
+    private List<Requirements> openRequirements;
+
+    public ScriptFormModal(Map<String, Object> config, List<SimpleResponseExecuteData> data, SoundData openSound, List<Requirements> openRequirements) {
         this.config = config;
         this.data = data;
         this.window = initWindow();
         this.openSound = openSound;
+        this.openRequirements = openRequirements;
     }
 
     public void execute(Player player, FormResponse response, Object... params) {

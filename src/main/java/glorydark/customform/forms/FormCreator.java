@@ -15,7 +15,7 @@ import com.google.gson.stream.JsonReader;
 import glorydark.customform.CustomFormMain;
 import glorydark.customform.GsonAdapter;
 import glorydark.customform.annotations.Api;
-import glorydark.customform.event.FormPreOpenEvent;
+import glorydark.customform.event.FormOpenEvent;
 import glorydark.customform.scriptForms.data.SoundData;
 import glorydark.customform.scriptForms.data.execute_data.ResponseExecuteData;
 import glorydark.customform.scriptForms.data.execute_data.SimpleResponseExecuteData;
@@ -96,8 +96,19 @@ public class FormCreator {
     @Api
     // This function can use as a way to customize your form.
     public static void showScriptForm(Player player, ScriptForm script, String identifier) {
-        Server.getInstance().getPluginManager().callEvent(new FormPreOpenEvent(script, player));
         FormWindow window = script.getWindow(player);
+        if (script.getOpenRequirements().size() > 0) {
+            boolean b = false;
+            for (Requirements openRequirement : script.getOpenRequirements()) {
+                if (openRequirement.isAllQualified(player)) {
+                    b = true;
+                    break;
+                }
+            }
+            if (!b) {
+                return;
+            }
+        }
         if (script.getOpenSound() != null) {
             script.getOpenSound().addSound(player);
         }
@@ -110,7 +121,7 @@ public class FormCreator {
         if (window instanceof FormWindowCustom) {
             showFormToPlayer(player, FormType.ScriptCustom, script, identifier);
         }
-        Server.getInstance().getPluginManager().callEvent(new FormPreOpenEvent(script, player));
+        Server.getInstance().getPluginManager().callEvent(new FormOpenEvent(script, player));
     }
 
     /*
@@ -334,7 +345,16 @@ public class FormCreator {
                         simpleResponseExecuteDataList.add(data);
                     }
                 }
-                ScriptFormSimple simple = new ScriptFormSimple(config, simpleResponseExecuteDataList, new SoundData("", 1f, 0f, true));
+
+                List<Requirements> openRequirementsList = new ArrayList<>();
+                if (config.containsKey("open_requirements")) {
+                    Map<String, Object> requirementData = (Map<String, Object>) config.get("requirements");
+                    for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
+                        openRequirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                    }
+
+                }
+                ScriptFormSimple simple = new ScriptFormSimple(config, simpleResponseExecuteDataList, new SoundData("", 1f, 0f, true), openRequirementsList);
                 if (config.containsKey("open_sound")) {
                     Map<String, Object> openSoundMap = (Map<String, Object>) config.get("open_sound");
                     simple.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
@@ -429,7 +449,15 @@ public class FormCreator {
                         }
                     }
                 }
-                ScriptFormCustom custom = new ScriptFormCustom(config, out, new SoundData("", 1f, 0f, true));
+                openRequirementsList = new ArrayList<>();
+                if (config.containsKey("open_requirements")) {
+                    Map<String, Object> requirementData = (Map<String, Object>) config.get("requirements");
+                    for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
+                        openRequirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                    }
+
+                }
+                ScriptFormCustom custom = new ScriptFormCustom(config, out, new SoundData("", 1f, 0f, true), openRequirementsList);
                 if (config.containsKey("open_sound")) {
                     Map<String, Object> openSoundMap = (Map<String, Object>) config.get("open_sound");
                     custom.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
@@ -447,7 +475,15 @@ public class FormCreator {
                     SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
                     simpleResponseExecuteDataList.add(data);
                 }
-                ScriptFormModal modal = new ScriptFormModal(config, simpleResponseExecuteDataList, new SoundData("", 1f, 0f, true));
+                openRequirementsList = new ArrayList<>();
+                if (config.containsKey("open_requirements")) {
+                    Map<String, Object> requirementData = (Map<String, Object>) config.get("requirements");
+                    for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
+                        openRequirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                    }
+
+                }
+                ScriptFormModal modal = new ScriptFormModal(config, simpleResponseExecuteDataList, new SoundData("", 1f, 0f, true), openRequirementsList);
                 if (config.containsKey("open_sound")) {
                     Map<String, Object> openSoundMap = (Map<String, Object>) config.get("open_sound");
                     modal.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
