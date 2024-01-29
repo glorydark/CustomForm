@@ -6,7 +6,7 @@ import cn.nukkit.form.window.FormWindow;
 import glorydark.customform.scriptForms.data.SoundData;
 
 public interface ScriptForm {
-    void execute(Player player, FormResponse response, Object... params);
+    void execute(Player player, FormWindow respondWindow, FormResponse response, Object... params);
 
     FormWindow getWindow(Player player);
 

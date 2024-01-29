@@ -1,6 +1,5 @@
 package glorydark.customform.scriptForms.data.requirement.item;
 
-import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import glorydark.customform.utils.InventoryUtils;
 import lombok.Data;
@@ -21,7 +20,7 @@ public class NeedItem {
 
     public NeedItem(String item, List<String> alternatives) {
         this.item = InventoryUtils.toItem(item);
-        for (String s: alternatives) {
+        for (String s : alternatives) {
             this.alternatives.add(InventoryUtils.toItem(s));
         }
     }

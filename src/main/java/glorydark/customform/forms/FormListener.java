@@ -23,16 +23,17 @@ public class FormListener implements Listener {
 
     @EventHandler
     public void DataPacketReceiveEvent(DataPacketReceiveEvent event) {
-        if(event.getPacket() instanceof ModalFormResponsePacket) {
+        if (event.getPacket() instanceof ModalFormResponsePacket) {
+            Player player = event.getPlayer();
             ModalFormResponsePacket pk = (ModalFormResponsePacket) event.getPacket();
-            if(pk.formId == FormCreator.formId) {
-                dealResponse(event.getPlayer(), pk.data);
+            if (pk.formId == FormCreator.formId) {
+                dealResponse(player, player.formWindows.get(pk.formId), pk.data);
             }
         }
     }
 
     // Give corresponding response to the player.
-    public void dealResponse(Player p, String response) {
+    public void dealResponse(Player p, FormWindow window, String response) {
         if (p == null) {
             return;
         }
@@ -44,25 +45,25 @@ public class FormListener implements Listener {
         }
         String pName = p.getName();
         FormType formType = FormCreator.UI_CACHE.containsKey(pName) ? FormCreator.UI_CACHE.get(pName).getType() : null;
-        if(formType == null) {
+        if (formType == null) {
             FormCreator.UI_CACHE.remove(pName);
             return;
         }
         String script = FormCreator.UI_CACHE.get(pName).getScript();
         ScriptForm form = FormCreator.formScripts.get(script);
-        if(form == null) {
+        if (form == null) {
             form = FormCreator.UI_CACHE.get(pName).getCustomizedScriptForm();
         }
         if (translateResponse(response.trim(), form.getWindow(p)) == null) {
             return;
         }
         FormCreator.UI_CACHE.remove(pName);
-        form.execute(p, translateResponse(response.trim(), form.getWindow(p)));
+        form.execute(p, window, translateResponse(response.trim(), form.getWindow(p)));
     }
 
     // Deal with empty response
     public FormResponse translateResponse(String string, FormWindow window) {
-        if(window instanceof FormWindowSimple) {
+        if (window instanceof FormWindowSimple) {
             if (string.equals("null")) {
                 return null;
             } else {
@@ -70,25 +71,25 @@ public class FormListener implements Listener {
                 return new FormResponseSimple(id, ((FormWindowSimple) window).getButtons().get(id));
             }
         }
-        if(window instanceof FormWindowCustom) {
+        if (window instanceof FormWindowCustom) {
             if (string.equals("null") || string.equals("")) {
                 return null;
             } else {
                 String replaced = string.trim().replace("[", "").replace("]", "");
                 String[] split = replaced.split(",");
                 HashMap<Integer, Object> hashMap = new HashMap<>();
-                for(int i = 0; i<split.length; i++) {
+                for (int i = 0; i < split.length; i++) {
                     hashMap.put(i, split[i]);
                 }
                 return new FormResponseCustom(hashMap, new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
             }
         }
-        if(window instanceof FormWindowModal) {
+        if (window instanceof FormWindowModal) {
             if (string.equals("null")) {
                 return null;
             } else {
-                int id = string.equals("true")? 0: 1;
-                return new FormResponseModal(id, id == 0? ((FormWindowModal) window).getButton1(): ((FormWindowModal) window).getButton2());
+                int id = string.equals("true") ? 0 : 1;
+                return new FormResponseModal(id, id == 0 ? ((FormWindowModal) window).getButton1() : ((FormWindowModal) window).getButton2());
             }
         }
         return null;

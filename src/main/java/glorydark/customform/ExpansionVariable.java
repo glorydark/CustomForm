@@ -13,7 +13,7 @@ public class ExpansionVariable extends BaseVariable {
     @Override
     public void strReplace() {
         Item item = player.getInventory().getItemInHand();
-        if(item != null) {
+        if (item != null) {
             this.addStrReplaceString("{item_nbt_tag}", InventoryUtils.bytesToHexString(item.getCompoundTag()));
             this.addStrReplaceString("{item_durability}", String.valueOf(item.getDamage()));
             this.addStrReplaceString("{item_name}", item.getName());

@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.form.element.*;
 import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseCustom;
+import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
 import com.creeperface.nukkit.placeholderapi.api.PlaceholderAPI;
 import com.smallaswater.npc.variable.VariableManage;
@@ -46,52 +47,53 @@ public class ScriptFormCustom implements ScriptForm {
         this.data = data;
         this.window = initWindow();
         this.openSound = openSound;
-        if(config.containsKey("global_responses")) {
+        if (config.containsKey("global_responses")) {
             Map<String, List<String>> globalResponses = (Map<String, List<String>>) config.get("global_responses");
             globalCommands = globalResponses.get("commands");
             globalMessages = globalResponses.get("messages");
         }
     }
 
-    public void execute(Player player, FormResponse response, Object... params) {
+    public void execute(Player player, FormWindow respondWindow, FormResponse response, Object... params) {
+        FormWindowCustom respondCustomWindow = (FormWindowCustom) respondWindow;
         FormResponseCustom responseCustom = (FormResponseCustom) response;
         Map<Integer, Object> responsesMap = responseCustom.getResponses();
-        globalMessages.forEach(message->{
-            for(int i= 0; i < responsesMap.size(); i++) {
-                message = message.replace("%"+i+"%", responsesMap.get(i).toString());
+        globalMessages.forEach(message -> {
+            for (int i = 0; i < responsesMap.size(); i++) {
+                message = message.replace("%" + i + "%", responsesMap.get(i).toString());
             }
             player.sendMessage(message);
         });
-        globalCommands.forEach(command->{
-            for(int i= 0; i < responsesMap.size(); i++) {
-                command = command.replace("%"+i+"%", responsesMap.get(i).toString());
+        globalCommands.forEach(command -> {
+            for (int i = 0; i < responsesMap.size(); i++) {
+                command = command.replace("%" + i + "%", responsesMap.get(i).toString());
             }
-            if(command.startsWith("console#")) {
+            if (command.startsWith("console#")) {
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), command.replace("console#", ""));
-            } else if(command.startsWith("op#")) {
-                if(player.isOp()) {
+            } else if (command.startsWith("op#")) {
+                if (player.isOp()) {
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), command.replace("op#", ""));
-                }else{
+                } else {
                     Server.getInstance().addOp(player.getName());
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), command.replace("op#", ""));
                     Server.getInstance().removeOp(player.getName());
                 }
-            } else{
+            } else {
                 Server.getInstance().dispatchCommand(player, command);
             }
         });
         responsesMap.forEach((key, value) -> {
-            if (window.getElements().get(key) instanceof ElementDropdown) {
+            if (respondCustomWindow.getElements().get(key) instanceof ElementDropdown) {
                 int elementDropdownResponseId = Integer.parseInt(((FormResponseCustom) response).getResponse(key).toString());
-                ElementDropdown dropdown = ((ElementDropdown) window.getElements().get(key));
+                ElementDropdown dropdown = ((ElementDropdown) respondCustomWindow.getElements().get(key));
                 data.get(key).execute(player, elementDropdownResponseId, dropdown.getOptions().get(elementDropdownResponseId));
             } else {
-                if(window.getElements().get(key) instanceof ElementStepSlider) {
+                if (respondCustomWindow.getElements().get(key) instanceof ElementStepSlider) {
                     int stepSliderResponseId = Integer.parseInt(((FormResponseCustom) response).getResponse(key).toString());
-                    ElementStepSlider stepSlider = ((ElementStepSlider) window.getElements().get(key));
+                    ElementStepSlider stepSlider = ((ElementStepSlider) respondCustomWindow.getElements().get(key));
                     data.get(key).execute(player, stepSliderResponseId, stepSlider.getSteps().get(stepSliderResponseId));
-                }else{
-                    if(responseCustom.getResponse(key) != null) {
+                } else {
+                    if (responseCustom.getResponse(key) != null) {
                         data.get(key).execute(player, 0, responseCustom.getResponse(key));
                     }
                 }
@@ -103,28 +105,28 @@ public class ScriptFormCustom implements ScriptForm {
         FormWindowCustom custom_temp = this.getModifiableWindow();
         int elementId = 0;
         custom_temp.setTitle(replace(custom_temp.getTitle(), player));
-        for(Element element: new ArrayList<>(custom_temp.getElements())) {
-            if(element instanceof ElementLabel) {
+        for (Element element : new ArrayList<>(custom_temp.getElements())) {
+            if (element instanceof ElementLabel) {
                 ((ElementLabel) element).setText(replace(((ElementLabel) element).getText(), player));
                 custom_temp.getElements().set(elementId, element);
-            }else if(element instanceof ElementInput) {
-                ElementInput input =  ((ElementInput) element);
+            } else if (element instanceof ElementInput) {
+                ElementInput input = ((ElementInput) element);
                 input.setDefaultText(replace(input.getDefaultText(), player));
                 input.setText(replace(input.getDefaultText(), player));
                 input.setPlaceHolder(replace(input.getDefaultText(), player));
                 custom_temp.getElements().set(elementId, input);
-            }else if(element instanceof ElementDropdown) {
+            } else if (element instanceof ElementDropdown) {
                 ElementDropdown dropdown = ((ElementDropdown) element);
                 dropdown.setText(replace(dropdown.getText(), player));
                 dropdown.getOptions().replaceAll(string -> replace(string, player));
                 custom_temp.getElements().set(elementId, dropdown);
-            }else if(element instanceof ElementToggle) {
+            } else if (element instanceof ElementToggle) {
                 ((ElementToggle) element).setText(replace(((ElementToggle) element).getText(), player));
                 custom_temp.getElements().set(elementId, element);
-            }else if(element instanceof ElementSlider) {
+            } else if (element instanceof ElementSlider) {
                 ((ElementSlider) element).setText(replace(((ElementSlider) element).getText(), player));
                 custom_temp.getElements().set(elementId, element);
-            }else if(element instanceof ElementStepSlider) {
+            } else if (element instanceof ElementStepSlider) {
                 ElementStepSlider stepSlider = ((ElementStepSlider) element);
                 stepSlider.setText(replace(stepSlider.getText(), player));
                 stepSlider.getSteps().replaceAll(string -> replace(string, player));
@@ -142,22 +144,22 @@ public class ScriptFormCustom implements ScriptForm {
     public List<Element> cloneElements(List<Element> elements) {
         List<Element> out = new ArrayList<>();
         for (Element element : elements) {
-            if(element instanceof ElementDropdown) {
+            if (element instanceof ElementDropdown) {
                 ElementDropdown elementDropdown = (ElementDropdown) element;
                 out.add(new ElementDropdown(elementDropdown.getText(), new ArrayList<>(elementDropdown.getOptions()), elementDropdown.getDefaultOptionIndex()));
-            }else if(element instanceof ElementInput) {
+            } else if (element instanceof ElementInput) {
                 ElementInput input = (ElementInput) element;
                 out.add(new ElementInput(input.getText(), input.getPlaceHolder(), input.getDefaultText()));
-            }else if(element instanceof ElementLabel) {
+            } else if (element instanceof ElementLabel) {
                 ElementLabel label = (ElementLabel) element;
                 out.add(new ElementLabel(label.getText()));
-            }else if(element instanceof ElementToggle) {
+            } else if (element instanceof ElementToggle) {
                 ElementToggle elementToggle = (ElementToggle) element;
                 out.add(new ElementToggle(elementToggle.getText(), elementToggle.isDefaultValue()));
-            }else if(element instanceof ElementSlider) {
+            } else if (element instanceof ElementSlider) {
                 ElementSlider slider = (ElementSlider) element;
                 out.add(new ElementSlider(slider.getText(), slider.getMin(), slider.getMax(), slider.getStep(), slider.getDefaultValue()));
-            }else if(element instanceof ElementStepSlider) {
+            } else if (element instanceof ElementStepSlider) {
                 ElementStepSlider stepSlider = (ElementStepSlider) element;
                 out.add(new ElementStepSlider(stepSlider.getText(), new ArrayList<>(stepSlider.getSteps()), stepSlider.getDefaultStepIndex()));
             }
@@ -173,7 +175,7 @@ public class ScriptFormCustom implements ScriptForm {
     public FormWindowCustom initWindow() {
         FormWindowCustom custom;
         custom = new FormWindowCustom((String) config.getOrDefault("title", ""));
-        for(Map<String, Object> component: (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
+        for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
             enableTipsVariableReplacement.add((Boolean) component.getOrDefault("enable_tips_variable", true));
             enableRsNPCXVariableReplacement.add((Boolean) component.getOrDefault("enable_rsNPCX_variable", true));
             switch ((String) component.getOrDefault("type", "")) {
@@ -212,16 +214,16 @@ public class ScriptFormCustom implements ScriptForm {
      * Refracted in order to expand the usages easily.
      */
     public String replace(String string, Player player, boolean replaceBreak) {
-        if(CustomFormMain.enableTips) {
+        if (CustomFormMain.enableTips) {
             string = Api.strReplace(string, player);
         }
-        if(CustomFormMain.enableRsNPCX) {
+        if (CustomFormMain.enableRsNPCX) {
             string = VariableManage.stringReplace(player, string, null);
         }
         if (CustomFormMain.enablePlaceHolderAPI) {
             string = PlaceholderAPI.getInstance().translateString(string);
         }
-        if(replaceBreak) {
+        if (replaceBreak) {
             string = replaceBreak(string);
         }
         return string;

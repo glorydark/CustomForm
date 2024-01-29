@@ -8,13 +8,13 @@ import java.util.List;
 
 // Concerning: Toggle
 @Data
-public class ToggleResponseExecuteData implements ResponseExecuteData{
+public class ToggleResponseExecuteData implements ResponseExecuteData {
     List<String> true_commands;
     List<String> true_messages;
     List<String> false_commands;
     List<String> false_messages;
 
-    public ToggleResponseExecuteData(List<String> true_commands, List<String> true_messages, List<String> false_commands,List<String> false_messages) {
+    public ToggleResponseExecuteData(List<String> true_commands, List<String> true_messages, List<String> false_commands, List<String> false_messages) {
         this.true_commands = true_commands;
         this.true_messages = true_messages;
         this.false_commands = false_commands;
@@ -24,42 +24,42 @@ public class ToggleResponseExecuteData implements ResponseExecuteData{
     public void execute(Player player, int responseId, Object... params) {
         switch (responseId) {
             case 0:
-                for(String command: true_commands) {
-                    if(command.startsWith("console#")) {
+                for (String command : true_commands) {
+                    if (command.startsWith("console#")) {
                         Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
-                    } else if(command.startsWith("op#")) {
-                        if(player.isOp()) {
+                    } else if (command.startsWith("op#")) {
+                        if (player.isOp()) {
                             Server.getInstance().dispatchCommand(player, replace(command, player));
                         } else {
                             Server.getInstance().addOp(player.getName());
                             Server.getInstance().dispatchCommand(player, replace(command, player));
                             Server.getInstance().removeOp(player.getName());
                         }
-                    } else{
+                    } else {
                         Server.getInstance().dispatchCommand(player, replace(command, player, params));
                     }
                 }
-                for(String message: true_messages) {
+                for (String message : true_messages) {
                     player.sendMessage(replace(message, player, params));
                 }
                 break;
             case 1:
-                for(String command: false_commands) {
-                    if(command.startsWith("console#")) {
+                for (String command : false_commands) {
+                    if (command.startsWith("console#")) {
                         Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
-                    } else if(command.startsWith("op#")) {
-                        if(player.isOp()) {
+                    } else if (command.startsWith("op#")) {
+                        if (player.isOp()) {
                             Server.getInstance().dispatchCommand(player, replace(command, player));
                         } else {
                             Server.getInstance().addOp(player.getName());
                             Server.getInstance().dispatchCommand(player, replace(command, player));
                             Server.getInstance().removeOp(player.getName());
                         }
-                    } else{
+                    } else {
                         Server.getInstance().dispatchCommand(player, replace(command, player, params));
                     }
                 }
-                for(String message: false_messages) {
+                for (String message : false_messages) {
                     player.sendMessage(replace(message, player, params));
                 }
                 break;
@@ -67,9 +67,9 @@ public class ToggleResponseExecuteData implements ResponseExecuteData{
     }
 
     public String replace(String text, Player player, Object... params) {
-        if(params.length < 1) {
+        if (params.length < 1) {
             return text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "").replaceFirst("op#", "");
-        }else{
+        } else {
             String ready = text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName());
             return ready.replace("%get%", String.valueOf(params[0])).replaceFirst("console#", "").replaceFirst("op#", "");
         }

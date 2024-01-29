@@ -2,7 +2,6 @@ package glorydark.customform.utils;
 
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.item.Item;
-import glorydark.customform.CustomFormMain;
 
 public class InventoryUtils {
 
@@ -75,7 +74,7 @@ public class InventoryUtils {
                 }
                 Item item = Item.fromString(identifierAndMeta.toString());
                 item.setCount(Integer.parseInt(strings[countIndex]));
-                item.setCompoundTag(hexStringToBytes(strings[countIndex+1]));
+                item.setCompoundTag(hexStringToBytes(strings[countIndex + 1]));
                 // CustomFormMain.plugin.getLogger().info(item.toString());
                 return item;
             } else if (strings.length == 4) {
@@ -90,7 +89,7 @@ public class InventoryUtils {
                 }
                 Item item = Item.fromString(identifierAndMeta.toString());
                 item.setCount(Integer.parseInt(strings[countIndex]));
-                item.setCompoundTag(hexStringToBytes(strings[countIndex+1]));
+                item.setCompoundTag(hexStringToBytes(strings[countIndex + 1]));
                 // CustomFormMain.plugin.getLogger().info(item.toString());
                 return item;
             }

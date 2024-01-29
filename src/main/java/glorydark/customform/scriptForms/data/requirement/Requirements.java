@@ -64,10 +64,10 @@ public class Requirements {
         Check if player can meet the all requirements here.
     */
     public boolean isAllQualified(Player player, Object... params) {
-        int multiply = params.length == 2? (int) params[1] : 1;
-        for(EconomyRequirementData datum: economyRequirementData) {
+        int multiply = params.length == 2 ? (int) params[1] : 1;
+        for (EconomyRequirementData datum : economyRequirementData) {
             BigDecimal difference;
-            if(!datum.isQualified(player, multiply)) {
+            if (!datum.isQualified(player, multiply)) {
                 switch (datum.getType()) {
                     case Points:
                         difference = BigDecimal.valueOf(datum.getAmount()).subtract(BigDecimal.valueOf(Point.getPoint(player.getUniqueId())).multiply(new BigDecimal(multiply)));
@@ -85,14 +85,14 @@ public class Requirements {
                 return false;
             }
         }
-        for(TipsRequirementData datum: tipsRequirementData) {
-            if(!datum.isQualified(player)) {
+        for (TipsRequirementData datum : tipsRequirementData) {
+            if (!datum.isQualified(player)) {
                 datum.sendFailedMsg(player, (datum.getComparedValue() instanceof Double || datum.getComparedValue() instanceof Integer), params[0]);
                 return false;
             }
         }
-        for(ItemRequirementData datum: itemRequirementData) {
-            if(!datum.checkItemIsPossess(player, false, multiply)) {
+        for (ItemRequirementData datum : itemRequirementData) {
+            if (!datum.checkItemIsPossess(player, false, multiply)) {
                 return false;
             }
         }
@@ -100,13 +100,13 @@ public class Requirements {
     }
 
     public void reduceAllCosts(Player player, int multiply) {
-        if(this.isChargeable()) {
-            for(EconomyRequirementData datum: economyRequirementData) {
+        if (this.isChargeable()) {
+            for (EconomyRequirementData datum : economyRequirementData) {
                 datum.reduceCost(player, multiply);
             }
         }
 
-        for(ItemRequirementData datum: itemRequirementData) {
+        for (ItemRequirementData datum : itemRequirementData) {
             datum.checkItemIsPossess(player, true, multiply);
         }
     }
@@ -128,43 +128,43 @@ public class Requirements {
     }
 
     public void executeSuccessCommand(Player player) {
-        for(String command: commands) {
-            if(command.startsWith("console#")) {
+        for (String command : commands) {
+            if (command.startsWith("console#")) {
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
-            } else if(command.startsWith("op#")) {
-                if(player.isOp()) {
+            } else if (command.startsWith("op#")) {
+                if (player.isOp()) {
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
-                }else{
+                } else {
                     Server.getInstance().addOp(player.getName());
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
                     Server.getInstance().removeOp(player.getName());
                 }
-            } else{
+            } else {
                 Server.getInstance().dispatchCommand(player, replace(command, player));
             }
         }
-        for(String message: messages) {
+        for (String message : messages) {
             player.sendMessage(replace(message, player));
         }
     }
 
     public void executeFailedCommand(Player player) {
-        for(String command: failedCommands) {
-            if(command.startsWith("console#")) {
+        for (String command : failedCommands) {
+            if (command.startsWith("console#")) {
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
-            } else if(command.startsWith("op#")) {
-                if(player.isOp()) {
+            } else if (command.startsWith("op#")) {
+                if (player.isOp()) {
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
-                }else{
+                } else {
                     Server.getInstance().addOp(player.getName());
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
                     Server.getInstance().removeOp(player.getName());
                 }
-            } else{
+            } else {
                 Server.getInstance().dispatchCommand(player, replace(command, player));
             }
         }
-        for(String message: failedMessages) {
+        for (String message : failedMessages) {
             player.sendMessage(replace(message, player));
         }
     }

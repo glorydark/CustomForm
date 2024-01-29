@@ -14,19 +14,14 @@ import java.util.List;
 @Data
 public class ChestMenuComponent {
 
+    protected List<String> successCommands = new ArrayList<>();
+    protected List<String> successMessages = new ArrayList<>();
+    protected List<String> failedCommands = new ArrayList<>();
+    protected List<String> failedMessages = new ArrayList<>();
     private String name;
     private String description;
     private Item item;
     private boolean isEnchanted;
-
-    protected List<String> successCommands = new ArrayList<>();
-
-    protected List<String> successMessages = new ArrayList<>();
-
-    protected List<String> failedCommands = new ArrayList<>();
-
-    protected List<String> failedMessages = new ArrayList<>();
-
     private List<Requirements> requirements = new ArrayList<>();
 
     public ChestMenuComponent(String name, String description, String item, boolean isEnchanted) {
@@ -48,7 +43,7 @@ public class ChestMenuComponent {
         }
         this.item.setLore(description.replace("\\n", "\n"));
         this.item.setCustomName(name);
-        if(isEnchanted) {
+        if (isEnchanted) {
             this.item.addEnchantment(Enchantment.get(Enchantment.ID_DURABILITY).setLevel(1));
         }
     }
@@ -73,37 +68,37 @@ public class ChestMenuComponent {
         // To check whether player is qualified or not
         boolean success;
         Requirements successRequire = null;
-        if(requirements.size() > 0) {
+        if (requirements.size() > 0) {
             success = false;
-            for(Requirements require: requirements) {
-                if(require.isAllQualified(player)) {
+            for (Requirements require : requirements) {
+                if (require.isAllQualified(player)) {
                     successRequire = require;
                     success = true;
                 }
             }
-        }else{
+        } else {
             success = true;
         }
 
         // Execute corresponding commands and messages
-        if(success) {
-            if(successRequire != null) {
+        if (success) {
+            if (successRequire != null) {
                 if (successRequire.isAllQualified(player)) {
                     successRequire.reduceAllCosts(player, 1);
                 }
             }
             for (String successCommand : successCommands) {
-                if(successCommand.startsWith("console#")) {
+                if (successCommand.startsWith("console#")) {
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(successCommand, player));
-                } else if(successCommand.startsWith("op#")) {
-                    if(player.isOp()) {
+                } else if (successCommand.startsWith("op#")) {
+                    if (player.isOp()) {
                         Server.getInstance().dispatchCommand(player, replace(successCommand, player));
-                    }else{
+                    } else {
                         Server.getInstance().addOp(player.getName());
                         Server.getInstance().dispatchCommand(player, replace(successCommand, player));
                         Server.getInstance().removeOp(player.getName());
                     }
-                } else{
+                } else {
                     Server.getInstance().dispatchCommand(player, replace(successCommand, player));
                 }
             }
@@ -111,19 +106,19 @@ public class ChestMenuComponent {
             for (String successMessage : successMessages) {
                 player.sendMessage(successMessage);
             }
-        }else{
+        } else {
             for (String failedCommand : failedCommands) {
-                if(failedCommand.startsWith("console#")) {
+                if (failedCommand.startsWith("console#")) {
                     Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(failedCommand, player));
-                } else if(failedCommand.startsWith("op#")) {
-                    if(player.isOp()) {
+                } else if (failedCommand.startsWith("op#")) {
+                    if (player.isOp()) {
                         Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
-                    }else{
+                    } else {
                         Server.getInstance().addOp(player.getName());
                         Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
                         Server.getInstance().removeOp(player.getName());
                     }
-                } else{
+                } else {
                     Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
                 }
             }

@@ -18,33 +18,33 @@ public class StepResponseExecuteData implements ResponseExecuteData {
     }
 
     public void execute(Player player, int responseId, Object... params) {
-        if(responseId >= responses.size()) {
+        if (responseId >= responses.size()) {
             return;
         }
-        for(String command: responses.get(responseId).getCommands()) {
-            if(command.startsWith("console#")) {
+        for (String command : responses.get(responseId).getCommands()) {
+            if (command.startsWith("console#")) {
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, responseId, params[0]));
-            } else if(command.startsWith("op#")) {
-                if(player.isOp()) {
+            } else if (command.startsWith("op#")) {
+                if (player.isOp()) {
                     Server.getInstance().dispatchCommand(player, replace(command, player, responseId, params[0]));
-                }else{
+                } else {
                     Server.getInstance().addOp(player.getName());
                     Server.getInstance().dispatchCommand(player, replace(command, player, responseId, params[0]));
                     Server.getInstance().removeOp(player.getName());
                 }
-            } else{
+            } else {
                 Server.getInstance().dispatchCommand(player, replace(command, player, responseId, params[0]));
             }
         }
-        for(String message: responses.get(responseId).getMessages()) {
+        for (String message : responses.get(responseId).getMessages()) {
             player.sendMessage(replace(message, player, responseId, params[0]));
         }
     }
 
     public String replace(String text, Player player, Object... params) {
-        if(params.length < 1) {
+        if (params.length < 1) {
             return Api.strReplace(text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "").replaceFirst("op#", ""), player);
-        }else{
+        } else {
             String ready = text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName());
             return Api.strReplace(ready.replace("%content%", String.valueOf(params[1])).replace("%contentId%", String.valueOf(params[0])).replaceFirst("console#", "").replaceFirst("op#", ""), player);
         }

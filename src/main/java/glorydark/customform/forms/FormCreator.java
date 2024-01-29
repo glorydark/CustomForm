@@ -49,31 +49,6 @@ public class FormCreator {
     public static int formId = -1;
 
     /*
-        WindowInfo stores the information, including its type and script name.
-    */
-    @Data
-    public static class WindowInfo{
-        private FormType type;
-
-        private String script;
-
-        // This is provided to customize your form more easily.
-        private ScriptForm customizedScriptForm;
-
-        public WindowInfo(FormType type, String script) {
-            this.type = type;
-            this.script = script;
-        }
-
-        public WindowInfo(FormType type, String script, ScriptForm customizedScriptForm) {
-            this.type = type;
-            this.script = script;
-            this.customizedScriptForm = customizedScriptForm;
-        }
-
-    }
-
-    /*
         Basic Refined Method.
         Modified from MurderMystery sourcecode one or two year ago.
         Especially thanks to lt-name(LT-name)!
@@ -85,13 +60,13 @@ public class FormCreator {
     @Api
     // You can show your own scriptForm without former registry by defining a certain scriptForm.
     public static void showFormToPlayer(Player player, FormType formType, ScriptForm scriptForm, String identifier) {
-        if(scriptForm.getStartMillis() != -1L || scriptForm.getExpiredMillis() != -1L) {
-            if(scriptForm.getStartMillis() < System.currentTimeMillis() && scriptForm.getExpiredMillis() < System.currentTimeMillis()) {
+        if (scriptForm.getStartMillis() != -1L || scriptForm.getExpiredMillis() != -1L) {
+            if (scriptForm.getStartMillis() < System.currentTimeMillis() && scriptForm.getExpiredMillis() < System.currentTimeMillis()) {
                 player.sendMessage("This form is expired!");
                 return;
             }
         }
-        if(player.namedTag.contains("lastFormRequestMillis") && System.currentTimeMillis() - player.namedTag.getLong("lastFormRequestMillis") < CustomFormMain.coolDownMillis) {
+        if (player.namedTag.contains("lastFormRequestMillis") && System.currentTimeMillis() - player.namedTag.getLong("lastFormRequestMillis") < CustomFormMain.coolDownMillis) {
             player.sendMessage(CustomFormMain.language.translateString(player, "operation_so_fast"));
             return;
         }
@@ -108,7 +83,7 @@ public class FormCreator {
         By this function, you can show a certain form whose identifier is the same as identifier.
     */
     public static void showScriptForm(Player player, String identifier) {
-        if(formScripts.containsKey(identifier)) {
+        if (formScripts.containsKey(identifier)) {
             ScriptForm script = formScripts.get(identifier);
             showScriptForm(player, script, identifier);
         }
@@ -122,16 +97,16 @@ public class FormCreator {
         }
         Server.getInstance().getPluginManager().callEvent(new FormPreOpenEvent(script, player));
         FormWindow window = script.getWindow(player);
-        if(script.getOpenSound() != null) {
+        if (script.getOpenSound() != null) {
             script.getOpenSound().addSound(player);
         }
-        if(window instanceof FormWindowSimple) {
+        if (window instanceof FormWindowSimple) {
             showFormToPlayer(player, FormType.ScriptSimple, script, identifier);
         }
-        if(window instanceof FormWindowModal) {
+        if (window instanceof FormWindowModal) {
             showFormToPlayer(player, FormType.ScriptModal, script, identifier);
         }
-        if(window instanceof FormWindowCustom) {
+        if (window instanceof FormWindowCustom) {
             showFormToPlayer(player, FormType.ScriptCustom, script, identifier);
         }
         Server.getInstance().getPluginManager().callEvent(new FormPreOpenEvent(script, player));
@@ -147,7 +122,7 @@ public class FormCreator {
     */
     public static Requirements buildRequirements(List<Map<String, Object>> requirementConfig, boolean chargeable) {
         Requirements requirements = new Requirements(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), chargeable);
-        for(Map<String, Object> map: requirementConfig) {
+        for (Map<String, Object> map : requirementConfig) {
             String type = (String) map.get("type");
             EconomyRequirementData data = null;
             TipsRequirementData tips_data = null;
@@ -176,8 +151,8 @@ public class FormCreator {
                     itemRequirementData = new ItemRequirementData((boolean) map.get("reduce"));
                     List<NeedItem> needItems = new ArrayList<>();
                     List<Map<String, Object>> needItemMapList = (List<Map<String, Object>>) map.getOrDefault("costs", new ArrayList<>());
-                    if(needItemMapList.size() > 0) {
-                        for(Map<String, Object> subMap : needItemMapList) {
+                    if (needItemMapList.size() > 0) {
+                        for (Map<String, Object> subMap : needItemMapList) {
                             NeedItem item = new NeedItem((String) subMap.get("item"), (List<String>) subMap.getOrDefault("alternatives", new ArrayList<>()));
                             needItems.add(item);
                         }
@@ -216,13 +191,13 @@ public class FormCreator {
                     requirements.setFailedMessages((List<String>) map.getOrDefault("failed_messages", new ArrayList<>()));
                     break;
             }
-            if(data != null) {
+            if (data != null) {
                 requirements.addEconomyRequirements(data);
             }
-            if(tips_data != null) {
+            if (tips_data != null) {
                 requirements.addTipsRequirements(tips_data);
             }
-            if(itemRequirementData != null) {
+            if (itemRequirementData != null) {
                 requirements.addItemRequirementData(itemRequirementData);
             }
         }
@@ -236,11 +211,11 @@ public class FormCreator {
      */
     public static boolean loadForm(String identifier, Map<String, Object> config) {
         ScriptForm scriptForm = getScriptFormByMap(config);
-        if(scriptForm != null) {
+        if (scriptForm != null) {
             FormCreator.formScripts.put(identifier, scriptForm);
             return true;
-        }else{
-            CustomFormMain.plugin.getLogger().warning("Can not load scriptForm: "+ identifier);
+        } else {
+            CustomFormMain.plugin.getLogger().warning("Can not load scriptForm: " + identifier);
         }
         return false;
     }
@@ -251,13 +226,13 @@ public class FormCreator {
             case 0:
                 //simple
                 List<SimpleResponseExecuteData> simpleResponseExecuteDataList = new ArrayList<>();
-                if(config.containsKey("components")) {
+                if (config.containsKey("components")) {
                     for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
                         SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
-                        if(component.containsKey("requirements")) {
+                        if (component.containsKey("requirements")) {
                             List<Requirements> requirementsList = new ArrayList<>();
                             Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
-                            for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)requirementData.get("data")) {
+                            for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
                                 requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                             }
                             data.setRequirements(requirementsList);
@@ -266,7 +241,7 @@ public class FormCreator {
                     }
                 }
                 ScriptFormSimple simple = new ScriptFormSimple(config, simpleResponseExecuteDataList, new SoundData("", 1f, 0f, true));
-                if(config.containsKey("open_sound")) {
+                if (config.containsKey("open_sound")) {
                     Map<String, Object> openSoundMap = (Map<String, Object>) config.get("open_sound");
                     simple.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
                 }
@@ -294,10 +269,10 @@ public class FormCreator {
                             out.add(new ToggleResponseExecuteData((List<String>) maps.get("true_commands"), (List<String>) maps.get("true_messages"), (List<String>) maps.get("false_commands"), (List<String>) maps.get("false_messages")));
                         } else {
                             SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
-                            if(component.containsKey("requirements")) {
+                            if (component.containsKey("requirements")) {
                                 List<Requirements> requirements = new ArrayList<>();
                                 Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
-                                for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)requirementData.get("data")) {
+                                for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
                                     requirements.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                                 }
                                 data.setRequirements(requirements);
@@ -307,13 +282,13 @@ public class FormCreator {
                     }
                 }
                 ScriptFormCustom custom = new ScriptFormCustom(config, out, new SoundData("", 1f, 0f, true));
-                if(config.containsKey("open_sound")) {
+                if (config.containsKey("open_sound")) {
                     Map<String, Object> openSoundMap = (Map<String, Object>) config.get("open_sound");
                     custom.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
                 }
                 custom.setStartMillis((Long) config.getOrDefault("startMillis", -1L));
                 custom.setExpiredMillis((Long) config.getOrDefault("expiredMillis", -1L));
-                if(custom.getWindow() != null) {
+                if (custom.getWindow() != null) {
                     return custom;
                 }
                 break;
@@ -325,7 +300,7 @@ public class FormCreator {
                     simpleResponseExecuteDataList.add(data);
                 }
                 ScriptFormModal modal = new ScriptFormModal(config, simpleResponseExecuteDataList, new SoundData("", 1f, 0f, true));
-                if(config.containsKey("open_sound")) {
+                if (config.containsKey("open_sound")) {
                     Map<String, Object> openSoundMap = (Map<String, Object>) config.get("open_sound");
                     modal.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
                 }
@@ -341,7 +316,7 @@ public class FormCreator {
 
     @Api
     public static Map<String, Object> convertConfigToMap(File file) {
-        if(file.getName().endsWith(".json")) {
+        if (file.getName().endsWith(".json")) {
             InputStream stream;
             try {
                 stream = new FileInputStream(file);
@@ -350,8 +325,10 @@ public class FormCreator {
             }
             InputStreamReader streamReader = new InputStreamReader(stream, StandardCharsets.UTF_8); //一定要以utf-8读取
             JsonReader reader = new JsonReader(streamReader);
-            Gson gson = new GsonBuilder().registerTypeAdapter(new TypeToken<Map<String, Object>>() {}.getType(), new GsonAdapter()).create();
-            Map<String, Object> mainMap = gson.fromJson(reader, new TypeToken<Map<String, Object>>() {}.getType());
+            Gson gson = new GsonBuilder().registerTypeAdapter(new TypeToken<Map<String, Object>>() {
+            }.getType(), new GsonAdapter()).create();
+            Map<String, Object> mainMap = gson.fromJson(reader, new TypeToken<Map<String, Object>>() {
+            }.getType());
 
             // Remember to close the streamReader after your implementation.
             try {
@@ -362,9 +339,34 @@ public class FormCreator {
                 throw new RuntimeException(e);
             }
             return mainMap;
-        } else if(file.getName().endsWith(".yml")) {
+        } else if (file.getName().endsWith(".yml")) {
             return new Config(file, Config.YAML).getAll();
         }
         return new HashMap<>();
+    }
+
+    /*
+        WindowInfo stores the information, including its type and script name.
+    */
+    @Data
+    public static class WindowInfo {
+        private FormType type;
+
+        private String script;
+
+        // This is provided to customize your form more easily.
+        private ScriptForm customizedScriptForm;
+
+        public WindowInfo(FormType type, String script) {
+            this.type = type;
+            this.script = script;
+        }
+
+        public WindowInfo(FormType type, String script, ScriptForm customizedScriptForm) {
+            this.type = type;
+            this.script = script;
+            this.customizedScriptForm = customizedScriptForm;
+        }
+
     }
 }

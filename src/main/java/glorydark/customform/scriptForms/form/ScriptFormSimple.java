@@ -5,6 +5,7 @@ import cn.nukkit.form.element.ElementButton;
 import cn.nukkit.form.element.ElementButtonImageData;
 import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseSimple;
+import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowSimple;
 import com.creeperface.nukkit.placeholderapi.api.PlaceholderAPI;
 import com.smallaswater.npc.variable.VariableManage;
@@ -44,9 +45,9 @@ public class ScriptFormSimple implements ScriptForm {
         this.openSound = openSound;
     }
 
-    public void execute(Player player, FormResponse response, Object... params) {
+    public void execute(Player player, FormWindow respondWindow, FormResponse response, Object... params) {
         FormResponseSimple responseSimple = (FormResponseSimple) response;
-        if(data.size() <= responseSimple.getClickedButtonId()) {
+        if (data.size() <= responseSimple.getClickedButtonId()) {
             return;
         }
         data.get(responseSimple.getClickedButtonId()).execute(player, 0, params);
@@ -55,7 +56,7 @@ public class ScriptFormSimple implements ScriptForm {
     public FormWindowSimple getWindow(Player player) {
         FormWindowSimple simple_temp = this.getModifiableWindow();
         int elementId = 0;
-        for(ElementButton button: new ArrayList<>(simple_temp.getButtons())) {
+        for (ElementButton button : new ArrayList<>(simple_temp.getButtons())) {
             boolean tipsEnabled = enableTipsVariableReplacement.get(elementId);
             boolean rsNPCXEnabled = enableRsNPCXVariableReplacement.get(elementId);
             button.setText(replace(button.getText(), player, true, rsNPCXEnabled, tipsEnabled));
@@ -80,7 +81,7 @@ public class ScriptFormSimple implements ScriptForm {
         FormWindowSimple simple;
         Object object = config.getOrDefault("content", "");
         String content = "";
-        if(!object.equals("")) {
+        if (!object.equals("")) {
             if (object instanceof String) {
                 content = (String) object;
             } else if (object instanceof ArrayList) {
@@ -97,12 +98,12 @@ public class ScriptFormSimple implements ScriptForm {
                 content = tempStr.toString();
             }
         }
-        if(content.equals("")) {
+        if (content.equals("")) {
             simple = new FormWindowSimple((String) config.getOrDefault("title", ""), "");
-        }else{
+        } else {
             simple = new FormWindowSimple((String) config.getOrDefault("title", ""), content);
         }
-        for(Map<String, Object> component: (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
+        for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
             enableTipsVariableReplacement.add((Boolean) component.getOrDefault("enable_tips_variable", true));
             enableRsNPCXVariableReplacement.add((Boolean) component.getOrDefault("enable_rsNPCX_variable", true));
             String picPath = (String) component.getOrDefault("pic", "");
@@ -111,10 +112,10 @@ public class ScriptFormSimple implements ScriptForm {
             } else {
                 if (picPath.startsWith("path#")) {
                     simple.addButton(new ElementButton((String) component.getOrDefault("text", ""), new ElementButtonImageData("path", picPath.replaceFirst("path#", ""))));
-                }else {
+                } else {
                     if (picPath.startsWith("url#")) {
                         simple.addButton(new ElementButton((String) component.getOrDefault("text", ""), new ElementButtonImageData("url", picPath.replaceFirst("url#", ""))));
-                    }else{
+                    } else {
                         simple.addButton(new ElementButton((String) component.getOrDefault("text", ""))); //格式都不对则取消
                     }
                 }
@@ -140,16 +141,16 @@ public class ScriptFormSimple implements ScriptForm {
     }
 
     public String replace(String string, Player player, boolean replaceBreak, boolean enableRsNPCX, boolean enableTips) {
-        if(CustomFormMain.enableTips && enableTips) {
+        if (CustomFormMain.enableTips && enableTips) {
             string = Api.strReplace(string, player);
         }
-        if(CustomFormMain.enableRsNPCX && enableRsNPCX) {
+        if (CustomFormMain.enableRsNPCX && enableRsNPCX) {
             string = VariableManage.stringReplace(player, string, null);
         }
         if (CustomFormMain.enablePlaceHolderAPI) {
             string = PlaceholderAPI.getInstance().translateString(string);
         }
-        if(replaceBreak) {
+        if (replaceBreak) {
             string = replaceBreak(string);
         }
         return string;
@@ -158,9 +159,9 @@ public class ScriptFormSimple implements ScriptForm {
     public List<ElementButton> cloneButtons(List<ElementButton> elementButtons) {
         List<ElementButton> out = new ArrayList<>();
         for (ElementButton elementButton : elementButtons) {
-            if(elementButton.getImage() == null) {
+            if (elementButton.getImage() == null) {
                 out.add(new ElementButton(elementButton.getText()));
-            }else{
+            } else {
                 out.add(new ElementButton(elementButton.getText(), new ElementButtonImageData(elementButton.getImage().getType(), elementButton.getImage().getData())));
             }
         }

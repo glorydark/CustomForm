@@ -18,7 +18,7 @@ public class ChestMenuMain {
     public static HashMap<Player, PlayerMinecartChestTempData> mineCartChests = new HashMap<>();
 
     public static void closeDoubleChestInventory(Player player) {
-        if(mineCartChests.containsKey(player)) {
+        if (mineCartChests.containsKey(player)) {
             EntityMinecartChest chest = mineCartChests.get(player).getEntityMinecartChest();
             chest.getInventory().clearAll();
             chest.close();
@@ -28,25 +28,25 @@ public class ChestMenuMain {
 
     public static void showMinecartChestMenu(Player player, String identifier) {
         MinecartChestMenu menu = chestMenus.get(identifier);
-        if(menu != null) {
+        if (menu != null) {
             menu.show(player, 1);
         }
     }
 
     public static boolean registerMinecartChestMenu(String identifier, Map<String, Object> config) {
-        if(!chestMenus.containsKey(identifier)) {
+        if (!chestMenus.containsKey(identifier)) {
             MinecartChestMenu menu = new MinecartChestMenu(identifier, (String) config.get("title"));
             List<Map<String, Object>> components = (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>());
-            for(Map<String, Object> component: components) {
+            for (Map<String, Object> component : components) {
                 ChestMenuComponent chestMenuComponent = new ChestMenuComponent((String) component.get("name"), (String) component.get("descriptions"), (String) component.get("item"), (Boolean) component.get("isEnchanted"));
                 chestMenuComponent.setFailedMessages((List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
                 chestMenuComponent.setFailedCommands((List<String>) component.getOrDefault("failed_commands", new ArrayList<>()));
                 chestMenuComponent.setSuccessMessages((List<String>) component.getOrDefault("messages", new ArrayList<>()));
                 chestMenuComponent.setSuccessCommands((List<String>) component.getOrDefault("commands", new ArrayList<>()));
-                if(component.containsKey("requirements")) {
+                if (component.containsKey("requirements")) {
                     List<Requirements> requirements = new ArrayList<>();
                     Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
-                    for(List<Map<String, Object>> object: (List<List<Map<String, Object>>>)requirementData.get("data")) {
+                    for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
                         requirements.add(FormCreator.buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                     }
                     chestMenuComponent.setRequirements(requirements);
