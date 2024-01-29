@@ -27,6 +27,8 @@ public class CustomFormMain extends PluginBase {
 
     public static boolean enableDoubleCheckMenu;
 
+    public static boolean enableCameraAnimation;
+
     /*
       enableEconomyAPI  -> EconomyAPI loaded
       enablePoints -> PointsAPI loaded
@@ -59,6 +61,7 @@ public class CustomFormMain extends PluginBase {
         this.saveResource("languages/en_us.properties", false);
         Config config = new Config(path + "/config.yml", Config.YAML);
         enableDoubleCheckMenu = config.getBoolean("enable_doubleCheckMenu", true);
+        enableCameraAnimation = config.getBoolean("enable_cameraAnimation", false);
         coolDownMillis = config.getLong("coolDown", 200L);
         language = new Language(config.getString("default_lang", "zh_cn"), path + "/languages/", path + "/languages/playerLanguageCache.yml");
         enableTips = checkSoftDepend("Tips") && config.getBoolean("enable_tips", true);

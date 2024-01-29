@@ -1,7 +1,6 @@
 package glorydark.customform.scriptForms.data.requirement.item;
 
 import cn.nukkit.item.Item;
-import glorydark.customform.CustomFormMain;
 import glorydark.customform.utils.InventoryUtils;
 import lombok.Data;
 
