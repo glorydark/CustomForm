@@ -17,10 +17,7 @@ import glorydark.customform.GsonAdapter;
 import glorydark.customform.annotations.Api;
 import glorydark.customform.event.FormOpenEvent;
 import glorydark.customform.scriptForms.data.SoundData;
-import glorydark.customform.scriptForms.data.execute_data.ResponseExecuteData;
-import glorydark.customform.scriptForms.data.execute_data.SimpleResponseExecuteData;
-import glorydark.customform.scriptForms.data.execute_data.StepResponseExecuteData;
-import glorydark.customform.scriptForms.data.execute_data.ToggleResponseExecuteData;
+import glorydark.customform.scriptForms.data.execute_data.*;
 import glorydark.customform.scriptForms.data.execute_data.config.ConfigModification;
 import glorydark.customform.scriptForms.data.execute_data.config.ConfigModificationType;
 import glorydark.customform.scriptForms.data.requirement.Requirements;
@@ -39,6 +36,7 @@ import glorydark.customform.scriptForms.form.ScriptFormSimple;
 import lombok.Data;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -80,7 +78,7 @@ public class FormCreator {
         packet.data = window.getJSONData();
         player.dataPacket(packet);
         player.namedTag.putLong("lastFormRequestMillis", System.currentTimeMillis());
-        UI_CACHE.put(player.getName(), new WindowInfo(formType, identifier, scriptForm));
+        UI_CACHE.put(player.getName(), new WindowInfo(formType, identifier, scriptForm, window));
     }
 
     /*
@@ -405,6 +403,49 @@ public class FormCreator {
                             data.add(new SimpleResponseExecuteData((List<String>) map.getOrDefault("commands", new ArrayList<>()), (List<String>) map.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), configModifications));
                         }
                         out.add(new StepResponseExecuteData(data));
+                    } else if (type.equals("PlayerListDropdown")) {
+                        DropdownPlayerListResponse data = new DropdownPlayerListResponse((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+                        if (component.containsKey("requirements")) {
+                            List<Requirements> requirementsList = new ArrayList<>();
+                            Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
+                            for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
+                                requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                            }
+                            data.setRequirements(requirementsList);
+                        }
+                        List<ConfigModification> configModifications = new ArrayList<>();
+                        if (component.containsKey("configs")) {
+                            for (Map<String, Object> configEntry : (List<Map<String, Object>>) component.getOrDefault("configs", new ArrayList<>())) {
+                                int configType = (int) configEntry.get("type");
+                                String extraData;
+                                if (configType == 0) {
+                                    extraData = configEntry.get("key_name").toString();
+                                } else {
+                                    extraData = configEntry.get("config_name").toString();
+                                }
+                                String deal_type = configEntry.get("deal_type").toString();
+                                ConfigModificationType modificationType;
+                                switch (deal_type) {
+                                    case "add":
+                                        modificationType = ConfigModificationType.ADD;
+                                        break;
+                                    case "deduct":
+                                        modificationType = ConfigModificationType.DEDUCT;
+                                        break;
+                                    case "set":
+                                        modificationType = ConfigModificationType.SET;
+                                        break;
+                                    case "remove":
+                                        modificationType = ConfigModificationType.REMOVE;
+                                        break;
+                                    default:
+                                        continue;
+                                }
+                                ConfigModification modification = new ConfigModification(configType, extraData, configEntry.get("deal_value"), modificationType);
+                                configModifications.add(modification);
+                            }
+                        }
+                        out.add(data);
                     } else {
                         if (type.equals("Toggle")) {
                             Map<String, Object> maps = (Map<String, Object>) component.getOrDefault("responses", new LinkedHashMap<>());
@@ -539,15 +580,19 @@ public class FormCreator {
         // This is provided to customize your form more easily.
         private ScriptForm customizedScriptForm;
 
-        public WindowInfo(FormType type, String script) {
+        private FormWindow formWindow;
+
+        public WindowInfo(FormType type, String script, FormWindow formWindow) {
             this.type = type;
             this.script = script;
+            this.formWindow = formWindow;
         }
 
-        public WindowInfo(FormType type, String script, ScriptForm customizedScriptForm) {
+        public WindowInfo(FormType type, String script, ScriptForm customizedScriptForm, FormWindow formWindow) {
             this.type = type;
             this.script = script;
             this.customizedScriptForm = customizedScriptForm;
+            this.formWindow = formWindow;
         }
 
     }

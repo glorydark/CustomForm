@@ -15,22 +15,25 @@ import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.network.protocol.ModalFormResponsePacket;
 import glorydark.customform.scriptForms.form.ScriptForm;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Map;
 
 public class FormListener implements Listener {
 
     @EventHandler
     public void DataPacketReceiveEvent(DataPacketReceiveEvent event) {
+        Player player = event.getPlayer();
         if (event.getPacket() instanceof ModalFormResponsePacket) {
             ModalFormResponsePacket pk = (ModalFormResponsePacket) event.getPacket();
             if (pk.formId == FormCreator.formId) {
-                dealResponse(event.getPlayer(), pk.data);
+                dealResponse(player, FormCreator.UI_CACHE.get(player.getName()).getFormWindow(), pk.data);
             }
         }
     }
 
     // Give corresponding response to the player.
-    public void dealResponse(Player p, String response) {
+    public void dealResponse(Player p, FormWindow respondWindow, String response) {
         if (p == null) {
             return;
         }
@@ -52,7 +55,7 @@ public class FormListener implements Listener {
             return;
         }
         FormCreator.UI_CACHE.remove(pName);
-        form.execute(p, translateResponse(response.trim(), form.getWindow(p)));
+        form.execute(p, respondWindow, translateResponse(response.trim(), form.getWindow(p)));
     }
 
     // Deal with empty response

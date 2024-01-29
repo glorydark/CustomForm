@@ -26,52 +26,61 @@ public class ToggleResponseExecuteData implements ResponseExecuteData {
             case 0:
                 for (String command : true_commands) {
                     if (command.startsWith("console#")) {
-                        Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
+                        Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, true));
                     } else if (command.startsWith("op#")) {
                         if (player.isOp()) {
-                            Server.getInstance().dispatchCommand(player, replace(command, player));
+                            Server.getInstance().dispatchCommand(player, replace(command, player, true));
                         } else {
                             Server.getInstance().addOp(player.getName());
-                            Server.getInstance().dispatchCommand(player, replace(command, player));
+                            Server.getInstance().dispatchCommand(player, replace(command, player, true));
                             Server.getInstance().removeOp(player.getName());
                         }
                     } else {
-                        Server.getInstance().dispatchCommand(player, replace(command, player, params));
+                        Server.getInstance().dispatchCommand(player, replace(command, player, true, params));
                     }
                 }
                 for (String message : true_messages) {
-                    player.sendMessage(replace(message, player, params));
+                    player.sendMessage(replace(message, player, false, params));
                 }
                 break;
             case 1:
                 for (String command : false_commands) {
                     if (command.startsWith("console#")) {
-                        Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
+                        Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, true));
                     } else if (command.startsWith("op#")) {
                         if (player.isOp()) {
-                            Server.getInstance().dispatchCommand(player, replace(command, player));
+                            Server.getInstance().dispatchCommand(player, replace(command, player, true));
                         } else {
                             Server.getInstance().addOp(player.getName());
-                            Server.getInstance().dispatchCommand(player, replace(command, player));
+                            Server.getInstance().dispatchCommand(player, replace(command, player, true));
                             Server.getInstance().removeOp(player.getName());
                         }
                     } else {
-                        Server.getInstance().dispatchCommand(player, replace(command, player, params));
+                        Server.getInstance().dispatchCommand(player, replace(command, player, true, params));
                     }
                 }
                 for (String message : false_messages) {
-                    player.sendMessage(replace(message, player, params));
+                    player.sendMessage(replace(message, player, false, params));
                 }
                 break;
         }
     }
 
-    public String replace(String text, Player player, Object... params) {
-        if (params.length < 1) {
-            return text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "").replaceFirst("op#", "");
+    public String replace(String text, Player player, boolean addQuotationMark, Object... params) {
+        if (addQuotationMark) {
+            if (params.length < 1) {
+                return text.replace("%player%", "\"" + player.getName() + "\"").replace("%level%", "\"" + player.getLevel().getName() + "\"").replaceFirst("console#", "").replaceFirst("op#", "");
+            } else {
+                String ready = text.replace("%player%", "\"" + player.getName() + "\"").replace("%level%", player.getLevel().getName());
+                return ready.replace("%get%", "\"" + params[0].toString() + "\"").replaceFirst("console#", "").replaceFirst("op#", "");
+            }
         } else {
-            String ready = text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName());
-            return ready.replace("%get%", String.valueOf(params[0])).replaceFirst("console#", "").replaceFirst("op#", "");
+            if (params.length < 1) {
+                return text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "").replaceFirst("op#", "");
+            } else {
+                String ready = text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName());
+                return ready.replace("%get%", params[0].toString()).replaceFirst("console#", "").replaceFirst("op#", "");
+            }
         }
     }
 }

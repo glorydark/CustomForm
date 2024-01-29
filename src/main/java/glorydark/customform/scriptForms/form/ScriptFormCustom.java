@@ -5,12 +5,14 @@ import cn.nukkit.Server;
 import cn.nukkit.form.element.*;
 import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseCustom;
+import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
 import com.creeperface.nukkit.placeholderapi.api.PlaceholderAPI;
 import com.smallaswater.npc.variable.VariableManage;
 import glorydark.customform.CustomFormMain;
 import glorydark.customform.scriptForms.data.SoundData;
 import glorydark.customform.scriptForms.data.execute_data.ResponseExecuteData;
+import glorydark.customform.scriptForms.data.execute_data.element.ElementPlayerListDropdown;
 import glorydark.customform.scriptForms.data.requirement.Requirements;
 import lombok.Data;
 import tip.utils.Api;
@@ -57,7 +59,8 @@ public class ScriptFormCustom implements ScriptForm {
         this.openRequirements = openRequirements;
     }
 
-    public void execute(Player player, FormResponse response, Object... params) {
+    public void execute(Player player, FormWindow respondWindow, FormResponse response, Object... params) {
+        FormWindowCustom respondCustomWindow = (FormWindowCustom) respondWindow;
         FormResponseCustom responseCustom = (FormResponseCustom) response;
         Map<Integer, Object> responsesMap = responseCustom.getResponses();
         globalMessages.forEach(message -> {
@@ -85,14 +88,15 @@ public class ScriptFormCustom implements ScriptForm {
             }
         });
         responsesMap.forEach((key, value) -> {
-            if (window.getElements().get(key) instanceof ElementDropdown) {
+            Element element = respondCustomWindow.getElements().get(key);
+            if (element instanceof ElementDropdown) {
                 int elementDropdownResponseId = Integer.parseInt(((FormResponseCustom) response).getResponse(key).toString());
-                ElementDropdown dropdown = ((ElementDropdown) window.getElements().get(key));
+                ElementDropdown dropdown = ((ElementDropdown) respondCustomWindow.getElements().get(key));
                 data.get(key).execute(player, elementDropdownResponseId, dropdown.getOptions().get(elementDropdownResponseId));
             } else {
-                if (window.getElements().get(key) instanceof ElementStepSlider) {
+                if (respondCustomWindow.getElements().get(key) instanceof ElementStepSlider) {
                     int stepSliderResponseId = Integer.parseInt(((FormResponseCustom) response).getResponse(key).toString());
-                    ElementStepSlider stepSlider = ((ElementStepSlider) window.getElements().get(key));
+                    ElementStepSlider stepSlider = ((ElementStepSlider) respondCustomWindow.getElements().get(key));
                     data.get(key).execute(player, stepSliderResponseId, stepSlider.getSteps().get(stepSliderResponseId));
                 } else {
                     if (responseCustom.getResponse(key) != null) {
@@ -118,10 +122,16 @@ public class ScriptFormCustom implements ScriptForm {
                 input.setPlaceHolder(replace(input.getDefaultText(), player));
                 custom_temp.getElements().set(elementId, input);
             } else if (element instanceof ElementDropdown) {
-                ElementDropdown dropdown = ((ElementDropdown) element);
-                dropdown.setText(replace(dropdown.getText(), player));
-                dropdown.getOptions().replaceAll(string -> replace(string, player));
-                custom_temp.getElements().set(elementId, dropdown);
+                if (element instanceof ElementPlayerListDropdown) {
+                    ElementPlayerListDropdown playerListDropdown = ((ElementPlayerListDropdown) element).copyNew();
+                    playerListDropdown.setText(replace(playerListDropdown.getText(), player));
+                    custom_temp.getElements().set(elementId, playerListDropdown);
+                } else {
+                    ElementDropdown dropdown = ((ElementDropdown) element);
+                    dropdown.setText(replace(dropdown.getText(), player));
+                    dropdown.getOptions().replaceAll(string -> replace(string, player));
+                    custom_temp.getElements().set(elementId, dropdown);
+                }
             } else if (element instanceof ElementToggle) {
                 ((ElementToggle) element).setText(replace(((ElementToggle) element).getText(), player));
                 custom_temp.getElements().set(elementId, element);
@@ -147,8 +157,12 @@ public class ScriptFormCustom implements ScriptForm {
         List<Element> out = new ArrayList<>();
         for (Element element : elements) {
             if (element instanceof ElementDropdown) {
-                ElementDropdown elementDropdown = (ElementDropdown) element;
-                out.add(new ElementDropdown(elementDropdown.getText(), new ArrayList<>(elementDropdown.getOptions()), elementDropdown.getDefaultOptionIndex()));
+                if (element instanceof ElementPlayerListDropdown) {
+                    out.add(element); // 丢到getWindow处理，和tips等变量替换一起
+                } else {
+                    ElementDropdown elementDropdown = (ElementDropdown) element;
+                    out.add(new ElementDropdown(elementDropdown.getText(), new ArrayList<>(elementDropdown.getOptions()), elementDropdown.getDefaultOptionIndex()));
+                }
             } else if (element instanceof ElementInput) {
                 ElementInput input = (ElementInput) element;
                 out.add(new ElementInput(input.getText(), input.getPlaceHolder(), input.getDefaultText()));
@@ -198,6 +212,9 @@ public class ScriptFormCustom implements ScriptForm {
                     break;
                 case "Dropdown":
                     custom.addElement(new ElementDropdown((String) component.getOrDefault("text", ""), (List<String>) component.getOrDefault("options", new ArrayList<>()), (int) component.getOrDefault("default", 0)));
+                    break;
+                case "PlayerListDropdown":
+                    custom.addElement(new ElementPlayerListDropdown((String) component.getOrDefault("text", "")));
                     break;
             }
         }

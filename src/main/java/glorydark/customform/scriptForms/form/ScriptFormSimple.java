@@ -5,6 +5,7 @@ import cn.nukkit.form.element.ElementButton;
 import cn.nukkit.form.element.ElementButtonImageData;
 import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseSimple;
+import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowSimple;
 import com.creeperface.nukkit.placeholderapi.api.PlaceholderAPI;
 import com.smallaswater.npc.variable.VariableManage;
@@ -48,7 +49,7 @@ public class ScriptFormSimple implements ScriptForm {
         this.openRequirements = openRequirements;
     }
 
-    public void execute(Player player, FormResponse response, Object... params) {
+    public void execute(Player player, FormWindow respondWindow, FormResponse response, Object... params) {
         FormResponseSimple responseSimple = (FormResponseSimple) response;
         if (data.size() <= responseSimple.getClickedButtonId()) {
             return;

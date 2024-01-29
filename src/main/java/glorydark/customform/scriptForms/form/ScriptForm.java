@@ -12,7 +12,7 @@ public interface ScriptForm {
 
     List<Requirements> getOpenRequirements();
 
-    void execute(Player player, FormResponse response, Object... params);
+    void execute(Player player, FormWindow respondWindow, FormResponse response, Object... params);
 
     FormWindow getWindow(Player player);
 

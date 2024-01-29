@@ -3,6 +3,7 @@ package glorydark.customform.scriptForms.form;
 import cn.nukkit.Player;
 import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseModal;
+import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowModal;
 import com.creeperface.nukkit.placeholderapi.api.PlaceholderAPI;
 import com.smallaswater.npc.variable.VariableManage;
@@ -41,7 +42,7 @@ public class ScriptFormModal implements ScriptForm {
         this.openRequirements = openRequirements;
     }
 
-    public void execute(Player player, FormResponse response, Object... params) {
+    public void execute(Player player, FormWindow respondWindow, FormResponse response, Object... params) {
         FormResponseModal responseModal = (FormResponseModal) response;
         if (data.size() <= (responseModal.getClickedButtonId())) {
             return;
