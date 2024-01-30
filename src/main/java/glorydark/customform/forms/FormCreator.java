@@ -146,21 +146,15 @@ public class FormCreator {
             switch (type) {
                 case "EconomyAPI":
                     // This is the way we deal with EconomyAPI-type requirements
-                    data = new EconomyRequirementData(null, 0d, chargeable, new Object());
-                    data.setType(EconomyRequirementType.EconomyAPI);
-                    data.setAmount(Double.parseDouble(map.get("cost").toString()));
+                    data = new EconomyRequirementData(EconomyRequirementType.EconomyAPI, Double.parseDouble(map.get("cost").toString()), chargeable, new Object());
                     break;
                 case "Points":
                     // This is the way we deal with Points-type requirements
-                    data = new EconomyRequirementData(null, 0d, chargeable, new Object());
-                    data.setType(EconomyRequirementType.Points);
-                    data.setAmount(Double.parseDouble(map.get("cost").toString()));
+                    data = new EconomyRequirementData(EconomyRequirementType.Points, Double.parseDouble(map.get("cost").toString()), chargeable, new Object());
                     break;
                 case "DCurrency":
                     // This is the way we deal with DCurrency-type requirements
-                    data = new EconomyRequirementData(null, 0d, chargeable, new Object());
-                    data.setType(EconomyRequirementType.DCurrency);
-                    data.setAmount(Double.parseDouble(map.get("cost").toString()));
+                    data = new EconomyRequirementData(EconomyRequirementType.DCurrency, Double.parseDouble(map.get("cost").toString()), chargeable, new Object());
                     data.setExtraData(new String[]{(String) map.get("currencyType")});
                     break;
                 case "Item":
@@ -264,14 +258,11 @@ public class FormCreator {
             }
             if (data != null) {
                 requirements.addEconomyRequirements(data);
-            }
-            if (tips_data != null) {
+            } else if (tips_data != null) {
                 requirements.addTipsRequirements(tips_data);
-            }
-            if (itemRequirementData != null) {
+            } else if (itemRequirementData != null) {
                 requirements.addItemRequirementData(itemRequirementData);
-            }
-            if (configRequirementData != null) {
+            } else if (configRequirementData != null) {
                 requirements.addConfigRequirementData(configRequirementData);
             }
         }
@@ -516,6 +507,14 @@ public class FormCreator {
                 simpleResponseExecuteDataList = new ArrayList<>();
                 for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
                     SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+                    if (component.containsKey("requirements")) {
+                        List<Requirements> requirementsList = new ArrayList<>();
+                        Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
+                        for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
+                            requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                        }
+                        data.setRequirements(requirementsList);
+                    }
                     simpleResponseExecuteDataList.add(data);
                 }
                 openRequirementsList = new ArrayList<>();
