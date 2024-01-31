@@ -1,6 +1,6 @@
 main: glorydark.customform.CustomFormMain
 name: CustomForm
-version: "1.0.8.4"
+version: "1.0.8.5"
 api: 1.0.0
 author: Glorydark
 description: CustomForm

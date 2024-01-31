@@ -364,7 +364,7 @@ public class FormCreator {
                     String type = (String) component.getOrDefault("type", "");
                     if (type.equals("StepSlider") || type.equals("Dropdown")) {
                         List<SimpleResponseExecuteData> data = new ArrayList<>();
-                        List<Map<String, Object>> maps = (List<Map<String, Object>>) component.getOrDefault("responses", new LinkedHashMap<>());
+                        List<Map<String, Object>> maps = (List<Map<String, Object>>) component.getOrDefault("responses", new ArrayList<>());
                         List<ConfigModification> configModifications = new ArrayList<>();
                         // todo 看看能否在某些地方能够运用到requirements
                         if (component.containsKey("config")) {
