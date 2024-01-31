@@ -4,10 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
-import cn.nukkit.form.response.FormResponse;
-import cn.nukkit.form.response.FormResponseCustom;
-import cn.nukkit.form.response.FormResponseModal;
-import cn.nukkit.form.response.FormResponseSimple;
+import cn.nukkit.form.element.*;
+import cn.nukkit.form.response.*;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.form.window.FormWindowModal;
@@ -17,6 +15,7 @@ import glorydark.customform.CustomFormMain;
 import glorydark.customform.scriptForms.form.ScriptForm;
 import glorydark.customform.utils.CameraUtils;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class FormListener implements Listener {
 
@@ -71,6 +70,13 @@ public class FormListener implements Listener {
             }
         }
         if (window instanceof FormWindowCustom) {
+            FormWindowCustom custom = (FormWindowCustom) window;
+            HashMap<Integer, FormResponseData> dropdownResponses = new LinkedHashMap<>();
+            HashMap<Integer, String> inputResponses = new LinkedHashMap<>();
+            HashMap<Integer, Float> sliderResponses = new LinkedHashMap<>();
+            HashMap<Integer, FormResponseData> stepSliderResponses = new LinkedHashMap<>();
+            HashMap<Integer, Boolean> toggleResponses = new LinkedHashMap<>();
+            HashMap<Integer, String> labelResponses = new LinkedHashMap<>();
             if (string.equals("null") || string.equals("")) {
                 return null;
             } else {
@@ -78,9 +84,27 @@ public class FormListener implements Listener {
                 String[] split = replaced.split(",");
                 HashMap<Integer, Object> hashMap = new HashMap<>();
                 for (int i = 0; i < split.length; i++) {
-                    hashMap.put(i, split[i]);
+                    String returnValue = split[i];
+                    hashMap.put(i, returnValue);
+                    Element element = custom.getElements().get(i);
+                    if (element instanceof ElementLabel) {
+                        labelResponses.put(i, ((ElementLabel) element).getText());
+                    } else if (element instanceof ElementInput) {
+                        inputResponses.put(i, returnValue);
+                    } else if (element instanceof ElementSlider) {
+                        sliderResponses.put(i, Float.parseFloat(returnValue));
+                    } else if (element instanceof ElementStepSlider) {
+                        String selectedItem = ((ElementStepSlider) element).getSteps().get(Integer.parseInt(returnValue));
+                        stepSliderResponses.put(i, new FormResponseData(Integer.parseInt(returnValue), selectedItem));
+                    } else if (element instanceof ElementToggle) {
+                        Boolean selectedItem = Boolean.parseBoolean(returnValue);
+                        toggleResponses.put(i, selectedItem);
+                    } else if (element instanceof ElementDropdown) {
+                        String selectedItem = ((ElementDropdown) element).getOptions().get(Integer.parseInt(returnValue));
+                        dropdownResponses.put(i, new FormResponseData(Integer.parseInt(returnValue), selectedItem));
+                    }
                 }
-                return new FormResponseCustom(hashMap, new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
+                return new FormResponseCustom(hashMap, dropdownResponses, inputResponses, sliderResponses, stepSliderResponses, toggleResponses, labelResponses);
             }
         }
         if (window instanceof FormWindowModal) {
