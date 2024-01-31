@@ -72,14 +72,14 @@ public class ToggleResponseExecuteData implements ResponseExecuteData {
                 return text.replace("%player%", "\"" + player.getName() + "\"").replace("%level%", "\"" + player.getLevel().getName() + "\"").replaceFirst("console#", "").replaceFirst("op#", "");
             } else {
                 String ready = text.replace("%player%", "\"" + player.getName() + "\"").replace("%level%", player.getLevel().getName());
-                return ready.replace("%get%", "\"" + params[0].toString() + "\"").replaceFirst("console#", "").replaceFirst("op#", "");
+                return ready.replace("%get%", String.valueOf(params[0])).replaceFirst("console#", "").replaceFirst("op#", "");
             }
         } else {
             if (params.length < 1) {
                 return text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "").replaceFirst("op#", "");
             } else {
                 String ready = text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName());
-                return ready.replace("%get%", params[0].toString()).replaceFirst("console#", "").replaceFirst("op#", "");
+                return ready.replace("%get%", String.valueOf(params[0])).replaceFirst("console#", "").replaceFirst("op#", "");
             }
         }
     }

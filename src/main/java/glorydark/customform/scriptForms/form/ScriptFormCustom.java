@@ -17,6 +17,7 @@ import glorydark.customform.scriptForms.data.requirement.Requirements;
 import lombok.Data;
 import tip.utils.Api;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -64,14 +65,48 @@ public class ScriptFormCustom implements ScriptForm {
         FormResponseCustom responseCustom = (FormResponseCustom) response;
         Map<Integer, Object> responsesMap = responseCustom.getResponses();
         globalMessages.forEach(message -> {
-            for (int i = 0; i < responsesMap.size(); i++) {
-                message = message.replace("%" + i + "%", responsesMap.get(i).toString());
+            for (int i = 0; i < respondCustomWindow.getElements().size(); i++) {
+                String replacePrefix = "%" + i + "%";
+                String replacePrefixToInteger = "%" + i + "_integer%";
+                String replacePrefixDropDownId = "%" + i + "_id%";
+                String replacePrefixDropDownContent = "%" + i + "_content%";
+                Element element = window.getElements().get(i);
+                if (element instanceof ElementInput) {
+                    message = message.replace(replacePrefix, responseCustom.getInputResponse(i));
+                } else if (element instanceof ElementToggle) {
+                    message = message.replace(replacePrefix, String.valueOf(responseCustom.getToggleResponse(i)));
+                } else if (element instanceof ElementDropdown) {
+                    message = message.replace(replacePrefixDropDownId, String.valueOf(responseCustom.getDropdownResponse(i).getElementID()));
+                    message = message.replace(replacePrefixDropDownContent, responseCustom.getDropdownResponse(i).getElementContent());
+                } else if (element instanceof ElementSlider) {
+                    message = message.replace(replacePrefix, String.valueOf(responseCustom.getSliderResponse(i)));
+                    message = message.replace(replacePrefixToInteger, String.valueOf(new BigDecimal(String.valueOf(responseCustom.getSliderResponse(i))).intValue()));
+                } else if (element instanceof ElementStepSlider) {
+                    message = message.replace(replacePrefixDropDownId, String.valueOf(responseCustom.getStepSliderResponse(i).getElementID()));
+                    message = message.replace(replacePrefixDropDownContent, responseCustom.getStepSliderResponse(i).getElementContent());
+                }
             }
             player.sendMessage(message);
         });
         globalCommands.forEach(command -> {
-            for (int i = 0; i < responsesMap.size(); i++) {
-                command = command.replace("%" + i + "%", responsesMap.get(i).toString());
+            for (int i = 0; i < respondCustomWindow.getElements().size(); i++) {
+                String replacePrefix = "%" + i + "%";
+                String replacePrefixDropDownId = "%" + i + "_id%";
+                String replacePrefixDropDownContent = "%" + i + "_content%";
+                Element element = window.getElements().get(i);
+                if (element instanceof ElementInput) {
+                    command = command.replace(replacePrefix, responseCustom.getInputResponse(i));
+                } else if (element instanceof ElementToggle) {
+                    command = command.replace(replacePrefix, String.valueOf(responseCustom.getToggleResponse(i)));
+                } else if (element instanceof ElementDropdown) {
+                    command = command.replace(replacePrefixDropDownId, String.valueOf(responseCustom.getDropdownResponse(i).getElementID()));
+                    command = command.replace(replacePrefixDropDownContent, responseCustom.getDropdownResponse(i).getElementContent());
+                } else if (element instanceof ElementSlider) {
+                    command = command.replace(replacePrefix, String.valueOf(responseCustom.getSliderResponse(i)));
+                } else if (element instanceof ElementStepSlider) {
+                    command = command.replace(replacePrefixDropDownId, String.valueOf(responseCustom.getStepSliderResponse(i).getElementID()));
+                    command = command.replace(replacePrefixDropDownContent, responseCustom.getStepSliderResponse(i).getElementContent());
+                }
             }
             if (command.startsWith("console#")) {
                 Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), command.replace("console#", ""));
@@ -118,8 +153,8 @@ public class ScriptFormCustom implements ScriptForm {
             } else if (element instanceof ElementInput) {
                 ElementInput input = ((ElementInput) element);
                 input.setDefaultText(replace(input.getDefaultText(), player));
-                input.setText(replace(input.getDefaultText(), player));
-                input.setPlaceHolder(replace(input.getDefaultText(), player));
+                input.setText(replace(input.getText(), player));
+                input.setPlaceHolder(replace(input.getPlaceHolder(), player));
                 custom_temp.getElements().set(elementId, input);
             } else if (element instanceof ElementDropdown) {
                 if (element instanceof ElementPlayerListDropdown) {
