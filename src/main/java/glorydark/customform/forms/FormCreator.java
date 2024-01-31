@@ -158,7 +158,7 @@ public class FormCreator {
                     data.setExtraData(new String[]{(String) map.get("currencyType")});
                     break;
                 case "Item":
-                    itemRequirementData = new ItemRequirementData((boolean) map.get("reduce"), (Boolean) map.getOrDefault("check_tag", true));
+                    itemRequirementData = new ItemRequirementData((boolean) map.getOrDefault("reduce", true), (Boolean) map.getOrDefault("check_tag", true));
                     List<NeedItem> needItems = new ArrayList<>();
                     List<Map<String, Object>> needItemMapList = (List<Map<String, Object>>) map.getOrDefault("costs", new ArrayList<>());
                     if (needItemMapList.size() > 0) {
@@ -372,7 +372,7 @@ public class FormCreator {
                                 int configType = (int) configEntry.get("type");
                                 String config_name = configEntry.get("key_name").toString();
                                 String deal_type = configEntry.get("deal_type").toString();
-                                ConfigModificationType modificationType = null;
+                                ConfigModificationType modificationType;
                                 switch (deal_type) {
                                     case "add":
                                         modificationType = ConfigModificationType.ADD;
@@ -443,7 +443,7 @@ public class FormCreator {
                     } else {
                         if (type.equals("Toggle")) {
                             Map<String, Object> maps = (Map<String, Object>) component.getOrDefault("responses", new LinkedHashMap<>());
-                            out.add(new ToggleResponseExecuteData((List<String>) maps.get("true_commands"), (List<String>) maps.get("true_messages"), (List<String>) maps.get("false_commands"), (List<String>) maps.get("false_messages")));
+                            out.add(new ToggleResponseExecuteData((List<String>) maps.getOrDefault("true_commands", new ArrayList<>()), (List<String>) maps.getOrDefault("true_messages", new ArrayList<>()), (List<String>) maps.getOrDefault("false_commands", new ArrayList<>()), (List<String>) maps.getOrDefault("false_messages", new ArrayList<>())));
                         } else {
                             List<ConfigModification> configModifications = new ArrayList<>();
                             out = new ArrayList<>();
@@ -451,7 +451,7 @@ public class FormCreator {
                                 int configType = (int) configEntry.get("type");
                                 String config_name = configEntry.get("key_name").toString();
                                 String deal_type = configEntry.get("deal_type").toString();
-                                ConfigModificationType modificationType = null;
+                                ConfigModificationType modificationType;
                                 switch (deal_type) {
                                     case "add":
                                         modificationType = ConfigModificationType.ADD;

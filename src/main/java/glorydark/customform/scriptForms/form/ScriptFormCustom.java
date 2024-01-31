@@ -54,8 +54,8 @@ public class ScriptFormCustom implements ScriptForm {
         this.openSound = openSound;
         if (config.containsKey("global_responses")) {
             Map<String, List<String>> globalResponses = (Map<String, List<String>>) config.get("global_responses");
-            globalCommands = globalResponses.get("commands");
-            globalMessages = globalResponses.get("messages");
+            globalCommands = globalResponses.getOrDefault("commands", new ArrayList<>());
+            globalMessages = globalResponses.getOrDefault("messages", new ArrayList<>());
         }
         this.openRequirements = openRequirements;
     }
