@@ -99,8 +99,8 @@ public class CustomFormMain extends PluginBase {
                 this.setEnabled(false);
             }
         }
-        this.loadScriptMineCartWindows();
-        this.loadScriptWindows();
+        this.loadScriptMineCartWindows(new File(path + "/minecart_chest_windows/"));
+        this.loadScriptWindows(new File(path + "/forms/"));
         this.getLogger().info("CustomForm onLoad");
         this.getServer().getCommandMap().register("", new Commands("form"));
         this.getServer().getPluginManager().registerEvents(new FormListener(), this);
@@ -128,44 +128,76 @@ public class CustomFormMain extends PluginBase {
         return (pl != null);
     }
 
-    public void loadScriptMineCartWindows() {
-        ChestMenuMain.mineCartChests.clear();
-        ChestMenuMain.chestMenus.clear();
+    public void loadScriptMineCartWindows(File dic) {
         ChestMenuMain.mineCartChests.forEach((player, playerMineCartChestTempData) -> {
             player.removeWindow(playerMineCartChestTempData.getEntityMinecartChest().getInventory());
             ChestMenuMain.closeDoubleChestInventory(player);
         });
-        File dic = new File(path + "/minecart_chest_windows/");
+        ChestMenuMain.mineCartChests.clear();
+        ChestMenuMain.chestMenus.clear();
         for (File file : Objects.requireNonNull(dic.listFiles())) {
+            if (file.isDirectory()) {
+                String subFolder = file.getName() + "/";
+                for (File subFolderFile : Objects.requireNonNull(file.listFiles())) {
+                    loadScriptMinecartWindow(subFolderFile, subFolder);
+                }
+            } else {
+                loadScriptMinecartWindow(file, "");
+            }
+        }
+        this.getLogger().info(language.translateString(null, "chest_window_minecart_loaded_in_total", ChestMenuMain.chestMenus.keySet().size()));
+    }
+
+    protected void loadScriptMinecartWindow(File file, String prefix) {
+        if (file.isDirectory()) {
+            for (File subFolderFile : Objects.requireNonNull(file.listFiles())) {
+                loadScriptMinecartWindow(subFolderFile, prefix + file.getName() + "/");
+            }
+        } else {
             Map<String, Object> mainMap = FormCreator.convertConfigToMap(file);
-            String identifier = file.getName().replace(".json", "").replace(".yml", "");
+            String identifier = prefix + file.getName().replace(".json", "").replace(".yml", "");
             if (ChestMenuMain.registerMinecartChestMenu(identifier, mainMap)) {
                 this.getLogger().info(language.translateString(null, "chest_window_minecart_loaded", identifier));
             } else {
                 this.getLogger().error(language.translateString(null, "chest_window_minecart_loaded_failed", identifier));
             }
         }
-        this.getLogger().info(language.translateString(null, "chest_window_minecart_loaded_in_total", ChestMenuMain.chestMenus.keySet().size()));
     }
 
     /**
      * This method is to read the script forms configuration,
      * and converted it to a ScriptForm-type variable.
      **/
-    public void loadScriptWindows() {
+    public void loadScriptWindows(File dic) {
         FormCreator.UI_CACHE.clear();
         FormCreator.formScripts.clear();
-        File dic = new File(path + "/forms/");
         for (File file : Objects.requireNonNull(dic.listFiles())) {
+            if (file.isDirectory()) {
+                String subFolder = file.getName() + "/";
+                for (File subFolderFile : Objects.requireNonNull(file.listFiles())) {
+                    loadScriptWindow(subFolderFile, subFolder);
+                }
+            } else {
+                loadScriptWindow(file, "");
+            }
+        }
+        this.getLogger().info(language.translateString(null, "form_loaded_in_total", FormCreator.formScripts.keySet().size()));
+    }
+
+    protected void loadScriptWindow(File file, String prefix) {
+        if (file.isDirectory()) {
+            for (File subFolderFile : Objects.requireNonNull(file.listFiles())) {
+                loadScriptWindow(subFolderFile, prefix + file.getName() + "/");
+            }
+        } else {
             Map<String, Object> mainMap = FormCreator.convertConfigToMap(file);
-            String identifier = file.getName().replace(".json", "").replace(".yml", "");
+            String identifier = prefix + file.getName().replace(".json", "").replace(".yml", "");
             if (FormCreator.loadForm(identifier, mainMap)) {
                 this.getLogger().info(language.translateString(null, "form_loaded", identifier));
             } else {
                 this.getLogger().error(language.translateString(null, "form_loaded_failed", identifier));
             }
         }
-        this.getLogger().info(language.translateString(null, "form_loaded_in_total", FormCreator.formScripts.keySet().size()));
     }
 
     private class Commands extends Command {
@@ -182,8 +214,8 @@ public class CustomFormMain extends PluginBase {
             switch (strings[0].toLowerCase()) {
                 case "reload":
                     if (commandSender.isOp() || !commandSender.isPlayer()) {
-                        loadScriptWindows();
-                        loadScriptMineCartWindows();
+                        loadScriptWindows(new File(path + "/forms/"));
+                        loadScriptMineCartWindows(new File(path + "/minecart_chest_windows/"));
                         commandSender.sendMessage(language.translateString(commandSender.isPlayer() ? (Player) commandSender : null, "plugin_reloaded"));
                     } else {
                         commandSender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", s));
