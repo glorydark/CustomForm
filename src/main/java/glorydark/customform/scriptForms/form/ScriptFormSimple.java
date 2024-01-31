@@ -17,6 +17,7 @@ import lombok.Data;
 import tip.utils.Api;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,12 +42,38 @@ public class ScriptFormSimple implements ScriptForm {
 
     private List<Requirements> openRequirements;
 
+    private List<PermissionEnum> openPermissions = new ArrayList<>();
+
+    private List<String> openPermissionWhitelist = new ArrayList<>();
+
     public ScriptFormSimple(Map<String, Object> config, List<SimpleResponseExecuteData> data, SoundData openSound, List<Requirements> openRequirements) {
         this.config = config;
         this.data = data;
         this.window = initWindow();
         this.openSound = openSound;
         this.openRequirements = openRequirements;
+        this.openPermissions = new ArrayList<>();
+        this.openPermissionWhitelist = new ArrayList<>();
+        if (config.containsKey("open_permissions")) {
+            Map<String, Object> openPermissionMap = (Map<String, Object>) config.getOrDefault("open_permissions", new HashMap<>());
+            List<String> permissions = (List<String>) openPermissionMap.getOrDefault("types", new ArrayList<>());
+            for (String permission : permissions) {
+                switch (permission) {
+                    case "op":
+                        openPermissions.add(PermissionEnum.OP);
+                        break;
+                    case "console":
+                        openPermissions.add(PermissionEnum.CONSOLE);
+                        break;
+                    case "only_user":
+                        openPermissions.add(PermissionEnum.ONLY_USER);
+                        break;
+                }
+            }
+            openPermissionWhitelist.addAll((List<String>) openPermissionMap.getOrDefault("whitelist", new ArrayList<>()));
+        } else {
+            openPermissions.add(PermissionEnum.DEFAULT);
+        }
     }
 
     public void execute(Player player, FormWindow respondWindow, FormResponse response, Object... params) {

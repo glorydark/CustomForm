@@ -29,10 +29,7 @@ import glorydark.customform.scriptForms.data.requirement.item.ItemRequirementDat
 import glorydark.customform.scriptForms.data.requirement.item.NeedItem;
 import glorydark.customform.scriptForms.data.requirement.tips.TipsRequirementData;
 import glorydark.customform.scriptForms.data.requirement.tips.TipsRequirementType;
-import glorydark.customform.scriptForms.form.ScriptForm;
-import glorydark.customform.scriptForms.form.ScriptFormCustom;
-import glorydark.customform.scriptForms.form.ScriptFormModal;
-import glorydark.customform.scriptForms.form.ScriptFormSimple;
+import glorydark.customform.scriptForms.form.*;
 import glorydark.customform.utils.CameraUtils;
 import lombok.Data;
 
@@ -84,10 +81,37 @@ public class FormCreator {
     /*
         By this function, you can show a certain form whose identifier is the same as identifier.
     */
-    public static void showScriptForm(Player player, String identifier) {
+    public static void showScriptForm(Player player, String identifier, boolean consoleExecute) {
         if (formScripts.containsKey(identifier)) {
             ScriptForm script = formScripts.get(identifier);
-            showScriptForm(player, script, identifier);
+            boolean allowOpen = false;
+            if (!script.getOpenPermissions().contains(PermissionEnum.DEFAULT) && !script.getOpenPermissionWhitelist().contains(player.getName())) {
+                for (PermissionEnum openPermission : script.getOpenPermissions()) {
+                    if (openPermission == PermissionEnum.ONLY_USER) {
+                        if (!player.isOp()) {
+                            allowOpen = true;
+                            break;
+                        }
+                    } else if (openPermission == PermissionEnum.OP) {
+                        if (player.isOp()) {
+                            allowOpen = true;
+                            break;
+                        }
+                    } else if (openPermission == PermissionEnum.CONSOLE) {
+                        if (consoleExecute) {
+                            allowOpen = true;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                allowOpen = true;
+            }
+            if (allowOpen) {
+                showScriptForm(player, script, identifier);
+            } else {
+                player.sendMessage(CustomFormMain.language.translateString(player, "command_no_permission"));
+            }
         }
     }
 

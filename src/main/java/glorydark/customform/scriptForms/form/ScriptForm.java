@@ -21,4 +21,8 @@ public interface ScriptForm {
     long getStartMillis();
 
     long getExpiredMillis();
+
+    List<PermissionEnum> getOpenPermissions();
+
+    List<String> getOpenPermissionWhitelist();
 }

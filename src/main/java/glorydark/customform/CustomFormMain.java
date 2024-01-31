@@ -1,6 +1,7 @@
 package glorydark.customform;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.lang.TranslationContainer;
@@ -224,10 +225,17 @@ public class CustomFormMain extends PluginBase {
                 case "show":
                     if (commandSender.isPlayer()) {
                         if (strings.length == 2) {
-                            FormCreator.showScriptForm((Player) commandSender, strings[1]);
+                            FormCreator.showScriptForm((Player) commandSender, strings[1], false);
                         }
                     } else {
-                        commandSender.sendMessage(language.translateString(null, "command_use_in_game"));
+                        if (strings.length == 3) {
+                            Player player = Server.getInstance().getPlayer(strings[1]);
+                            if (player != null) {
+                                FormCreator.showScriptForm(player, strings[2], true);
+                            } else {
+                                commandSender.sendMessage(language.translateString(null, "command_player_not_found", strings[1]));
+                            }
+                        }
                     }
                     break;
                 case "showminecartmenu":
@@ -236,7 +244,7 @@ public class CustomFormMain extends PluginBase {
                             ChestMenuMain.showMinecartChestMenu((Player) commandSender, strings[1]);
                         }
                     } else {
-                        commandSender.sendMessage(language.translateString(null, "command_use_in_game"));
+                        commandSender.sendMessage(language.translateString(null, "command_player_not_found", strings[1]));
                     }
                     break;
                 case "setlang":

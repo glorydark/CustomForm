@@ -18,9 +18,7 @@ import lombok.Data;
 import tip.utils.Api;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Data
 public class ScriptFormCustom implements ScriptForm {
@@ -47,17 +45,43 @@ public class ScriptFormCustom implements ScriptForm {
 
     private List<Requirements> openRequirements;
 
+    private List<PermissionEnum> openPermissions = new ArrayList<>();
+
+    private List<String> openPermissionWhitelist = new ArrayList<>();
+
     public ScriptFormCustom(Map<String, Object> config, List<ResponseExecuteData> data, SoundData openSound, List<Requirements> openRequirements) {
         this.config = config;
         this.data = data;
         this.window = initWindow();
         this.openSound = openSound;
+        this.openPermissions = new ArrayList<>();
+        this.openPermissionWhitelist = new ArrayList<>();
         if (config.containsKey("global_responses")) {
             Map<String, List<String>> globalResponses = (Map<String, List<String>>) config.get("global_responses");
             globalCommands = globalResponses.getOrDefault("commands", new ArrayList<>());
             globalMessages = globalResponses.getOrDefault("messages", new ArrayList<>());
         }
         this.openRequirements = openRequirements;
+        if (config.containsKey("open_permissions")) {
+            Map<String, Object> openPermissionMap = (Map<String, Object>) config.getOrDefault("open_permissions", new HashMap<>());
+            List<String> permissions = (List<String>) openPermissionMap.getOrDefault("types", new ArrayList<>());
+            for (String permission : permissions) {
+                switch (permission) {
+                    case "op":
+                        openPermissions.add(PermissionEnum.OP);
+                        break;
+                    case "console":
+                        openPermissions.add(PermissionEnum.CONSOLE);
+                        break;
+                    case "only_user":
+                        openPermissions.add(PermissionEnum.ONLY_USER);
+                        break;
+                }
+            }
+            openPermissionWhitelist.addAll((List<String>) openPermissionMap.getOrDefault("whitelist", new ArrayList<>()));
+        } else {
+            openPermissions.add(PermissionEnum.DEFAULT);
+        }
     }
 
     public void execute(Player player, FormWindow respondWindow, FormResponse response, Object... params) {
