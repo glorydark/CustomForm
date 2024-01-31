@@ -65,7 +65,7 @@ public class ScriptFormSimple implements ScriptForm {
                     case "console":
                         openPermissions.add(PermissionEnum.CONSOLE);
                         break;
-                    case "only_user":
+                    case "user-only":
                         openPermissions.add(PermissionEnum.ONLY_USER);
                         break;
                 }
