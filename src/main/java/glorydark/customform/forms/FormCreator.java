@@ -365,7 +365,7 @@ public class FormCreator {
 
                 List<Requirements> openRequirementsList = new ArrayList<>();
                 if (config.containsKey("open_requirements")) {
-                    Map<String, Object> requirementData = (Map<String, Object>) config.get("requirements");
+                    Map<String, Object> requirementData = (Map<String, Object>) config.get("open_requirements");
                     for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
                         openRequirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                     }
@@ -510,7 +510,7 @@ public class FormCreator {
                 }
                 openRequirementsList = new ArrayList<>();
                 if (config.containsKey("open_requirements")) {
-                    Map<String, Object> requirementData = (Map<String, Object>) config.get("requirements");
+                    Map<String, Object> requirementData = (Map<String, Object>) config.get("open_requirements");
                     for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
                         openRequirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                     }
@@ -543,7 +543,7 @@ public class FormCreator {
                 }
                 openRequirementsList = new ArrayList<>();
                 if (config.containsKey("open_requirements")) {
-                    Map<String, Object> requirementData = (Map<String, Object>) config.get("requirements");
+                    Map<String, Object> requirementData = (Map<String, Object>) config.get("open_requirements");
                     for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
                         openRequirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                     }
