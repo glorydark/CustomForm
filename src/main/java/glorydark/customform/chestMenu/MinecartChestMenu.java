@@ -11,6 +11,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.DyeColor;
 import glorydark.customform.CustomFormMain;
+import glorydark.customform.entity.FormEntityMinecartChest;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -59,7 +60,7 @@ public class MinecartChestMenu {
     }
 
     public void show(Player player, int page) {
-        EntityMinecartChest chest = new EntityMinecartChest(player.getChunk(), EntityMinecartChest.getDefaultNBT(player.getPosition()));
+        FormEntityMinecartChest chest = new FormEntityMinecartChest(player.getChunk(), EntityMinecartChest.getDefaultNBT(player.getPosition()));
         chest.namedTag.putBoolean("custom_form_entity", true);
         chest.namedTag.putInt("page", 1);
         chest.namedTag.putList(new ListTag("Items"));

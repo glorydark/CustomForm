@@ -10,7 +10,6 @@ import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.inventory.InventoryClickEvent;
-import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
 import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.event.player.PlayerInteractEntityEvent;
@@ -69,7 +68,7 @@ public class ChestMenuListener implements Listener {
                                 int clickId = event.getSlot() + (page - 1) * 18;
                                 ChestMenuComponent component = data.getMenu().getChestMenuComponents().get(clickId);
                                 component.execute(event.getPlayer());
-                                event.getPlayer().removeWindow(event.getInventory());
+                                ChestMenuMain.closeDoubleChestInventory(event.getPlayer());
                             }
                             break;
                     }
@@ -83,7 +82,7 @@ public class ChestMenuListener implements Listener {
                             int clickId = data.getDoubleCheckComponentId();
                             ChestMenuComponent component = data.getMenu().getChestMenuComponents().get(clickId);
                             component.execute(event.getPlayer());
-                            event.getPlayer().removeWindow(event.getInventory());
+                            ChestMenuMain.closeDoubleChestInventory(event.getPlayer());
                             break;
                     }
                 }
@@ -96,16 +95,6 @@ public class ChestMenuListener implements Listener {
     public void InventoryMoveItemEvent(InventoryMoveItemEvent event) {
         if (isCustomFormInventory(event.getInventory())) {
             event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void InventoryCloseEvent(InventoryCloseEvent event) {
-        if (ChestMenuMain.mineCartChests.containsKey(event.getPlayer())) {
-            EntityMinecartChest chest = ChestMenuMain.mineCartChests.get(event.getPlayer()).getEntityMinecartChest();
-            if (event.getInventory().getHolder().equals(chest)) {
-                ChestMenuMain.closeDoubleChestInventory(event.getPlayer());
-            }
         }
     }
 
