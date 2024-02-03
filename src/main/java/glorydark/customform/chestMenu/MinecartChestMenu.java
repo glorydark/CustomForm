@@ -65,7 +65,7 @@ public class MinecartChestMenu {
         chest.namedTag.putInt("page", 1);
         chest.namedTag.putList(new ListTag("Items"));
         chest.namedTag.putByte("Slot", 27);
-        chest.namedTag.putBoolean("Invulnerable", true);
+        chest.namedTag.putBoolean( "Invulnerable", true);
         chest.namedTag.putBoolean("CustomDisplayTile", false);
         chest.setNameTag(this.title);
         chest.getInventory().setContents(getItems(player, page));
@@ -73,7 +73,6 @@ public class MinecartChestMenu {
         chest.setNameTagAlwaysVisible(false);
         chest.setImmobile(true);
         chest.spawnTo(player);
-        chest.addEffect(Effect.getEffect(Effect.INVISIBILITY).setDuration(999999).setVisible(false));
         player.addWindow(chest.getInventory());
         ChestMenuMain.mineCartChests.put(player, new ChestMenuMain.PlayerMinecartChestTempData(chest, this));
     }

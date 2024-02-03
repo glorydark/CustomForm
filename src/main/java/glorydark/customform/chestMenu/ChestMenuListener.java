@@ -9,9 +9,7 @@ import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.event.inventory.InventoryClickEvent;
-import cn.nukkit.event.inventory.InventoryMoveItemEvent;
-import cn.nukkit.event.inventory.InventoryPickupItemEvent;
+import cn.nukkit.event.inventory.*;
 import cn.nukkit.event.player.PlayerInteractEntityEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.inventory.Inventory;
@@ -28,8 +26,25 @@ public class ChestMenuListener implements Listener {
     }
 
     @EventHandler
+    public void InventoryMoveItemEvent(InventoryMoveItemEvent event) {
+        if (isCustomFormInventory(event.getInventory())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void InventoryTransactionEvent(InventoryTransactionEvent event) {
+        for (Inventory inventory : event.getTransaction().getInventories()) {
+            if (isCustomFormInventory(inventory)) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
     public void InventoryClickEvent(InventoryClickEvent event) {
         if (isCustomFormInventory(event.getInventory())) {
+            event.setCancelled(true);
             if (event.getInventory() instanceof MinecartChestInventory) {
                 EntityMinecartChest entity = ((MinecartChestInventory) event.getInventory()).getHolder();
                 ChestMenuMain.PlayerMinecartChestTempData data = ChestMenuMain.mineCartChests.get(event.getPlayer());
@@ -86,20 +101,19 @@ public class ChestMenuListener implements Listener {
                             break;
                     }
                 }
-                event.setCancelled(true);
             }
         }
     }
 
     @EventHandler
-    public void InventoryMoveItemEvent(InventoryMoveItemEvent event) {
-        if (isCustomFormInventory(event.getInventory())) {
-            event.setCancelled(true);
+    public void PlayerQuitEvent(PlayerQuitEvent event) {
+        if (ChestMenuMain.mineCartChests.containsKey(event.getPlayer())) {
+            ChestMenuMain.closeDoubleChestInventory(event.getPlayer());
         }
     }
 
     @EventHandler
-    public void PlayerQuitEvent(PlayerQuitEvent event) {
+    public void InventoryCloseEvent(InventoryCloseEvent event) {
         if (ChestMenuMain.mineCartChests.containsKey(event.getPlayer())) {
             ChestMenuMain.closeDoubleChestInventory(event.getPlayer());
         }
