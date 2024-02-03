@@ -67,6 +67,9 @@ public class CustomFormCommands extends Command {
                 }
                 break;
             case "executewithdelay":
+                if (commandSender.isPlayer() && !commandSender.isOp()) {
+                    return false;
+                }
                 if (strings.length == 4) {
                     CommandSender sender;
                     if ("console".equals(strings[1])) {
