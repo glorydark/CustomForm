@@ -42,9 +42,9 @@ public class ScriptFormSimple implements ScriptForm {
 
     private List<Requirements> openRequirements;
 
-    private List<PermissionEnum> openPermissions = new ArrayList<>();
+    private List<PermissionEnum> openPermissions;
 
-    private List<String> openPermissionWhitelist = new ArrayList<>();
+    private List<String> openPermissionWhitelist;
 
     public ScriptFormSimple(Map<String, Object> config, List<SimpleResponseExecuteData> data, SoundData openSound, List<Requirements> openRequirements) {
         this.config = config;

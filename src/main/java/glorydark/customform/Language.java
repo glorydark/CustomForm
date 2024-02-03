@@ -6,7 +6,6 @@ import glorydark.customform.annotations.Developing;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -34,31 +33,18 @@ public class Language {
     }
 
     public String translateString(Player player, String key, Object... params) {
-        String originText = (String) lang.getOrDefault(getPlayerLanguage(player), new HashMap<>()).getOrDefault(key, "Key not found!");
+        String originText = (String) lang.getOrDefault(getLang(player), new HashMap<>()).getOrDefault(key, "Key not found!");
         for (int i = 1; i <= params.length; i++) {
             originText = originText.replaceAll("%" + i + "%", params[i - 1].toString());
         }
         return originText;
     }
 
-    public String getPlayerLanguage(Player player) {
-        String langName;
+    private String getLang(Player player) {
         if (player == null) {
-            langName = defaultLang;
-        } else {
-            langName = (String) playerLanguage.getOrDefault(player.getName(), "zh_cn");
+            return defaultLang;
         }
-        return lang.containsKey(langName) ? langName : defaultLang;
-    }
-
-    public boolean setPlayerLanguage(String playerName, String langName) {
-        if (lang.containsKey(langName)) {
-            playerLanguage.put(playerName, langName);
-            Config config = new Config(playerLanguageConfigPath, Config.YAML);
-            config.setAll((LinkedHashMap<String, Object>) playerLanguage);
-            config.save();
-            return true;
-        }
-        return false;
+        String languageCode = player.getLoginChainData().getLanguageCode();
+        return lang.containsKey(languageCode) ? languageCode : defaultLang;
     }
 }

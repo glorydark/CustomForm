@@ -45,9 +45,9 @@ public class ScriptFormCustom implements ScriptForm {
 
     private List<Requirements> openRequirements;
 
-    private List<PermissionEnum> openPermissions = new ArrayList<>();
+    private List<PermissionEnum> openPermissions;
 
-    private List<String> openPermissionWhitelist = new ArrayList<>();
+    private List<String> openPermissionWhitelist;
 
     public ScriptFormCustom(Map<String, Object> config, List<ResponseExecuteData> data, SoundData openSound, List<Requirements> openRequirements) {
         this.config = config;

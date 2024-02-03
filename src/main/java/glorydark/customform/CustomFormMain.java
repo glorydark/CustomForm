@@ -1,17 +1,12 @@
 package glorydark.customform;
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
-import cn.nukkit.command.Command;
-import cn.nukkit.command.CommandSender;
-import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
-import cn.nukkit.utils.TextFormat;
 import com.smallaswater.npc.variable.VariableManage;
 import glorydark.customform.chestMenu.ChestMenuListener;
 import glorydark.customform.chestMenu.ChestMenuMain;
+import glorydark.customform.commands.CustomFormCommands;
 import glorydark.customform.forms.FormCreator;
 import glorydark.customform.forms.FormListener;
 import tip.utils.Api;
@@ -24,7 +19,7 @@ public class CustomFormMain extends PluginBase {
 
     public static String path;
 
-    public static Plugin plugin;
+    public static CustomFormMain plugin;
 
     public static boolean enableDoubleCheckMenu;
 
@@ -103,7 +98,7 @@ public class CustomFormMain extends PluginBase {
         this.loadScriptMineCartWindows(new File(path + "/minecart_chest_windows/"));
         this.loadScriptWindows(new File(path + "/forms/"));
         this.getLogger().info("CustomForm onLoad");
-        this.getServer().getCommandMap().register("", new Commands("form"));
+        this.getServer().getCommandMap().register("", new CustomFormCommands());
         this.getServer().getPluginManager().registerEvents(new FormListener(), this);
         this.getServer().getPluginManager().registerEvents(new ChestMenuListener(), this);
     }
@@ -198,76 +193,6 @@ public class CustomFormMain extends PluginBase {
             } else {
                 this.getLogger().error(language.translateString(null, "form_loaded_failed", identifier));
             }
-        }
-    }
-
-    private class Commands extends Command {
-
-        public Commands(String name) {
-            super(name);
-        }
-
-        @Override
-        public boolean execute(CommandSender commandSender, String s, String[] strings) {
-            if (strings.length == 0) {
-                return false;
-            }
-            switch (strings[0].toLowerCase()) {
-                case "reload":
-                    if (commandSender.isOp() || !commandSender.isPlayer()) {
-                        loadScriptWindows(new File(path + "/forms/"));
-                        loadScriptMineCartWindows(new File(path + "/minecart_chest_windows/"));
-                        commandSender.sendMessage(language.translateString(commandSender.isPlayer() ? (Player) commandSender : null, "plugin_reloaded"));
-                    } else {
-                        commandSender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", s));
-                    }
-                    break;
-                case "show":
-                    if (commandSender.isPlayer()) {
-                        if (strings.length == 2) {
-                            FormCreator.showScriptForm((Player) commandSender, strings[1], false);
-                        }
-                    } else {
-                        if (strings.length == 3) {
-                            Player player = Server.getInstance().getPlayer(strings[1]);
-                            if (player != null) {
-                                FormCreator.showScriptForm(player, strings[2], true);
-                            } else {
-                                commandSender.sendMessage(language.translateString(null, "command_player_not_found", strings[1]));
-                            }
-                        }
-                    }
-                    break;
-                case "showminecartmenu":
-                    if (commandSender.isPlayer()) {
-                        if (strings.length == 2) {
-                            ChestMenuMain.showMinecartChestMenu((Player) commandSender, strings[1]);
-                        }
-                    } else {
-                        commandSender.sendMessage(language.translateString(null, "command_player_not_found", strings[1]));
-                    }
-                    break;
-                case "setlang":
-                    if (commandSender.isOp() || !commandSender.isPlayer()) {
-                        if (strings.length == 3) {
-                            if (language.setPlayerLanguage(strings[1], strings[2])) {
-                                language.translateString(null, "language_set", strings[1], strings[2]);
-                            } else {
-                                language.translateString(null, "language_set_failed", strings[1], strings[2]);
-                            }
-                        }
-                    } else {
-                        commandSender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", s));
-                    }
-                    break;
-                case "list":
-                    commandSender.sendMessage(FormCreator.formScripts.keySet().size() + " form scripts loaded: ");
-                    for (String string : FormCreator.formScripts.keySet()) {
-                        commandSender.sendMessage("- " + string);
-                    }
-                    break;
-            }
-            return true;
         }
     }
 }
