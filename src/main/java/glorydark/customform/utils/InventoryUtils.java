@@ -62,38 +62,18 @@ public class InventoryUtils {
             item.setCompoundTag(hexStringToBytes(strings[3]));
             return item;
         } else {
-            if (strings.length == 5) {
-                // minecraft:test:0:1:null
-                int countIndex = strings.length - 2;
-                StringBuilder identifierAndMeta = new StringBuilder();
-                for (int i = 0; i < strings.length - 2; i++) {
-                    identifierAndMeta.append(strings[i]);
-                    if (i != strings.length - 3) {
-                        identifierAndMeta.append(":");
-                    }
+            int countIndex = strings.length - 2;
+            StringBuilder identifierAndMeta = new StringBuilder();
+            for (int i = 0; i < strings.length - 2; i++) {
+                identifierAndMeta.append(strings[i]);
+                if (i != strings.length - 3) {
+                    identifierAndMeta.append(":");
                 }
-                Item item = Item.fromString(identifierAndMeta.toString());
-                item.setCount(Integer.parseInt(strings[countIndex]));
-                item.setCompoundTag(hexStringToBytes(strings[countIndex+1]));
-                // CustomFormMain.plugin.getLogger().info(item.toString());
-                return item;
-            } else if (strings.length == 4) {
-                // minecraft:test:1:null
-                int countIndex = strings.length - 2;
-                StringBuilder identifierAndMeta = new StringBuilder();
-                for (int i = 0; i < strings.length - 2; i++) {
-                    identifierAndMeta.append(strings[i]);
-                    if (i != strings.length - 3) {
-                        identifierAndMeta.append(":");
-                    }
-                }
-                Item item = Item.fromString(identifierAndMeta.toString());
-                item.setCount(Integer.parseInt(strings[countIndex]));
-                item.setCompoundTag(hexStringToBytes(strings[countIndex+1]));
-                // CustomFormMain.plugin.getLogger().info(item.toString());
-                return item;
             }
+            Item item = Item.fromString(identifierAndMeta.toString());
+            item.setCount(Integer.parseInt(strings[countIndex]));
+            item.setCompoundTag(hexStringToBytes(strings[countIndex+1]));
+            return item;
         }
-        return new BlockUnknown(999).toItem();
     }
 }

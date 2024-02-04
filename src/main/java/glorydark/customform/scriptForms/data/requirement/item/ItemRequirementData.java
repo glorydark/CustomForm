@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
 import glorydark.customform.CustomFormMain;
+import glorydark.customform.utils.NukkitTypeUtils;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -19,9 +20,12 @@ public class ItemRequirementData {
 
     private boolean checkTag;
 
-    public ItemRequirementData(boolean reduce, boolean checkTag) {
+    private boolean checkCustomName;
+
+    public ItemRequirementData(boolean reduce, boolean checkTag, boolean checkCustomName) {
         this.reduce = reduce;
         this.checkTag = checkTag;
+        this.checkCustomName = checkCustomName;
     }
 
     public boolean checkItemIsPossess(Player player, boolean reducing, int multiply) {
@@ -81,15 +85,43 @@ public class ItemRequirementData {
             for (Map.Entry<Integer, Item> mapEntry : player.getInventory().getContents().entrySet()) {
                 Item entryValue = mapEntry.getValue();
                 if (isCheckTag()) {
-                    CompoundTag c1 = entryValue.getNamedTag();
-                    CompoundTag c2 = item.getNamedTag();
-                    boolean tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
-                    if (entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage() && tagEqual) {
-                        output.setCount(output.getCount() + entryValue.getCount());
+                    switch (NukkitTypeUtils.getNukkitType()) {
+                        case POWER_NUKKIT_X:
+                        case POWER_NUKKIT_X_2:
+                        case MOT:
+                            CompoundTag c1 = entryValue.getNamedTag();
+                            CompoundTag c2 = item.getNamedTag();
+                            boolean tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
+                            if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && entryValue.getDamage() == item.getDamage() && tagEqual) {
+                                output.setCount(output.getCount() + entryValue.getCount());
+                            }
+                            break;
+                        default:
+                            c1 = entryValue.getNamedTag();
+                            c2 = item.getNamedTag();
+                            tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
+                            if (entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage() && tagEqual) {
+                                output.setCount(output.getCount() + entryValue.getCount());
+                            }
+                            break;
                     }
                 } else {
-                    if (entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage()) {
-                        output.setCount(output.getCount() + entryValue.getCount());
+                    if (checkCustomName && entryValue.getCustomName().equals(item.getCustomName())) {
+                        continue;
+                    }
+                    switch (NukkitTypeUtils.getNukkitType()) {
+                        case POWER_NUKKIT_X:
+                        case POWER_NUKKIT_X_2:
+                        case MOT:
+                            if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && entryValue.getDamage() == item.getDamage()) {
+                                output.setCount(output.getCount() + entryValue.getCount());
+                            }
+                            break;
+                        default:
+                            if (entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage()) {
+                                output.setCount(output.getCount() + entryValue.getCount());
+                            }
+                            break;
                     }
                 }
             }
@@ -101,5 +133,9 @@ public class ItemRequirementData {
 
     public boolean isCheckTag() {
         return checkTag;
+    }
+
+    public boolean isCheckCustomName() {
+        return checkCustomName;
     }
 }
