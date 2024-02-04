@@ -22,10 +22,13 @@ public class ItemRequirementData {
 
     private boolean checkCustomName;
 
-    public ItemRequirementData(boolean reduce, boolean checkTag, boolean checkCustomName) {
+    private boolean checkDamage;
+
+    public ItemRequirementData(boolean reduce, boolean checkTag, boolean checkCustomName, boolean checkDamage) {
         this.reduce = reduce;
         this.checkTag = checkTag;
         this.checkCustomName = checkCustomName;
+        this.checkDamage = checkDamage;
     }
 
     public boolean checkItemIsPossess(Player player, boolean reducing, int multiply) {
@@ -92,7 +95,10 @@ public class ItemRequirementData {
                             CompoundTag c1 = entryValue.getNamedTag();
                             CompoundTag c2 = item.getNamedTag();
                             boolean tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
-                            if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && entryValue.getDamage() == item.getDamage() && tagEqual) {
+                            if (checkDamage && entryValue.getDamage() != item.getDamage()) {
+                                continue;
+                            }
+                            if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && tagEqual) {
                                 output.setCount(output.getCount() + entryValue.getCount());
                             }
                             break;
@@ -100,7 +106,10 @@ public class ItemRequirementData {
                             c1 = entryValue.getNamedTag();
                             c2 = item.getNamedTag();
                             tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
-                            if (entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage() && tagEqual) {
+                            if (checkDamage && entryValue.getDamage() != item.getDamage()) {
+                                continue;
+                            }
+                            if (entryValue.getId() == item.getId() && tagEqual) {
                                 output.setCount(output.getCount() + entryValue.getCount());
                             }
                             break;

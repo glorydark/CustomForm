@@ -5,10 +5,12 @@ import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.utils.Config;
 import cn.nukkit.utils.TextFormat;
 import glorydark.customform.CustomFormMain;
 import glorydark.customform.chestMenu.ChestMenuMain;
 import glorydark.customform.forms.FormCreator;
+import glorydark.customform.utils.InventoryUtils;
 
 import java.io.File;
 
@@ -80,6 +82,11 @@ public class CustomFormCommands extends Command {
                     Server.getInstance().getScheduler().scheduleDelayedTask(CustomFormMain.plugin, () -> Server.getInstance().dispatchCommand(sender, strings[2]), Integer.parseInt(strings[3]));
                 }
                 break;
+            case "savenbt":
+                if (commandSender.isPlayer()) {
+                    Config config = new Config(CustomFormMain.path + "/save_nbt_cache.yml", Config.YAML);
+                    config.set(strings[1], InventoryUtils.saveItemToString(((Player) commandSender).getInventory().getItemInHand()));
+                }
         }
         return true;
     }

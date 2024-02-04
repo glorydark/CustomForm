@@ -2,6 +2,10 @@ package glorydark.customform.utils;
 
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.item.Item;
+import cn.nukkit.utils.Config;
+import glorydark.customform.CustomFormMain;
+
+import java.io.File;
 
 public class InventoryUtils {
 
@@ -41,15 +45,29 @@ public class InventoryUtils {
     }
 
     public static String saveItemToString(Item item) {
-        if (item.hasCompoundTag()) {
-            return item.getId() + ":" + item.getDamage() + ":" + item.getCount() + ":" + bytesToHexString(item.getCompoundTag());
-        } else {
-            return item.getId() + ":" + item.getDamage() + ":" + item.getCount() + ":null";
+        switch (NukkitTypeUtils.getNukkitType()) {
+            case POWER_NUKKIT_X:
+            case POWER_NUKKIT_X_2:
+            case MOT:
+                if (item.hasCompoundTag()) {
+                    return item.getId() + ":" + item.getDamage() + ":" + item.getCount() + ":" + bytesToHexString(item.getCompoundTag());
+                } else {
+                    return item.getId() + ":" + item.getDamage() + ":" + item.getCount() + ":null";
+                }
+            default:
+                if (item.hasCompoundTag()) {
+                    return item.getNamespaceId() + ":" + item.getDamage() + ":" + item.getCount() + ":" + bytesToHexString(item.getCompoundTag());
+                } else {
+                    return item.getNamespaceId() + ":" + item.getDamage() + ":" + item.getCount() + ":null";
+                }
         }
     }
 
     public static Item toItem(String itemString) {
         String[] strings = itemString.split(":");
+        if (strings.length < 4) {
+            return getItemFromConfig(itemString);
+        }
         boolean isNumericId = false;
         try {
             int test = Integer.parseInt(strings[0]);
@@ -75,5 +93,16 @@ public class InventoryUtils {
             item.setCompoundTag(hexStringToBytes(strings[countIndex+1]));
             return item;
         }
+    }
+
+    public static Item getItemFromConfig(String key) {
+        File file = new File(CustomFormMain.path + "/save_nbt_cache.yml");
+        if (file.exists()) {
+            Config config = new Config(file, Config.YAML);
+            if (config.exists(key)) {
+                return toItem(config.getString(key));
+            }
+        }
+        return null;
     }
 }
