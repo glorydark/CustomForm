@@ -16,7 +16,13 @@ public class NeedItem {
 
     private Item finalComparedItem = null;
 
-    private Item hasItem;
+    private List<Item> hasItems = new ArrayList<>();
+
+    private boolean checkTag = true;
+
+    private boolean checkCustomName = false;
+
+    private boolean checkDamage = true;
 
     public NeedItem(String item, List<String> alternatives) {
         this.item = InventoryUtils.toItem(item);

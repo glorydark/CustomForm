@@ -188,6 +188,9 @@ public class FormCreator {
                     if (needItemMapList.size() > 0) {
                         for (Map<String, Object> subMap : needItemMapList) {
                             NeedItem item = new NeedItem((String) subMap.get("item"), (List<String>) subMap.getOrDefault("alternatives", new ArrayList<>()));
+                            item.setCheckDamage((Boolean) subMap.getOrDefault("check_damage", true));
+                            item.setCheckTag((Boolean) subMap.getOrDefault("check_tag", false));
+                            item.setCheckCustomName((Boolean) subMap.getOrDefault("check_custom_name", true));
                             needItems.add(item);
                         }
                     }
