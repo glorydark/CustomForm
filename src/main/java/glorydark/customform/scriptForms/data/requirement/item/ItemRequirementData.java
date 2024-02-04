@@ -85,7 +85,8 @@ public class ItemRequirementData {
         if (item == null) {
             return null;
         }
-        Item output = item.clone();
+        Item output = Item.get(item.getId(), item.getDamage(), item.getCount());
+        output.setCompoundTag(item.getCompoundTag());
         output.setCount(0);
         for (Map.Entry<Integer, Item> mapEntry : player.getInventory().getContents().entrySet()) {
             Item entryValue = mapEntry.getValue();
