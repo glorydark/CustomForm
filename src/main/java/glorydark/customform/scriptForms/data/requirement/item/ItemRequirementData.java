@@ -18,17 +18,8 @@ public class ItemRequirementData {
 
     private List<NeedItem> needItems = new ArrayList<>();
 
-    private boolean checkTag;
-
-    private boolean checkCustomName;
-
-    private boolean checkDamage;
-
-    public ItemRequirementData(boolean reduce, boolean checkTag, boolean checkCustomName, boolean checkDamage) {
+    public ItemRequirementData(boolean reduce) {
         this.reduce = reduce;
-        this.checkTag = checkTag;
-        this.checkCustomName = checkCustomName;
-        this.checkDamage = checkDamage;
     }
 
     public boolean checkItemIsPossess(Player player, boolean reducing, int multiply) {
@@ -105,7 +96,7 @@ public class ItemRequirementData {
         List<Item> hasItems = new ArrayList<>();
         for (Map.Entry<Integer, Item> mapEntry : player.getInventory().getContents().entrySet()) {
             Item entryValue = mapEntry.getValue();
-            if (checkTag && needItem.isCheckTag()) {
+            if (needItem.isCheckTag()) {
                 switch (NukkitTypeUtils.getNukkitType()) {
                     case POWER_NUKKIT_X:
                     case POWER_NUKKIT_X_2:
@@ -113,7 +104,7 @@ public class ItemRequirementData {
                         CompoundTag c1 = entryValue.getNamedTag();
                         CompoundTag c2 = item.getNamedTag();
                         boolean tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
-                        if ((checkDamage && needItem.isCheckDamage()) && entryValue.getDamage() != item.getDamage()) {
+                        if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
                             continue;
                         }
                         if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && tagEqual) {
@@ -124,7 +115,7 @@ public class ItemRequirementData {
                         c1 = entryValue.getNamedTag();
                         c2 = item.getNamedTag();
                         tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
-                        if ((checkDamage && needItem.isCheckDamage()) && entryValue.getDamage() != item.getDamage()) {
+                        if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
                             continue;
                         }
                         if (entryValue.getId() == item.getId() && tagEqual) {
@@ -133,7 +124,7 @@ public class ItemRequirementData {
                         break;
                 }
             } else {
-                if ((checkCustomName && needItem.isCheckCustomName()) && !entryValue.getCustomName().equals(item.getCustomName())) {
+                if (needItem.isCheckCustomName() && !entryValue.getCustomName().equals(item.getCustomName())) {
                     player.sendMessage(entryValue.getCustomName());
                     player.sendMessage(item.getCustomName());
                     continue;
@@ -142,7 +133,7 @@ public class ItemRequirementData {
                     case POWER_NUKKIT_X:
                     case POWER_NUKKIT_X_2:
                     case MOT:
-                        if ((checkDamage && needItem.isCheckDamage()) && entryValue.getDamage() != item.getDamage()) {
+                        if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
                             continue;
                         }
                         if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && entryValue.getDamage() == item.getDamage()) {
@@ -150,7 +141,7 @@ public class ItemRequirementData {
                         }
                         break;
                     default:
-                        if ((checkDamage && needItem.isCheckDamage()) && entryValue.getDamage() != item.getDamage()) {
+                        if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
                             continue;
                         }
                         if (entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage()) {

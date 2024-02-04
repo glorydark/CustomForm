@@ -182,7 +182,7 @@ public class FormCreator {
                     data.setExtraData(new String[]{(String) map.get("currencyType")});
                     break;
                 case "Item":
-                    itemRequirementData = new ItemRequirementData((boolean) map.getOrDefault("reduce", true), (Boolean) map.getOrDefault("check_tag", true), (Boolean) map.getOrDefault("check_custom_name", false), (Boolean) map.getOrDefault("check_damage", true));
+                    itemRequirementData = new ItemRequirementData((boolean) map.getOrDefault("reduce", true));
                     List<NeedItem> needItems = new ArrayList<>();
                     List<Map<String, Object>> needItemMapList = (List<Map<String, Object>>) map.getOrDefault("costs", new ArrayList<>());
                     if (needItemMapList.size() > 0) {
