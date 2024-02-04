@@ -83,10 +83,14 @@ public class CustomFormCommands extends Command {
                 }
                 break;
             case "savenbt":
-                if (commandSender.isPlayer()) {
-                    Config config = new Config(CustomFormMain.path + "/save_nbt_cache.yml", Config.YAML);
-                    config.set(strings[1], InventoryUtils.saveItemToString(((Player) commandSender).getInventory().getItemInHand()));
+                if (strings.length == 2) {
+                    if (commandSender.isPlayer() && commandSender.isOp()) {
+                        Config config = new Config(CustomFormMain.path + "/save_nbt_cache.yml", Config.YAML);
+                        config.set(strings[1], InventoryUtils.saveItemToString(((Player) commandSender).getInventory().getItemInHand()));
+                        config.save();
+                    }
                 }
+                break;
         }
         return true;
     }
