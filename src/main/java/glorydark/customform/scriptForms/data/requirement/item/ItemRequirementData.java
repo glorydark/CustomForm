@@ -84,7 +84,7 @@ public class ItemRequirementData {
             output.setCount(0);
             for (Map.Entry<Integer, Item> mapEntry : player.getInventory().getContents().entrySet()) {
                 Item entryValue = mapEntry.getValue();
-                if (isCheckTag()) {
+                if (checkTag) {
                     switch (NukkitTypeUtils.getNukkitType()) {
                         case POWER_NUKKIT_X:
                         case POWER_NUKKIT_X_2:
@@ -106,7 +106,7 @@ public class ItemRequirementData {
                             break;
                     }
                 } else {
-                    if (checkCustomName && entryValue.getCustomName().equals(item.getCustomName())) {
+                    if (checkCustomName && !entryValue.getCustomName().equals(item.getCustomName())) {
                         continue;
                     }
                     switch (NukkitTypeUtils.getNukkitType()) {
@@ -129,13 +129,5 @@ public class ItemRequirementData {
         } else {
             return null;
         }
-    }
-
-    public boolean isCheckTag() {
-        return checkTag;
-    }
-
-    public boolean isCheckCustomName() {
-        return checkCustomName;
     }
 }
