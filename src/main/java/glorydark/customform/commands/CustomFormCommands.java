@@ -88,6 +88,7 @@ public class CustomFormCommands extends Command {
                         Config config = new Config(CustomFormMain.path + "/save_nbt_cache.yml", Config.YAML);
                         config.set(strings[1], InventoryUtils.saveItemToString(((Player) commandSender).getInventory().getItemInHand()));
                         config.save();
+                        commandSender.sendMessage("Save item string successfully!");
                     }
                 }
                 break;
