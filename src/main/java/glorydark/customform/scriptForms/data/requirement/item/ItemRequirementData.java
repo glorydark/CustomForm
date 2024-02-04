@@ -82,61 +82,60 @@ public class ItemRequirementData {
     }
 
     public Item getAvailableItem(Player player, Item item) {
-        if (player.getInventory().contains(item)) {
-            Item output = item.clone();
-            output.setCount(0);
-            for (Map.Entry<Integer, Item> mapEntry : player.getInventory().getContents().entrySet()) {
-                Item entryValue = mapEntry.getValue();
-                if (checkTag) {
-                    switch (NukkitTypeUtils.getNukkitType()) {
-                        case POWER_NUKKIT_X:
-                        case POWER_NUKKIT_X_2:
-                        case MOT:
-                            CompoundTag c1 = entryValue.getNamedTag();
-                            CompoundTag c2 = item.getNamedTag();
-                            boolean tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
-                            if (checkDamage && entryValue.getDamage() != item.getDamage()) {
-                                continue;
-                            }
-                            if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && tagEqual) {
-                                output.setCount(output.getCount() + entryValue.getCount());
-                            }
-                            break;
-                        default:
-                            c1 = entryValue.getNamedTag();
-                            c2 = item.getNamedTag();
-                            tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
-                            if (checkDamage && entryValue.getDamage() != item.getDamage()) {
-                                continue;
-                            }
-                            if (entryValue.getId() == item.getId() && tagEqual) {
-                                output.setCount(output.getCount() + entryValue.getCount());
-                            }
-                            break;
-                    }
-                } else {
-                    if (checkCustomName && !entryValue.getCustomName().equals(item.getCustomName())) {
-                        continue;
-                    }
-                    switch (NukkitTypeUtils.getNukkitType()) {
-                        case POWER_NUKKIT_X:
-                        case POWER_NUKKIT_X_2:
-                        case MOT:
-                            if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && entryValue.getDamage() == item.getDamage()) {
-                                output.setCount(output.getCount() + entryValue.getCount());
-                            }
-                            break;
-                        default:
-                            if (entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage()) {
-                                output.setCount(output.getCount() + entryValue.getCount());
-                            }
-                            break;
-                    }
-                }
-            }
-            return output;
-        } else {
+        if (item == null) {
             return null;
         }
+        Item output = item.clone();
+        output.setCount(0);
+        for (Map.Entry<Integer, Item> mapEntry : player.getInventory().getContents().entrySet()) {
+            Item entryValue = mapEntry.getValue();
+            if (checkTag) {
+                switch (NukkitTypeUtils.getNukkitType()) {
+                    case POWER_NUKKIT_X:
+                    case POWER_NUKKIT_X_2:
+                    case MOT:
+                        CompoundTag c1 = entryValue.getNamedTag();
+                        CompoundTag c2 = item.getNamedTag();
+                        boolean tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
+                        if (checkDamage && entryValue.getDamage() != item.getDamage()) {
+                            continue;
+                        }
+                        if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && tagEqual) {
+                            output.setCount(output.getCount() + entryValue.getCount());
+                        }
+                        break;
+                    default:
+                        c1 = entryValue.getNamedTag();
+                        c2 = item.getNamedTag();
+                        tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
+                        if (checkDamage && entryValue.getDamage() != item.getDamage()) {
+                            continue;
+                        }
+                        if (entryValue.getId() == item.getId() && tagEqual) {
+                            output.setCount(output.getCount() + entryValue.getCount());
+                        }
+                        break;
+                }
+            } else {
+                if (checkCustomName && !entryValue.getCustomName().equals(item.getCustomName())) {
+                    continue;
+                }
+                switch (NukkitTypeUtils.getNukkitType()) {
+                    case POWER_NUKKIT_X:
+                    case POWER_NUKKIT_X_2:
+                    case MOT:
+                        if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && entryValue.getDamage() == item.getDamage()) {
+                            output.setCount(output.getCount() + entryValue.getCount());
+                        }
+                        break;
+                    default:
+                        if (entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage()) {
+                            output.setCount(output.getCount() + entryValue.getCount());
+                        }
+                        break;
+                }
+            }
+        }
+        return output;
     }
 }

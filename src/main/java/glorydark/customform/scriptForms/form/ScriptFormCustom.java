@@ -18,7 +18,10 @@ import lombok.Data;
 import tip.utils.Api;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Data
 public class ScriptFormCustom implements ScriptForm {

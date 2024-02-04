@@ -14,6 +14,7 @@ import cn.nukkit.network.protocol.ModalFormResponsePacket;
 import glorydark.customform.CustomFormMain;
 import glorydark.customform.scriptForms.form.ScriptForm;
 import glorydark.customform.utils.CameraUtils;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 

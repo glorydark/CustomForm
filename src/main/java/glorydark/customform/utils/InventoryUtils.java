@@ -1,6 +1,5 @@
 package glorydark.customform.utils;
 
-import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.item.Item;
 import cn.nukkit.utils.Config;
 import glorydark.customform.CustomFormMain;
@@ -50,15 +49,15 @@ public class InventoryUtils {
             case POWER_NUKKIT_X_2:
             case MOT:
                 if (item.hasCompoundTag()) {
-                    return item.getId() + ":" + item.getDamage() + ":" + item.getCount() + ":" + bytesToHexString(item.getCompoundTag());
-                } else {
-                    return item.getId() + ":" + item.getDamage() + ":" + item.getCount() + ":null";
-                }
-            default:
-                if (item.hasCompoundTag()) {
                     return item.getNamespaceId() + ":" + item.getDamage() + ":" + item.getCount() + ":" + bytesToHexString(item.getCompoundTag());
                 } else {
                     return item.getNamespaceId() + ":" + item.getDamage() + ":" + item.getCount() + ":null";
+                }
+            default:
+                if (item.hasCompoundTag()) {
+                    return item.getId() + ":" + item.getDamage() + ":" + item.getCount() + ":" + bytesToHexString(item.getCompoundTag());
+                } else {
+                    return item.getId() + ":" + item.getDamage() + ":" + item.getCount() + ":null";
                 }
         }
     }
@@ -90,7 +89,7 @@ public class InventoryUtils {
             }
             Item item = Item.fromString(identifierAndMeta.toString());
             item.setCount(Integer.parseInt(strings[countIndex]));
-            item.setCompoundTag(hexStringToBytes(strings[countIndex+1]));
+            item.setCompoundTag(hexStringToBytes(strings[countIndex + 1]));
             return item;
         }
     }
@@ -99,8 +98,13 @@ public class InventoryUtils {
         File file = new File(CustomFormMain.path + "/save_nbt_cache.yml");
         if (file.exists()) {
             Config config = new Config(file, Config.YAML);
-            if (config.exists(key)) {
-                return toItem(config.getString(key));
+            String[] strings = key.split(":");
+            if (config.exists(strings[0])) {
+                Item item = toItem(config.getString(strings[0]));
+                if (strings.length == 2) {
+                    item.setCount(Integer.parseInt(strings[1]));
+                }
+                return item;
             }
         }
         return null;
