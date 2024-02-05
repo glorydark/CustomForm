@@ -125,8 +125,6 @@ public class ItemRequirementData {
                 }
             } else {
                 if (needItem.isCheckCustomName() && !entryValue.getCustomName().equals(item.getCustomName())) {
-                    player.sendMessage(entryValue.getCustomName());
-                    player.sendMessage(item.getCustomName());
                     continue;
                 }
                 switch (NukkitTypeUtils.getNukkitType()) {
