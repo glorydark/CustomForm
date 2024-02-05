@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 // Concerning: Toggle
@@ -14,6 +15,10 @@ public class ToggleResponseExecuteData implements ResponseExecuteData {
     List<String> false_commands;
     List<String> false_messages;
 
+    Date startDate = new Date(-1);
+
+    Date expiredDate = new Date(-1);
+
     public ToggleResponseExecuteData(List<String> true_commands, List<String> true_messages, List<String> false_commands, List<String> false_messages) {
         this.true_commands = true_commands;
         this.true_messages = true_messages;
@@ -22,6 +27,9 @@ public class ToggleResponseExecuteData implements ResponseExecuteData {
     }
 
     public void execute(Player player, int responseId, Object... params) {
+        if (!this.isInStartDate(player)) {
+            return;
+        }
         switch (responseId) {
             case 0:
                 for (String command : true_commands) {

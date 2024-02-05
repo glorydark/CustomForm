@@ -8,6 +8,7 @@ import glorydark.customform.scriptForms.data.requirement.Requirements;
 import glorydark.customform.utils.ConfigUtils;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 // Concerning: Button, Input, Slider
@@ -26,6 +27,10 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
 
     List<ConfigModification> configModifications;
 
+    Date startDate = new Date(-1);
+
+    Date expiredDate = new Date(-1);
+
     public SimpleResponseExecuteData(List<String> commands, List<String> messages, List<String> failed_commands, List<String> failed_messages, List<Requirements> requirements, List<ConfigModification> configModifications) {
         this.commands = commands;
         this.messages = messages;
@@ -36,6 +41,9 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
     }
 
     public void execute(Player player, int responseId, Object... params) {
+        if (!this.isInStartDate(player)) {
+            return;
+        }
         if (requirements.size() > 0) {
             boolean success = false;
             int multiply = 1;

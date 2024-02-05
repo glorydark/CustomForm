@@ -14,6 +14,7 @@ import tip.utils.Api;
 import java.io.File;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TimeZone;
 
 public class CustomFormMain extends PluginBase {
 
@@ -50,6 +51,8 @@ public class CustomFormMain extends PluginBase {
 
     @Override
     public void onEnable() {
+        TimeZone timeZone = TimeZone.getTimeZone("GMT+8");
+        TimeZone.setDefault(timeZone);
         path = this.getDataFolder().getPath();
         plugin = this;
         this.saveDefaultConfig();

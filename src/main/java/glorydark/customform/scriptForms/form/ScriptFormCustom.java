@@ -18,10 +18,7 @@ import lombok.Data;
 import tip.utils.Api;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Data
 public class ScriptFormCustom implements ScriptForm {
@@ -42,9 +39,9 @@ public class ScriptFormCustom implements ScriptForm {
 
     private List<Boolean> enableRsNPCXVariableReplacement = new ArrayList<>();
 
-    private long startMillis = -1L;
+    private Date startDate = new Date(-1);
 
-    private long expiredMillis = -1L;
+    private Date expiredDate = new Date(-1);
 
     private List<Requirements> openRequirements;
 

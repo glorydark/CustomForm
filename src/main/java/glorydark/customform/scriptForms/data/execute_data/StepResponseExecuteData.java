@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import lombok.Data;
 import tip.utils.Api;
 
+import java.util.Date;
 import java.util.List;
 
 // StepSlider, Dropdown
@@ -13,11 +14,18 @@ public class StepResponseExecuteData implements ResponseExecuteData {
 
     public List<SimpleResponseExecuteData> responses;
 
+    Date startDate = new Date(-1);
+
+    Date expiredDate = new Date(-1);
+
     public StepResponseExecuteData(List<SimpleResponseExecuteData> responses) {
         this.responses = responses;
     }
 
     public void execute(Player player, int responseId, Object... params) {
+        if (!this.isInStartDate(player)) {
+            return;
+        }
         if (responseId >= responses.size()) {
             return;
         }
