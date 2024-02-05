@@ -387,8 +387,8 @@ public class FormCreator {
                     Map<String, Object> openSoundMap = (Map<String, Object>) config.get("open_sound");
                     simple.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
                 }
-                simple.setStartMillis((Long) config.getOrDefault("startMillis", -1L));
-                simple.setExpiredMillis((Long) config.getOrDefault("expiredMillis", -1L));
+                simple.setStartMillis(Long.parseLong(config.getOrDefault("start_millis", -1L).toString()));
+                simple.setExpiredMillis(Long.parseLong(config.getOrDefault("end_millis", -1L).toString()));
                 if (simple.getWindow() != null) {
                     return simple;
                 }
