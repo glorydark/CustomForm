@@ -35,6 +35,7 @@ import lombok.Data;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class FormCreator {
@@ -45,6 +46,12 @@ public class FormCreator {
 
     // This value effectively reduces the conflicts brought by the duplication of ID value inside the Player.class(Nukkit)
     public static int formId = -1;
+
+    public static String dateToString(Player player, Long dateMillis) {
+        Date date = new Calendar.Builder().setInstant(dateMillis).build().getTime();
+        SimpleDateFormat format = new SimpleDateFormat(CustomFormMain.language.translateString(player, "form_date_string_format"));
+        return format.format(date);
+    }
 
     /*
         Basic Refined Method.
@@ -59,11 +66,13 @@ public class FormCreator {
     @Api
     // You can show your own scriptForm without former registry by defining a certain scriptForm.
     public static void showFormToPlayer(Player player, FormType formType, ScriptForm scriptForm, String identifier) {
-        if (scriptForm.getStartMillis() != -1L || scriptForm.getExpiredMillis() != -1L) {
-            if (scriptForm.getStartMillis() < System.currentTimeMillis() && scriptForm.getExpiredMillis() < System.currentTimeMillis()) {
-                player.sendMessage("This form is expired!");
-                return;
-            }
+        if (scriptForm.getStartMillis() != -1 && scriptForm.getStartMillis() < System.currentTimeMillis()) {
+            player.sendMessage(CustomFormMain.language.translateString(player, "form_not_in_opening_hours", dateToString(player, scriptForm.getStartMillis()), dateToString(player, scriptForm.getExpiredMillis())));
+            return;
+        }
+        if (scriptForm.getExpiredMillis() != -1 && scriptForm.getExpiredMillis() < System.currentTimeMillis()) {
+            player.sendMessage(CustomFormMain.language.translateString(player, "form_not_in_opening_hours", dateToString(player, scriptForm.getStartMillis()), dateToString(player, scriptForm.getExpiredMillis())));
+            return;
         }
         if (player.namedTag.contains("lastFormRequestMillis") && System.currentTimeMillis() - player.namedTag.getLong("lastFormRequestMillis") < CustomFormMain.coolDownMillis) {
             player.sendMessage(CustomFormMain.language.translateString(player, "operation_so_fast"));
