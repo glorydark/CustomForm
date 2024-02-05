@@ -48,9 +48,13 @@ public class FormCreator {
     public static int formId = -1;
 
     public static String dateToString(Player player, Long dateMillis) {
-        Date date = new Calendar.Builder().setInstant(dateMillis).build().getTime();
-        SimpleDateFormat format = new SimpleDateFormat(CustomFormMain.language.translateString(player, "form_date_string_format"));
-        return format.format(date);
+        if (dateMillis <= 0) {
+            return "?";
+        } else {
+            Date date = new Calendar.Builder().setInstant(dateMillis).build().getTime();
+            SimpleDateFormat format = new SimpleDateFormat(CustomFormMain.language.translateString(player, "form_date_string_format"));
+            return format.format(date);
+        }
     }
 
     /*
@@ -66,11 +70,11 @@ public class FormCreator {
     @Api
     // You can show your own scriptForm without former registry by defining a certain scriptForm.
     public static void showFormToPlayer(Player player, FormType formType, ScriptForm scriptForm, String identifier) {
-        if (scriptForm.getStartMillis() != -1 && scriptForm.getStartMillis() < System.currentTimeMillis()) {
+        if (scriptForm.getStartMillis() > 0 && scriptForm.getStartMillis() < System.currentTimeMillis()) {
             player.sendMessage(CustomFormMain.language.translateString(player, "form_not_in_opening_hours", dateToString(player, scriptForm.getStartMillis()), dateToString(player, scriptForm.getExpiredMillis())));
             return;
         }
-        if (scriptForm.getExpiredMillis() != -1 && scriptForm.getExpiredMillis() < System.currentTimeMillis()) {
+        if (scriptForm.getExpiredMillis() > 0 && scriptForm.getExpiredMillis() < System.currentTimeMillis()) {
             player.sendMessage(CustomFormMain.language.translateString(player, "form_not_in_opening_hours", dateToString(player, scriptForm.getStartMillis()), dateToString(player, scriptForm.getExpiredMillis())));
             return;
         }
@@ -388,7 +392,7 @@ public class FormCreator {
                     simple.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
                 }
                 simple.setStartMillis(Long.parseLong(config.getOrDefault("start_millis", -1L).toString()));
-                simple.setExpiredMillis(Long.parseLong(config.getOrDefault("end_millis", -1L).toString()));
+                simple.setExpiredMillis(Long.parseLong(config.getOrDefault("expire_millis", -1L).toString()));
                 if (simple.getWindow() != null) {
                     return simple;
                 }
@@ -532,8 +536,8 @@ public class FormCreator {
                     Map<String, Object> openSoundMap = (Map<String, Object>) config.get("open_sound");
                     custom.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
                 }
-                custom.setStartMillis((Long) config.getOrDefault("startMillis", -1L));
-                custom.setExpiredMillis((Long) config.getOrDefault("expiredMillis", -1L));
+                custom.setStartMillis((Long) config.getOrDefault("start_millis", -1L));
+                custom.setExpiredMillis((Long) config.getOrDefault("expire_millis", -1L));
                 if (custom.getWindow() != null) {
                     return custom;
                 }
@@ -565,8 +569,8 @@ public class FormCreator {
                     Map<String, Object> openSoundMap = (Map<String, Object>) config.get("open_sound");
                     modal.setOpenSound(new SoundData((String) openSoundMap.get("name"), Float.parseFloat(openSoundMap.getOrDefault("volume", 1f).toString()), Float.parseFloat(openSoundMap.getOrDefault("pitch", 0f).toString()), (Boolean) openSoundMap.getOrDefault("personal", true)));
                 }
-                modal.setStartMillis((Long) config.getOrDefault("startMillis", -1L));
-                modal.setExpiredMillis((Long) config.getOrDefault("expiredMillis", -1L));
+                modal.setStartMillis((Long) config.getOrDefault("start_millis", -1L));
+                modal.setExpiredMillis((Long) config.getOrDefault("expire_millis", -1L));
                 if (modal.getWindow() != null) {
                     return modal;
                 }
