@@ -107,6 +107,6 @@ public class InventoryUtils {
                 return item;
             }
         }
-        return null;
+        return Item.get(0);
     }
 }

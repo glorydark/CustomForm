@@ -6,12 +6,14 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import glorydark.customform.CustomFormMain;
 import glorydark.customform.utils.NukkitTypeUtils;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Data
+@ToString
 public class ItemRequirementData {
 
     private boolean reduce;
@@ -26,44 +28,53 @@ public class ItemRequirementData {
         if (needItems.size() > 0) {
             List<NeedItem> costItems = new ArrayList<>();
             for (NeedItem s : needItems) {
-                s.setHasItems(new ArrayList<>());
-                boolean b = false;
-                List<Item> avail = getAvailableItem(player, s);
-                if (avail != null) {
-                    int count = 0;
-                    for (Item item : avail) {
-                        count += item.getCount();
-                    }
-                    if (count >= s.getItem().getCount() * multiply) {
-                        b = true;
-                        s.setHasItems(avail);
-                        s.setFinalComparedItem(s.getItem());
-                        costItems.add(s);
-                    }
-                } else {
-                    for (Item alternative : s.getAlternatives()) {
-                        avail = getAvailableItem(player, s);
-                        if (avail != null) {
-                            int count = 0;
-                            for (Item item : avail) {
-                                count += item.getCount();
-                            }
-                            if (count >= alternative.getCount() * multiply) {
-                                b = true;
-                                s.setHasItems(avail);
-                                s.setFinalComparedItem(s.getItem());
-                                costItems.add(s);
+                if (s.getItem().getId() != 0) {
+                    s.setHasItems(new ArrayList<>());
+                    boolean b = false;
+                    List<Item> avail = getAvailableItem(player, s);
+                    if (avail != null) {
+                        int count = 0;
+                        for (Item item : avail) {
+                            count += item.getCount();
+                        }
+                        if (count >= s.getItem().getCount() * multiply) {
+                            b = true;
+                            s.setHasItems(avail);
+                            s.setFinalComparedItem(s.getItem());
+                            costItems.add(s);
+                        }
+                    } else {
+                        for (Item alternative : s.getAlternatives()) {
+                            if (alternative.getId() != 0) {
+                                avail = getAvailableItem(player, s);
+                                if (avail != null) {
+                                    int count = 0;
+                                    for (Item item : avail) {
+                                        count += item.getCount();
+                                    }
+                                    if (count >= alternative.getCount() * multiply) {
+                                        b = true;
+                                        s.setHasItems(avail);
+                                        s.setFinalComparedItem(s.getItem());
+                                        costItems.add(s);
+                                    }
+                                }
+                            } else {
+                                CustomFormMain.plugin.getLogger().error("Find an air item in " + this);
                             }
                         }
                     }
-                }
-                if (!b) {
-                    StringBuilder builder = new StringBuilder();
-                    builder.append(s.getItem().getName()).append("*").append(s.getItem().getCount());
-                    for (Item alternative : s.getAlternatives()) {
-                        builder.append("/").append(alternative.getName()).append("*").append(s.getItem().getCount());
+                    if (!b) {
+                        StringBuilder builder = new StringBuilder();
+                        builder.append(s.getItem().getName()).append("*").append(s.getItem().getCount());
+                        for (Item alternative : s.getAlternatives()) {
+                            builder.append("/").append(alternative.getName()).append("*").append(s.getItem().getCount());
+                        }
+                        player.sendMessage(CustomFormMain.language.translateString(player, "requirements_item_not_qualified", builder.toString()));
+                        return false;
                     }
-                    player.sendMessage(CustomFormMain.language.translateString(player, "requirements_item_not_qualified", builder.toString()));
+                } else {
+                    CustomFormMain.plugin.getLogger().error("Find an air item in " + this);
                     return false;
                 }
             }
