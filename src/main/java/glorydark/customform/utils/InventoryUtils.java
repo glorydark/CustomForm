@@ -29,7 +29,7 @@ public class InventoryUtils {
 
     public static String bytesToHexString(byte[] src) {
         StringBuilder stringBuilder = new StringBuilder();
-        if (src == null || src.length <= 0) {
+        if (src == null || src.length == 0) {
             return "null";
         }
         for (byte aSrc : src) {
@@ -77,6 +77,9 @@ public class InventoryUtils {
         if (isNumericId) {
             Item item = Item.get(Integer.parseInt(strings[0]), Integer.parseInt(strings[1]), Integer.parseInt(strings[2]));
             item.setCompoundTag(hexStringToBytes(strings[3]));
+            if (item.getId() == 0) {
+                CustomFormMain.plugin.getLogger().error("Error in parsing item string, caused by: cannot parse the item string { " + item + " } in the save_nbt_cache.yml");
+            }
             return item;
         } else {
             int countIndex = strings.length - 2;
@@ -90,6 +93,9 @@ public class InventoryUtils {
             Item item = Item.fromString(identifierAndMeta.toString());
             item.setCount(Integer.parseInt(strings[countIndex]));
             item.setCompoundTag(hexStringToBytes(strings[countIndex + 1]));
+            if (item.getId() == 0) {
+                CustomFormMain.plugin.getLogger().error("Error in parsing item string, caused by: cannot parse the item string { " + item + " } in the save_nbt_cache.yml");
+            }
             return item;
         }
     }
@@ -107,6 +113,7 @@ public class InventoryUtils {
                 return item;
             }
         }
+        CustomFormMain.plugin.getLogger().error("Error in parsing item string, caused by: cannot find the key { " + key + " } in the save_nbt_cache.yml");
         return Item.get(0);
     }
 }

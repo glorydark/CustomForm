@@ -59,8 +59,6 @@ public class ItemRequirementData {
                                         costItems.add(s);
                                     }
                                 }
-                            } else {
-                                CustomFormMain.plugin.getLogger().error("Find an air item in " + this);
                             }
                         }
                     }
@@ -73,9 +71,6 @@ public class ItemRequirementData {
                         player.sendMessage(CustomFormMain.language.translateString(player, "requirements_item_not_qualified", builder.toString()));
                         return false;
                     }
-                } else {
-                    CustomFormMain.plugin.getLogger().error("Find an air item in " + this);
-                    return false;
                 }
             }
             if (reducing && reduce) {
