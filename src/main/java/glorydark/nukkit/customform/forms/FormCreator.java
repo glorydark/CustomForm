@@ -256,54 +256,52 @@ public class FormCreator {
                 case "Config":
                     // This is the way we deal with Tips-type requirements
                     int config_type = (Integer) map.get("config_type");
+                    String config_compared_type = (String) map.get("compared_sign");
+                    Object config_compared_value = map.get("compared_value");
+                    failed_messages = (List<String>) map.getOrDefault("failed_messages", new ArrayList<>());
+                    Object defaultComparedValue = map.getOrDefault("default_compared_value", null);
                     if (config_type == 0) {
                         String keyString = (String) map.get("key_name");
-                        String config_compared_type = (String) map.get("compared_sign");
-                        Object config_compared_value = map.get("compared_value");
-                        failed_messages = (List<String>) map.getOrDefault("failed_messages", new ArrayList<>());
                         switch (config_compared_type) {
                             case "bigger":
-                                configRequirementData = new ConfigRequirementData(0, ConfigRequirementType.BIGGER, keyString, config_compared_value, failed_messages);
+                                configRequirementData = new ConfigRequirementData(0, ConfigRequirementType.BIGGER, keyString, config_compared_value, defaultComparedValue, failed_messages);
                                 break;
                             case "bigger_or_equal":
-                                configRequirementData = new ConfigRequirementData(0, ConfigRequirementType.BIGGER_OR_EQUAL, keyString, config_compared_value, failed_messages);
+                                configRequirementData = new ConfigRequirementData(0, ConfigRequirementType.BIGGER_OR_EQUAL, keyString, config_compared_value, defaultComparedValue, failed_messages);
                                 break;
                             case "equal":
-                                configRequirementData = new ConfigRequirementData(0, ConfigRequirementType.EQUAL, keyString, config_compared_value, failed_messages);
+                                configRequirementData = new ConfigRequirementData(0, ConfigRequirementType.EQUAL, keyString, config_compared_value, defaultComparedValue, failed_messages);
                                 break;
                             case "smaller":
-                                configRequirementData = new ConfigRequirementData(0, ConfigRequirementType.SMALLER, keyString, config_compared_value, failed_messages);
+                                configRequirementData = new ConfigRequirementData(0, ConfigRequirementType.SMALLER, keyString, config_compared_value, defaultComparedValue, failed_messages);
                                 break;
                             case "smaller_or_equal":
-                                configRequirementData = new ConfigRequirementData(0, ConfigRequirementType.SMALLER_OR_EQUAL, keyString, config_compared_value, failed_messages);
+                                configRequirementData = new ConfigRequirementData(0, ConfigRequirementType.SMALLER_OR_EQUAL, keyString, config_compared_value, defaultComparedValue, failed_messages);
                                 break;
                             case "exist":
-                                configRequirementData = new ConfigRequirementData(0, ConfigRequirementType.EXIST, keyString, config_compared_value, failed_messages);
+                                configRequirementData = new ConfigRequirementData(0, ConfigRequirementType.EXIST, keyString, config_compared_value, defaultComparedValue, failed_messages);
                                 break;
                         }
                     } else if (config_type == 1) {
                         String config_name = (String) map.get("config_name");
-                        String config_compared_type = (String) map.get("compared_sign");
-                        Object config_compared_value = map.get("compared_value");
-                        failed_messages = (List<String>) map.getOrDefault("failed_messages", new ArrayList<>());
                         switch (config_compared_type) {
                             case "bigger":
-                                configRequirementData = new ConfigRequirementData(1, ConfigRequirementType.BIGGER, config_name, config_compared_value, failed_messages);
+                                configRequirementData = new ConfigRequirementData(1, ConfigRequirementType.BIGGER, config_name, config_compared_value, defaultComparedValue, failed_messages);
                                 break;
                             case "bigger_or_equal":
-                                configRequirementData = new ConfigRequirementData(1, ConfigRequirementType.BIGGER_OR_EQUAL, config_name, config_compared_value, failed_messages);
+                                configRequirementData = new ConfigRequirementData(1, ConfigRequirementType.BIGGER_OR_EQUAL, config_name, config_compared_value, defaultComparedValue, failed_messages);
                                 break;
                             case "equal":
-                                configRequirementData = new ConfigRequirementData(1, ConfigRequirementType.EQUAL, config_name, config_compared_value, failed_messages);
+                                configRequirementData = new ConfigRequirementData(1, ConfigRequirementType.EQUAL, config_name, config_compared_value, defaultComparedValue, failed_messages);
                                 break;
                             case "smaller":
-                                configRequirementData = new ConfigRequirementData(1, ConfigRequirementType.SMALLER, config_name, config_compared_value, failed_messages);
+                                configRequirementData = new ConfigRequirementData(1, ConfigRequirementType.SMALLER, config_name, config_compared_value, defaultComparedValue, failed_messages);
                                 break;
                             case "smaller_or_equal":
-                                configRequirementData = new ConfigRequirementData(1, ConfigRequirementType.SMALLER_OR_EQUAL, config_name, config_compared_value, failed_messages);
+                                configRequirementData = new ConfigRequirementData(1, ConfigRequirementType.SMALLER_OR_EQUAL, config_name, config_compared_value, defaultComparedValue, failed_messages);
                                 break;
                             case "exist":
-                                configRequirementData = new ConfigRequirementData(1, ConfigRequirementType.EXIST, config_name, config_compared_value, failed_messages);
+                                configRequirementData = new ConfigRequirementData(1, ConfigRequirementType.EXIST, config_name, config_compared_value, defaultComparedValue, failed_messages);
                                 break;
                         }
                     }
