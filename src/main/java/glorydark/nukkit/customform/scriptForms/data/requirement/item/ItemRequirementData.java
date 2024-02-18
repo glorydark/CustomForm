@@ -71,6 +71,9 @@ public class ItemRequirementData {
                         player.sendMessage(CustomFormMain.language.translateString(player, "requirements_item_not_qualified", builder.toString()));
                         return false;
                     }
+                } else {
+                    CustomFormMain.plugin.getLogger().warning("Found an empty cost item! Data: " + this);
+                    return false;
                 }
             }
             if (reducing && reduce) {
