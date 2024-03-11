@@ -116,6 +116,9 @@ public class ItemRequirementData {
                         if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
                             continue;
                         }
+                        if (!checkMustHaveTag(needItem, entryValue)) {
+                            continue;
+                        }
                         if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && tagEqual) {
                             hasItems.add(entryValue);
                         }
@@ -125,6 +128,9 @@ public class ItemRequirementData {
                         c2 = item.getNamedTag();
                         tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
                         if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
+                            continue;
+                        }
+                        if (!checkMustHaveTag(needItem, entryValue)) {
                             continue;
                         }
                         if (entryValue.getId() == item.getId() && tagEqual) {
@@ -143,12 +149,18 @@ public class ItemRequirementData {
                         if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
                             continue;
                         }
+                        if (!checkMustHaveTag(needItem, entryValue)) {
+                            continue;
+                        }
                         if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && entryValue.getDamage() == item.getDamage()) {
                             hasItems.add(entryValue);
                         }
                         break;
                     default:
                         if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
+                            continue;
+                        }
+                        if (!checkMustHaveTag(needItem, entryValue)) {
                             continue;
                         }
                         if (entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage()) {
@@ -159,5 +171,36 @@ public class ItemRequirementData {
             }
         }
         return hasItems;
+    }
+
+    public boolean checkMustHaveTag(NeedItem needItem, Item hasItem) {
+        for (Map.Entry<String, Object> entry : needItem.getMustHaveTag().entrySet()) {
+            if (entry.getValue() instanceof Map) {
+                if (!checkMustHaveTag(needItem.getMustHaveTag(), hasItem.getNamedTag())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean checkMustHaveTag(Map<String, Object> tag, CompoundTag itemTag) {
+        if (itemTag == null) {
+            return tag.isEmpty();
+        }
+        for (Map.Entry<String, Object> entry : tag.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (value instanceof Map) {
+                if (!checkMustHaveTag((Map<String, Object>) entry.getValue(), itemTag.getCompound(key))) {
+                    return false;
+                }
+            } else {
+                if (!itemTag.get(key).parseValue().equals(tag.getOrDefault(key, null))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
