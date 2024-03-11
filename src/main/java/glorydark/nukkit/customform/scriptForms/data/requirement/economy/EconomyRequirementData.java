@@ -1,8 +1,8 @@
 package glorydark.nukkit.customform.scriptForms.data.requirement.economy;
 
 import cn.nukkit.Player;
-import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.dcurrency.CurrencyAPI;
+import glorydark.nukkit.customform.CustomFormMain;
 import lombok.Data;
 import me.onebone.economyapi.EconomyAPI;
 import net.player.api.Point;

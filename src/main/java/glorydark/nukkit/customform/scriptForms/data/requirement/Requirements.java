@@ -2,13 +2,13 @@ package glorydark.nukkit.customform.scriptForms.data.requirement;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import glorydark.dcurrency.CurrencyAPI;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.annotations.Developing;
 import glorydark.nukkit.customform.scriptForms.data.requirement.config.ConfigRequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.economy.EconomyRequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.item.ItemRequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.tips.TipsRequirementData;
-import glorydark.dcurrency.CurrencyAPI;
 import me.onebone.economyapi.EconomyAPI;
 import net.player.api.Point;
 import tip.utils.Api;

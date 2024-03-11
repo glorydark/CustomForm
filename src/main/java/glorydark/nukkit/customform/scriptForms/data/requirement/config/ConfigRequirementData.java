@@ -71,7 +71,7 @@ public class ConfigRequirementData {
             return false;
         }
         if (comparedValue instanceof Double) {
-            final double defaultValue = defaultComparedValue == null? 0d : Double.parseDouble(this.defaultComparedValue.toString());
+            final double defaultValue = defaultComparedValue == null ? 0d : Double.parseDouble(this.defaultComparedValue.toString());
             double convertedCompared = Double.parseDouble(comparedValue.toString());
             double configValue = defaultValue;
             if (configType == 0) {
@@ -94,7 +94,7 @@ public class ConfigRequirementData {
             return false;
         } else if (comparedValue instanceof String) {
             if (requirementType.equals(ConfigRequirementType.EQUAL)) {
-                final String defaultValue = defaultComparedValue == null? "undefined_value": defaultComparedValue.toString();
+                final String defaultValue = defaultComparedValue == null ? "undefined_value" : defaultComparedValue.toString();
                 String compared = comparedValue.toString();
                 String configValue = defaultValue;
                 if (configType == 0) {
@@ -108,7 +108,7 @@ public class ConfigRequirementData {
                 return false;
             }
         } else if (comparedValue instanceof Integer) {
-            final int defaultValue = defaultComparedValue == null? 0 : Integer.parseInt(defaultComparedValue.toString());
+            final int defaultValue = defaultComparedValue == null ? 0 : Integer.parseInt(defaultComparedValue.toString());
             int configValue = defaultValue;
             int convertedCompared = Integer.parseInt(comparedValue.toString());
             if (configType == 0) {
