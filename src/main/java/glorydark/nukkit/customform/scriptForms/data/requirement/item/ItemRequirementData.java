@@ -30,43 +30,43 @@ public class ItemRequirementData {
             for (NeedItem s : needItems) {
                 if (s.getItem().getId() != 0) {
                     s.setHasItems(new ArrayList<>());
-                    boolean b = false;
-                    List<Item> avail = getAvailableItem(player, s);
+                    boolean isEnough = false;
+                    List<Item> avail = getAvailableItem(player, s.getItem(), s.isCheckDamage(), s.isCheckCustomName(), s.isCheckTag(), s.getMustHaveTag());
                     if (avail != null) {
                         int count = 0;
                         for (Item item : avail) {
                             count += item.getCount();
                         }
                         if (count >= s.getItem().getCount() * multiply) {
-                            b = true;
+                            isEnough = true;
                             s.setHasItems(avail);
                             s.setFinalComparedItem(s.getItem());
                             costItems.add(s);
                         }
                     } else {
-                        for (Item alternative : s.getAlternatives()) {
-                            if (alternative.getId() != 0) {
-                                avail = getAvailableItem(player, s);
-                                if (avail != null) {
-                                    int count = 0;
-                                    for (Item item : avail) {
-                                        count += item.getCount();
-                                    }
-                                    if (count >= alternative.getCount() * multiply) {
-                                        b = true;
-                                        s.setHasItems(avail);
-                                        s.setFinalComparedItem(s.getItem());
-                                        costItems.add(s);
-                                    }
+                        for (AlternativeItem alternative : s.getAlternatives()) {
+                            List<Item> availAlternatives = getAvailableItem(player, alternative.getItem(), alternative.isCheckDamage(), alternative.isCheckCustomName(), alternative.isCheckTag(), alternative.getMustHaveTag());
+                            if (availAlternatives != null) {
+                                int count = 0;
+                                for (Item item : availAlternatives) {
+                                    count += item.getCount();
                                 }
+                                if (count >= s.getItem().getCount() * multiply) {
+                                    isEnough = true;
+                                    s.setHasItems(availAlternatives);
+                                    s.setFinalComparedItem(s.getItem());
+                                    costItems.add(s);
+                                }
+                            } else {
+                                return false;
                             }
                         }
                     }
-                    if (!b) {
+                    if (!isEnough) {
                         StringBuilder builder = new StringBuilder();
                         builder.append(s.getItem().getName()).append("*").append(s.getItem().getCount());
-                        for (Item alternative : s.getAlternatives()) {
-                            builder.append("/").append(alternative.getName()).append("*").append(s.getItem().getCount());
+                        for (AlternativeItem alternative : s.getAlternatives()) {
+                            builder.append("/").append(alternative.getItem().getName()).append("*");
                         }
                         player.sendMessage(CustomFormMain.language.translateString(player, "requirements_item_not_qualified", builder.toString()));
                         return false;
@@ -97,67 +97,92 @@ public class ItemRequirementData {
         return true;
     }
 
-    public List<Item> getAvailableItem(Player player, NeedItem needItem) {
-        Item item = needItem.getItem();
+    public List<Item> getAvailableItem(Player player, Item item, boolean checkDamage, boolean checkCustomName, boolean checkTag, Map<String, Object> mustHaveTag) {
         if (item == null) {
             return null;
         }
         List<Item> hasItems = new ArrayList<>();
         for (Map.Entry<Integer, Item> mapEntry : player.getInventory().getContents().entrySet()) {
             Item entryValue = mapEntry.getValue();
-            if (needItem.isCheckTag()) {
-                switch (NukkitTypeUtils.getNukkitType()) {
-                    case POWER_NUKKIT_X:
-                    case POWER_NUKKIT_X_2:
-                    case MOT:
+            switch (NukkitTypeUtils.getNukkitType()) {
+                case POWER_NUKKIT_X:
+                case POWER_NUKKIT_X_2:
+                case MOT:
+                    if (!entryValue.getNamespaceId().equals(item.getNamespaceId())) {
+                        continue;
+                    }
+                    if (checkDamage && entryValue.getDamage() != item.getDamage()) {
+                        continue;
+                    }
+                    if (checkCustomName && !entryValue.getCustomName().equals(item.getCustomName())) {
+                        continue;
+                    }
+                    if (checkTag) {
                         CompoundTag c1 = entryValue.getNamedTag();
                         CompoundTag c2 = item.getNamedTag();
                         boolean tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
-                        if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
+                        if (!tagEqual) {
                             continue;
                         }
-                        if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && tagEqual) {
-                            hasItems.add(entryValue);
-                        }
-                        break;
-                    default:
-                        c1 = entryValue.getNamedTag();
-                        c2 = item.getNamedTag();
-                        tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
-                        if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
+                    }
+                    if (!equalToMustHaveTag(mustHaveTag, entryValue.getNamedTag(), player)) {
+                        continue;
+                    }
+                    hasItems.add(entryValue);
+                    break;
+                default:
+                    if (entryValue.getId() != item.getId()) {
+                        continue;
+                    }
+                    if (checkDamage && entryValue.getDamage() != item.getDamage()) {
+                        continue;
+                    }
+                    if (checkCustomName && !entryValue.getCustomName().equals(item.getCustomName())) {
+                        continue;
+                    }
+                    if (checkTag) {
+                        CompoundTag c1 = entryValue.getNamedTag();
+                        CompoundTag c2 = item.getNamedTag();
+                        boolean tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
+                        if (!tagEqual) {
                             continue;
                         }
-                        if (entryValue.getId() == item.getId() && tagEqual) {
-                            hasItems.add(entryValue);
-                        }
-                        break;
-                }
-            } else {
-                if (needItem.isCheckCustomName() && !entryValue.getCustomName().equals(item.getCustomName())) {
-                    continue;
-                }
-                switch (NukkitTypeUtils.getNukkitType()) {
-                    case POWER_NUKKIT_X:
-                    case POWER_NUKKIT_X_2:
-                    case MOT:
-                        if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
-                            continue;
-                        }
-                        if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && entryValue.getDamage() == item.getDamage()) {
-                            hasItems.add(entryValue);
-                        }
-                        break;
-                    default:
-                        if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
-                            continue;
-                        }
-                        if (entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage()) {
-                            hasItems.add(entryValue);
-                        }
-                        break;
-                }
+                    }
+                    if (!equalToMustHaveTag(mustHaveTag, entryValue.getNamedTag(), player)) {
+                        continue;
+                    }
+                    hasItems.add(entryValue);
+                    break;
             }
         }
         return hasItems;
+    }
+
+    public boolean equalToMustHaveTag(Map<String, Object> tag, CompoundTag itemTag, Player player) {
+        if (itemTag == null) {
+            return tag.isEmpty();
+        }
+        for (Map.Entry<String, Object> entry : tag.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (value instanceof Map) {
+                if (!equalToMustHaveTag((Map<String, Object>) entry.getValue(), itemTag.getCompound(key), player)) {
+                    return false;
+                }
+            } else {
+                Object getValue = itemTag.get(key).parseValue();
+                Object comparedValue = tag.getOrDefault(key, null);
+                if (comparedValue instanceof String) {
+                    if (!comparedValue.toString().replace("%player%", player.getName()).equals(getValue)) {
+                        return false;
+                    }
+                } else {
+                    if (!comparedValue.equals(getValue)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 }

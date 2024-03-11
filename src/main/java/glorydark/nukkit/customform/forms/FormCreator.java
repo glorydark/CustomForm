@@ -213,7 +213,7 @@ public class FormCreator {
                     List<Map<String, Object>> needItemMapList = (List<Map<String, Object>>) map.getOrDefault("costs", new ArrayList<>());
                     if (needItemMapList.size() > 0) {
                         for (Map<String, Object> subMap : needItemMapList) {
-                            NeedItem item = new NeedItem((String) subMap.get("item"), (List<String>) subMap.getOrDefault("alternatives", new ArrayList<>()));
+                            NeedItem item = new NeedItem((String) subMap.get("item"), (List<Map<String, Object>>) subMap.getOrDefault("alternatives", new ArrayList<>()), (Map<String, Object>) subMap.getOrDefault("must_have_tag", new LinkedHashMap<>()));
                             item.setCheckDamage((Boolean) subMap.getOrDefault("check_damage", true));
                             item.setCheckTag((Boolean) subMap.getOrDefault("check_tag", false));
                             item.setCheckCustomName((Boolean) subMap.getOrDefault("check_custom_name", true));
