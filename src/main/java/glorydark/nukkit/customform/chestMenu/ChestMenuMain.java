@@ -37,8 +37,8 @@ public class ChestMenuMain {
     public static boolean registerMinecartChestMenu(String identifier, Map<String, Object> config) {
         if (!chestMenus.containsKey(identifier)) {
             MinecartChestMenu menu = new MinecartChestMenu(identifier, (String) config.get("title"));
-            List<Map<String, Object>> components = (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>());
-            for (Map<String, Object> component : components) {
+            List<Map<String, Object>> peComponents = (List<Map<String, Object>>) config.getOrDefault("pe_components", new ArrayList<>());
+            for (Map<String, Object> component : peComponents) {
                 ChestMenuComponent chestMenuComponent = new ChestMenuComponent((String) component.get("name"), (String) component.get("descriptions"), (String) component.get("item"), (Boolean) component.get("isEnchanted"));
                 chestMenuComponent.setFailedMessages((List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
                 chestMenuComponent.setFailedCommands((List<String>) component.getOrDefault("failed_commands", new ArrayList<>()));
@@ -53,6 +53,23 @@ public class ChestMenuMain {
                     chestMenuComponent.setRequirements(requirements);
                 }
                 menu.addComponent((Integer) component.get("slot"), chestMenuComponent);
+            }
+            List<Map<String, Object>> pcComponents = (List<Map<String, Object>>) config.getOrDefault("pc_components", new ArrayList<>());
+            for (Map<String, Object> component : pcComponents) {
+                ChestMenuComponent chestMenuComponent = new ChestMenuComponent((String) component.get("name"), (String) component.get("descriptions"), (String) component.get("item"), (Boolean) component.get("isEnchanted"));
+                chestMenuComponent.setFailedMessages((List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
+                chestMenuComponent.setFailedCommands((List<String>) component.getOrDefault("failed_commands", new ArrayList<>()));
+                chestMenuComponent.setSuccessMessages((List<String>) component.getOrDefault("messages", new ArrayList<>()));
+                chestMenuComponent.setSuccessCommands((List<String>) component.getOrDefault("commands", new ArrayList<>()));
+                if (component.containsKey("requirements")) {
+                    List<Requirements> requirements = new ArrayList<>();
+                    Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
+                    for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
+                        requirements.add(FormCreator.buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                    }
+                    chestMenuComponent.setRequirements(requirements);
+                }
+                menu.addPEComponent((Integer) component.get("slot"), chestMenuComponent);
             }
             chestMenus.put(identifier, menu);
             return true;
