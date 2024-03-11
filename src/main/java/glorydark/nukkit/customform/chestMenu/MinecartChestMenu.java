@@ -23,7 +23,7 @@ public class MinecartChestMenu {
 
     private String title;
 
-    private HashMap<Integer, ChestMenuComponent> chestMenuComponents = new HashMap<>();
+    private HashMap<Integer, ChestMenuComponent> chestMenuPCComponents = new HashMap<>();
 
     private HashMap<Integer, ChestMenuComponent> chestMenuPEComponents = new HashMap<>();
 
@@ -34,7 +34,6 @@ public class MinecartChestMenu {
 
     public static boolean isPC(Player player) {
         int deviceOs = player.getLoginChainData().getDeviceOS();
-
         switch (deviceOs) {
             case 7:
             case 8:
@@ -45,11 +44,13 @@ public class MinecartChestMenu {
     }
 
     public Map<Integer, Item> getItems(Player player, int page) {
-        if (isPC(player)) {
-            Map<Integer, Item> items = new HashMap<>();
-            int base = (page - 1) * 18;
+        boolean pc = isPC(player);
+        Map<Integer, Item> items = new HashMap<>();
+        int base;
+        if (pc) {
+            base = (page - 1) * 18;
             for (int i = base; i < 18 * page; i++) {
-                ChestMenuComponent component = chestMenuComponents.getOrDefault(i, null);
+                ChestMenuComponent component = chestMenuPCComponents.getOrDefault(i, null);
                 int relativeIndex = i - base;
                 if (component != null) {
                     items.put(relativeIndex, component.getItem());
@@ -63,17 +64,15 @@ public class MinecartChestMenu {
                 items.put(18, previousPageButton);
             }
             Item info = new BlockGlassStained(4).toItem();
-            info.setCustomName(CustomFormMain.language.translateString(player, "item_info_name", page, getMaxPage()));
+            info.setCustomName(CustomFormMain.language.translateString(player, "item_info_name", page, getMaxPage(true)));
             items.put(22, info);
-            if (page < this.getMaxPage()) {
+            if (page < this.getMaxPage(true)) {
                 Item nextPageButton = new BlockGlassStained(4).toItem();
                 nextPageButton.setCustomName(CustomFormMain.language.translateString(player, "item_next_page_name"));
                 items.put(26, nextPageButton);
             }
-            return items;
         } else {
-            Map<Integer, Item> items = new HashMap<>();
-            int base = (page - 1) * 23;
+            base = (page - 1) * 23;
             for (int i = base; i < 23 * page; i++) {
                 ChestMenuComponent component = chestMenuPEComponents.getOrDefault(i, null);
                 int relativeIndex = i - base;
@@ -89,15 +88,15 @@ public class MinecartChestMenu {
                 items.put(24, previousPageButton);
             }
             Item info = new BlockGlassStained(4).toItem();
-            info.setCustomName(CustomFormMain.language.translateString(player, "item_info_name", page, getMaxPage()));
+            info.setCustomName(CustomFormMain.language.translateString(player, "item_info_name", page, getMaxPage(false)));
             items.put(25, info);
-            if (page < this.getMaxPage()) {
+            if (page < this.getMaxPage(false)) {
                 Item nextPageButton = new BlockGlassStained(4).toItem();
                 nextPageButton.setCustomName(CustomFormMain.language.translateString(player, "item_next_page_name"));
                 items.put(26, nextPageButton);
             }
-            return items;
         }
+        return items;
     }
 
     public void show(Player player, int page) {
@@ -130,7 +129,7 @@ public class MinecartChestMenu {
             items.put(15, ConfirmButton);
 
             Item selectedInfo = new ItemBookEnchanted();
-            selectedInfo.setCustomName(CustomFormMain.language.translateString(player, "item_selected_info", chestMenuComponents.get(checkComponentIndex).getName()));
+            selectedInfo.setCustomName(CustomFormMain.language.translateString(player, "item_selected_info", chestMenuPCComponents.get(checkComponentIndex).getName()));
             items.put(22, selectedInfo);
             return items;
         } else {
@@ -144,28 +143,28 @@ public class MinecartChestMenu {
             items.put(25, ConfirmButton);
 
             Item selectedInfo = new ItemBookEnchanted();
-            selectedInfo.setCustomName(CustomFormMain.language.translateString(player, "item_selected_info", chestMenuComponents.get(checkComponentIndex).getName()));
+            selectedInfo.setCustomName(CustomFormMain.language.translateString(player, "item_selected_info", chestMenuPEComponents.get(checkComponentIndex).getName()));
             items.put(26, selectedInfo);
             return items;
         }
     }
 
     public void addComponent(int slot, ChestMenuComponent component) {
-        chestMenuComponents.put(slot, component);
+        chestMenuPCComponents.put(slot, component);
     }
 
     public void addPEComponent(int slot, ChestMenuComponent component) {
         chestMenuPEComponents.put(slot, component);
     }
 
-    public int getMaxPage() {
+    public int getMaxPage(boolean pc) {
         int maxIndex = 0;
-        for (int i : this.getChestMenuComponents().keySet()) {
+        for (int i : this.getChestMenuPCComponents().keySet()) {
             if (i > maxIndex) {
                 maxIndex = i;
             }
         }
-        int maxPage = maxIndex / 17;
+        int maxPage = maxIndex / (pc? 17: 23);
         if (maxPage < 1) {
             maxPage = 1;
         } else {
