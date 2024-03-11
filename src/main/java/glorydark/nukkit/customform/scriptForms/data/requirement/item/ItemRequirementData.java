@@ -108,7 +108,7 @@ public class ItemRequirementData {
                 case POWER_NUKKIT_X:
                 case POWER_NUKKIT_X_2:
                 case MOT:
-                    if (entryValue.getNamespaceId().equals(item.getNamespaceId())) {
+                    if (!entryValue.getNamespaceId().equals(item.getNamespaceId())) {
                         continue;
                     }
                     if (checkDamage && entryValue.getDamage() != item.getDamage()) {
@@ -125,7 +125,7 @@ public class ItemRequirementData {
                             continue;
                         }
                     }
-                    if (!equalToMustHaveTag(mustHaveTag, entryValue)) {
+                    if (!equalToMustHaveTag(mustHaveTag, entryValue.getNamedTag(), player)) {
                         continue;
                     }
                     hasItems.add(entryValue);
@@ -148,7 +148,7 @@ public class ItemRequirementData {
                             continue;
                         }
                     }
-                    if (!equalToMustHaveTag(mustHaveTag, entryValue)) {
+                    if (!equalToMustHaveTag(mustHaveTag, entryValue.getNamedTag(), player)) {
                         continue;
                     }
                     hasItems.add(entryValue);
@@ -158,18 +158,7 @@ public class ItemRequirementData {
         return hasItems;
     }
 
-    public boolean equalToMustHaveTag(Map<String, Object> mustHaveTag, Item hasItem) {
-        for (Map.Entry<String, Object> entry : mustHaveTag.entrySet()) {
-            if (entry.getValue() instanceof Map) {
-                if (!equalToMustHaveTag(mustHaveTag, hasItem.getNamedTag())) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    public boolean equalToMustHaveTag(Map<String, Object> tag, CompoundTag itemTag) {
+    public boolean equalToMustHaveTag(Map<String, Object> tag, CompoundTag itemTag, Player player) {
         if (itemTag == null) {
             return tag.isEmpty();
         }
@@ -177,12 +166,20 @@ public class ItemRequirementData {
             String key = entry.getKey();
             Object value = entry.getValue();
             if (value instanceof Map) {
-                if (!equalToMustHaveTag((Map<String, Object>) entry.getValue(), itemTag.getCompound(key))) {
+                if (!equalToMustHaveTag((Map<String, Object>) entry.getValue(), itemTag.getCompound(key), player)) {
                     return false;
                 }
             } else {
-                if (!itemTag.get(key).parseValue().equals(tag.getOrDefault(key, null))) {
-                    return false;
+                Object getValue = itemTag.get(key).parseValue();
+                Object comparedValue = tag.getOrDefault(key, null);
+                if (comparedValue instanceof String) {
+                    if (!comparedValue.toString().replace("%player%", player.getName()).equals(getValue)) {
+                        return false;
+                    }
+                } else {
+                    if (!comparedValue.equals(getValue)) {
+                        return false;
+                    }
                 }
             }
         }
