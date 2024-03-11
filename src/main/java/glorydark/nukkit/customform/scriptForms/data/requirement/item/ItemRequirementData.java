@@ -105,69 +105,55 @@ public class ItemRequirementData {
         List<Item> hasItems = new ArrayList<>();
         for (Map.Entry<Integer, Item> mapEntry : player.getInventory().getContents().entrySet()) {
             Item entryValue = mapEntry.getValue();
-            if (needItem.isCheckTag()) {
-                switch (NukkitTypeUtils.getNukkitType()) {
-                    case POWER_NUKKIT_X:
-                    case POWER_NUKKIT_X_2:
-                    case MOT:
+            switch (NukkitTypeUtils.getNukkitType()) {
+                case POWER_NUKKIT_X:
+                case POWER_NUKKIT_X_2:
+                case MOT:
+                    if (entryValue.getNamespaceId().equals(item.getNamespaceId())) {
+                        continue;
+                    }
+                    if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
+                        continue;
+                    }
+                    if (needItem.isCheckCustomName() && !entryValue.getCustomName().equals(item.getCustomName())) {
+                        continue;
+                    }
+                    if (needItem.isCheckTag()) {
                         CompoundTag c1 = entryValue.getNamedTag();
                         CompoundTag c2 = item.getNamedTag();
                         boolean tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
-                        if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
+                        if (!tagEqual) {
                             continue;
                         }
-                        if (!checkMustHaveTag(needItem, entryValue)) {
+                    }
+                    if (!checkMustHaveTag(needItem, entryValue)) {
+                        continue;
+                    }
+                    hasItems.add(entryValue);
+                    break;
+                default:
+                    if (entryValue.getId() != item.getId()) {
+                        continue;
+                    }
+                    if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
+                        continue;
+                    }
+                    if (needItem.isCheckCustomName() && !entryValue.getCustomName().equals(item.getCustomName())) {
+                        continue;
+                    }
+                    if (needItem.isCheckTag()) {
+                        CompoundTag c1 = entryValue.getNamedTag();
+                        CompoundTag c2 = item.getNamedTag();
+                        boolean tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
+                        if (!tagEqual) {
                             continue;
                         }
-                        if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && tagEqual) {
-                            hasItems.add(entryValue);
-                        }
-                        break;
-                    default:
-                        c1 = entryValue.getNamedTag();
-                        c2 = item.getNamedTag();
-                        tagEqual = (c1 != null && c1.equals(c2)) || (c1 == null && c2 == null);
-                        if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
-                            continue;
-                        }
-                        if (!checkMustHaveTag(needItem, entryValue)) {
-                            continue;
-                        }
-                        if (entryValue.getId() == item.getId() && tagEqual) {
-                            hasItems.add(entryValue);
-                        }
-                        break;
-                }
-            } else {
-                if (needItem.isCheckCustomName() && !entryValue.getCustomName().equals(item.getCustomName())) {
-                    continue;
-                }
-                switch (NukkitTypeUtils.getNukkitType()) {
-                    case POWER_NUKKIT_X:
-                    case POWER_NUKKIT_X_2:
-                    case MOT:
-                        if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
-                            continue;
-                        }
-                        if (!checkMustHaveTag(needItem, entryValue)) {
-                            continue;
-                        }
-                        if (entryValue.getNamespaceId().equals(item.getNamespaceId()) && entryValue.getDamage() == item.getDamage()) {
-                            hasItems.add(entryValue);
-                        }
-                        break;
-                    default:
-                        if (needItem.isCheckDamage() && entryValue.getDamage() != item.getDamage()) {
-                            continue;
-                        }
-                        if (!checkMustHaveTag(needItem, entryValue)) {
-                            continue;
-                        }
-                        if (entryValue.getId() == item.getId() && entryValue.getDamage() == item.getDamage()) {
-                            hasItems.add(entryValue);
-                        }
-                        break;
-                }
+                    }
+                    if (!checkMustHaveTag(needItem, entryValue)) {
+                        continue;
+                    }
+                    hasItems.add(entryValue);
+                    break;
             }
         }
         return hasItems;
