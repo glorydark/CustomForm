@@ -415,12 +415,105 @@ public class FormCreator {
                 //custom
                 for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
                     String type = (String) component.getOrDefault("type", "");
-                    if (type.equals("StepSlider") || type.equals("Dropdown")) {
-                        List<SimpleResponseExecuteData> data = new ArrayList<>();
-                        List<Map<String, Object>> maps = (List<Map<String, Object>>) component.getOrDefault("responses", new ArrayList<>());
-                        List<ConfigModification> configModifications = new ArrayList<>();
-                        // todo 看看能否在某些地方能够运用到requirements
-                        if (component.containsKey("config")) {
+                    switch (type) {
+                        case "StepSlider":
+                        case "Dropdown": {
+                            List<SimpleResponseExecuteData> data = new ArrayList<>();
+                            List<Map<String, Object>> maps = (List<Map<String, Object>>) component.getOrDefault("responses", new ArrayList<>());
+                            List<ConfigModification> configModifications = new ArrayList<>();
+                            // todo 看看能否在某些地方能够运用到requirements
+                            if (component.containsKey("config")) {
+                                for (Map<String, Object> configEntry : (List<Map<String, Object>>) component.getOrDefault("configs", new ArrayList<>())) {
+                                    int configType = (int) configEntry.get("type");
+                                    String config_name = configEntry.get("key_name").toString();
+                                    String deal_type = configEntry.get("deal_type").toString();
+                                    ConfigModificationType modificationType;
+                                    switch (deal_type) {
+                                        case "add":
+                                            modificationType = ConfigModificationType.ADD;
+                                            break;
+                                        case "deduct":
+                                            modificationType = ConfigModificationType.DEDUCT;
+                                            break;
+                                        case "set":
+                                            modificationType = ConfigModificationType.SET;
+                                            break;
+                                        case "remove":
+                                            modificationType = ConfigModificationType.REMOVE;
+                                            break;
+                                        default:
+                                            continue;
+                                    }
+                                    ConfigModification modification = new ConfigModification(configType, config_name, configEntry.get("deal_value"), modificationType);
+                                    configModifications.add(modification);
+                                }
+                            }
+                            for (Map<String, Object> map : maps) {
+                                SimpleResponseExecuteData simpleResponseExecuteData = new SimpleResponseExecuteData((List<String>) map.getOrDefault("commands", new ArrayList<>()), (List<String>) map.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), configModifications);
+                                simpleResponseExecuteData.setStartDate(stringToDate((String) map.getOrDefault("start_time", "")));
+                                simpleResponseExecuteData.setExpiredDate(stringToDate((String) map.getOrDefault("expire_time", "")));
+                                data.add(simpleResponseExecuteData);
+                            }
+                            out.add(new StepResponseExecuteData(data));
+                            break;
+                        }
+                        case "PlayerListDropdown":
+                            DropdownPlayerListResponse data = new DropdownPlayerListResponse((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+                            data.setStartDate(stringToDate((String) component.getOrDefault("start_time", "")));
+                            data.setExpiredDate(stringToDate((String) component.getOrDefault("expire_time", "")));
+                            if (component.containsKey("requirements")) {
+                                List<Requirements> requirementsList = new ArrayList<>();
+                                Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
+                                for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
+                                    requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                                }
+                                data.setRequirements(requirementsList);
+                            }
+                            List<ConfigModification> configModifications = new ArrayList<>();
+                            if (component.containsKey("configs")) {
+                                for (Map<String, Object> configEntry : (List<Map<String, Object>>) component.getOrDefault("configs", new ArrayList<>())) {
+                                    int configType = (int) configEntry.get("type");
+                                    String extraData;
+                                    if (configType == 0) {
+                                        extraData = configEntry.get("key_name").toString();
+                                    } else {
+                                        extraData = configEntry.get("config_name").toString();
+                                    }
+                                    String deal_type = configEntry.get("deal_type").toString();
+                                    ConfigModificationType modificationType;
+                                    switch (deal_type) {
+                                        case "add":
+                                            modificationType = ConfigModificationType.ADD;
+                                            break;
+                                        case "deduct":
+                                            modificationType = ConfigModificationType.DEDUCT;
+                                            break;
+                                        case "set":
+                                            modificationType = ConfigModificationType.SET;
+                                            break;
+                                        case "remove":
+                                            modificationType = ConfigModificationType.REMOVE;
+                                            break;
+                                        default:
+                                            continue;
+                                    }
+                                    ConfigModification modification = new ConfigModification(configType, extraData, configEntry.get("deal_value"), modificationType);
+                                    configModifications.add(modification);
+                                }
+                            }
+                            data.setConfigModifications(configModifications);
+                            out.add(data);
+                            break;
+                        case "Toggle":
+                            Map<String, Object> maps = (Map<String, Object>) component.getOrDefault("responses", new LinkedHashMap<>());
+                            ToggleResponseExecuteData toggleResponseExecuteData = new ToggleResponseExecuteData((List<String>) maps.getOrDefault("true_commands", new ArrayList<>()), (List<String>) maps.getOrDefault("true_messages", new ArrayList<>()), (List<String>) maps.getOrDefault("false_commands", new ArrayList<>()), (List<String>) maps.getOrDefault("false_messages", new ArrayList<>()));
+                            toggleResponseExecuteData.setStartDate(stringToDate((String) maps.getOrDefault("start_time", "")));
+                            toggleResponseExecuteData.setExpiredDate(stringToDate((String) maps.getOrDefault("expire_time", "")));
+                            out.add(toggleResponseExecuteData);
+                            break;
+                        case "Input":
+                            configModifications = new ArrayList<>();
+                            out = new ArrayList<>();
                             for (Map<String, Object> configEntry : (List<Map<String, Object>>) component.getOrDefault("configs", new ArrayList<>())) {
                                 int configType = (int) configEntry.get("type");
                                 String config_name = configEntry.get("key_name").toString();
@@ -445,67 +538,22 @@ public class FormCreator {
                                 ConfigModification modification = new ConfigModification(configType, config_name, configEntry.get("deal_value"), modificationType);
                                 configModifications.add(modification);
                             }
-                        }
-                        for (Map<String, Object> map : maps) {
-                            SimpleResponseExecuteData simpleResponseExecuteData = new SimpleResponseExecuteData((List<String>) map.getOrDefault("commands", new ArrayList<>()), (List<String>) map.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), configModifications);
-                            simpleResponseExecuteData.setStartDate(stringToDate((String) map.getOrDefault("start_time", "")));
-                            simpleResponseExecuteData.setExpiredDate(stringToDate((String) map.getOrDefault("expire_time", "")));
-                            data.add(simpleResponseExecuteData);
-                        }
-                        out.add(new StepResponseExecuteData(data));
-                    } else if (type.equals("PlayerListDropdown")) {
-                        DropdownPlayerListResponse data = new DropdownPlayerListResponse((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-                        data.setStartDate(stringToDate((String) component.getOrDefault("start_time", "")));
-                        data.setExpiredDate(stringToDate((String) component.getOrDefault("expire_time", "")));
-                        if (component.containsKey("requirements")) {
-                            List<Requirements> requirementsList = new ArrayList<>();
-                            Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
-                            for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                                requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
-                            }
-                            data.setRequirements(requirementsList);
-                        }
-                        List<ConfigModification> configModifications = new ArrayList<>();
-                        if (component.containsKey("configs")) {
-                            for (Map<String, Object> configEntry : (List<Map<String, Object>>) component.getOrDefault("configs", new ArrayList<>())) {
-                                int configType = (int) configEntry.get("type");
-                                String extraData;
-                                if (configType == 0) {
-                                    extraData = configEntry.get("key_name").toString();
-                                } else {
-                                    extraData = configEntry.get("config_name").toString();
+                            SimpleResponseExecuteData simpleResponseExecuteData = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()), new ArrayList<>(), configModifications);
+                            simpleResponseExecuteData.setStartDate(stringToDate((String) component.getOrDefault("start_time", "")));
+                            simpleResponseExecuteData.setExpiredDate(stringToDate((String) component.getOrDefault("expire_time", "")));
+                            if (component.containsKey("requirements")) {
+                                List<Requirements> requirements = new ArrayList<>();
+                                Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
+                                for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
+                                    requirements.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                                 }
-                                String deal_type = configEntry.get("deal_type").toString();
-                                ConfigModificationType modificationType;
-                                switch (deal_type) {
-                                    case "add":
-                                        modificationType = ConfigModificationType.ADD;
-                                        break;
-                                    case "deduct":
-                                        modificationType = ConfigModificationType.DEDUCT;
-                                        break;
-                                    case "set":
-                                        modificationType = ConfigModificationType.SET;
-                                        break;
-                                    case "remove":
-                                        modificationType = ConfigModificationType.REMOVE;
-                                        break;
-                                    default:
-                                        continue;
-                                }
-                                ConfigModification modification = new ConfigModification(configType, extraData, configEntry.get("deal_value"), modificationType);
-                                configModifications.add(modification);
+                                simpleResponseExecuteData.setRequirements(requirements);
                             }
-                        }
-                        out.add(data);
-                    } else if (type.equals("Toggle")) {
-                        Map<String, Object> maps = (Map<String, Object>) component.getOrDefault("responses", new LinkedHashMap<>());
-                        ToggleResponseExecuteData toggleResponseExecuteData = new ToggleResponseExecuteData((List<String>) maps.getOrDefault("true_commands", new ArrayList<>()), (List<String>) maps.getOrDefault("true_messages", new ArrayList<>()), (List<String>) maps.getOrDefault("false_commands", new ArrayList<>()), (List<String>) maps.getOrDefault("false_messages", new ArrayList<>()));
-                        toggleResponseExecuteData.setStartDate(stringToDate((String) maps.getOrDefault("start_time", "")));
-                        toggleResponseExecuteData.setExpiredDate(stringToDate((String) maps.getOrDefault("expire_time", "")));
-                        out.add(toggleResponseExecuteData);
-                    } else {
-                        out.add(null);
+                            out.add(simpleResponseExecuteData);
+                            break;
+                        default:
+                            out.add(null);
+                            break;
                     }
                 }
                 openRequirementsList = new ArrayList<>();
