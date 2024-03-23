@@ -147,19 +147,22 @@ public class ScriptFormCustom implements ScriptForm {
             }
         });
         responsesMap.forEach((key, value) -> {
-            Element element = respondCustomWindow.getElements().get(key);
-            if (element instanceof ElementDropdown) {
-                int elementDropdownResponseId = Integer.parseInt(((FormResponseCustom) response).getResponse(key).toString());
-                ElementDropdown dropdown = ((ElementDropdown) respondCustomWindow.getElements().get(key));
-                data.get(key).execute(player, elementDropdownResponseId, dropdown.getOptions().get(elementDropdownResponseId));
-            } else {
-                if (respondCustomWindow.getElements().get(key) instanceof ElementStepSlider) {
-                    int stepSliderResponseId = Integer.parseInt(((FormResponseCustom) response).getResponse(key).toString());
-                    ElementStepSlider stepSlider = ((ElementStepSlider) respondCustomWindow.getElements().get(key));
-                    data.get(key).execute(player, stepSliderResponseId, stepSlider.getSteps().get(stepSliderResponseId));
+            ResponseExecuteData responseExecuteData = data.get(key);
+            if (responseExecuteData != null) {
+                Element element = respondCustomWindow.getElements().get(key);
+                if (element instanceof ElementDropdown) {
+                    int elementDropdownResponseId = Integer.parseInt(((FormResponseCustom) response).getResponse(key).toString());
+                    ElementDropdown dropdown = ((ElementDropdown) respondCustomWindow.getElements().get(key));
+                    responseExecuteData.execute(player, elementDropdownResponseId, dropdown.getOptions().get(elementDropdownResponseId));
                 } else {
-                    if (responseCustom.getResponse(key) != null) {
-                        data.get(key).execute(player, 0, responseCustom.getResponse(key));
+                    if (respondCustomWindow.getElements().get(key) instanceof ElementStepSlider) {
+                        int stepSliderResponseId = Integer.parseInt(((FormResponseCustom) response).getResponse(key).toString());
+                        ElementStepSlider stepSlider = ((ElementStepSlider) respondCustomWindow.getElements().get(key));
+                        responseExecuteData.execute(player, stepSliderResponseId, stepSlider.getSteps().get(stepSliderResponseId));
+                    } else {
+                        if (responseCustom.getResponse(key) != null) {
+                            responseExecuteData.execute(player, 0, responseCustom.getResponse(key));
+                        }
                     }
                 }
             }

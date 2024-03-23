@@ -497,54 +497,16 @@ public class FormCreator {
                                 configModifications.add(modification);
                             }
                         }
+                        data.setConfigModifications(configModifications);
                         out.add(data);
+                    } else if (type.equals("Toggle")) {
+                        Map<String, Object> maps = (Map<String, Object>) component.getOrDefault("responses", new LinkedHashMap<>());
+                        ToggleResponseExecuteData toggleResponseExecuteData = new ToggleResponseExecuteData((List<String>) maps.getOrDefault("true_commands", new ArrayList<>()), (List<String>) maps.getOrDefault("true_messages", new ArrayList<>()), (List<String>) maps.getOrDefault("false_commands", new ArrayList<>()), (List<String>) maps.getOrDefault("false_messages", new ArrayList<>()));
+                        toggleResponseExecuteData.setStartDate(stringToDate((String) maps.getOrDefault("start_time", "")));
+                        toggleResponseExecuteData.setExpiredDate(stringToDate((String) maps.getOrDefault("expire_time", "")));
+                        out.add(toggleResponseExecuteData);
                     } else {
-                        if (type.equals("Toggle")) {
-                            Map<String, Object> maps = (Map<String, Object>) component.getOrDefault("responses", new LinkedHashMap<>());
-                            ToggleResponseExecuteData toggleResponseExecuteData = new ToggleResponseExecuteData((List<String>) maps.getOrDefault("true_commands", new ArrayList<>()), (List<String>) maps.getOrDefault("true_messages", new ArrayList<>()), (List<String>) maps.getOrDefault("false_commands", new ArrayList<>()), (List<String>) maps.getOrDefault("false_messages", new ArrayList<>()));
-                            toggleResponseExecuteData.setStartDate(stringToDate((String) maps.getOrDefault("start_time", "")));
-                            toggleResponseExecuteData.setExpiredDate(stringToDate((String) maps.getOrDefault("expire_time", "")));
-                            out.add(toggleResponseExecuteData);
-                        } else {
-                            List<ConfigModification> configModifications = new ArrayList<>();
-                            out = new ArrayList<>();
-                            for (Map<String, Object> configEntry : (List<Map<String, Object>>) component.getOrDefault("configs", new ArrayList<>())) {
-                                int configType = (int) configEntry.get("type");
-                                String config_name = configEntry.get("key_name").toString();
-                                String deal_type = configEntry.get("deal_type").toString();
-                                ConfigModificationType modificationType;
-                                switch (deal_type) {
-                                    case "add":
-                                        modificationType = ConfigModificationType.ADD;
-                                        break;
-                                    case "deduct":
-                                        modificationType = ConfigModificationType.DEDUCT;
-                                        break;
-                                    case "set":
-                                        modificationType = ConfigModificationType.SET;
-                                        break;
-                                    case "remove":
-                                        modificationType = ConfigModificationType.REMOVE;
-                                        break;
-                                    default:
-                                        continue;
-                                }
-                                ConfigModification modification = new ConfigModification(configType, config_name, configEntry.get("deal_value"), modificationType);
-                                configModifications.add(modification);
-                            }
-                            SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()), new ArrayList<>(), configModifications);
-                            data.setStartDate(stringToDate((String) component.getOrDefault("start_time", "")));
-                            data.setExpiredDate(stringToDate((String) component.getOrDefault("expire_time", "")));
-                            if (component.containsKey("requirements")) {
-                                List<Requirements> requirements = new ArrayList<>();
-                                Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
-                                for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                                    requirements.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
-                                }
-                                data.setRequirements(requirements);
-                            }
-                            out.add(data);
-                        }
+                        out.add(null);
                     }
                 }
                 openRequirementsList = new ArrayList<>();
