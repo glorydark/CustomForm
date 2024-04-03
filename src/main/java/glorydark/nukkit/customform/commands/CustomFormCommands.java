@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.level.Location;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.TextFormat;
 import glorydark.nukkit.customform.CustomFormMain;
@@ -88,9 +89,9 @@ public class CustomFormCommands extends Command {
                 }
                 if (strings.length == 2) {
                     for (Player player : Server.getInstance().getOnlinePlayers().values()) {
-                        player.sendMessage(strings[1]);
+                        player.sendMessage(strings[1].replace("{空格}", " "));
                     }
-                    CustomFormMain.plugin.getLogger().info(strings[1]);
+                    CustomFormMain.plugin.getLogger().info(strings[1].replace("{空格}", " "));
                 }
                 break;
             case "savenbt":
@@ -100,6 +101,29 @@ public class CustomFormCommands extends Command {
                         config.set(strings[1], InventoryUtils.saveItemToString(((Player) commandSender).getInventory().getItemInHand()));
                         config.save();
                         commandSender.sendMessage("Save item string successfully!");
+                    }
+                }
+                break;
+            case "tp": // tp test 0 1 0 world 2 2 2
+                if (commandSender.isPlayer() && !commandSender.isOp()) {
+                    return false;
+                }
+                Player player = Server.getInstance().getPlayer(strings[1]);
+                if (player == null) {
+                    commandSender.sendMessage("Can not find player!");
+                    return false;
+                }
+                if (strings.length >= 5) {
+                    switch (strings.length) {
+                        case 5:
+                            player.teleport(new Location(Double.parseDouble(strings[2]), Double.parseDouble(strings[3]), Double.parseDouble(strings[4]), player.getLevel()));
+                            break;
+                        case 6:
+                            player.teleport(new Location(Double.parseDouble(strings[2]), Double.parseDouble(strings[3]), Double.parseDouble(strings[4]), Server.getInstance().getLevelByName(strings[5])));
+                            break;
+                        case 9:
+                            player.teleport(new Location(Double.parseDouble(strings[2]), Double.parseDouble(strings[3]), Double.parseDouble(strings[4]), Double.parseDouble(strings[5]), Double.parseDouble(strings[6]), Double.parseDouble(strings[7]), Server.getInstance().getLevelByName(strings[8])));
+                            break;
                     }
                 }
                 break;
