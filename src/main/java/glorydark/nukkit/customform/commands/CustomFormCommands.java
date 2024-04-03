@@ -82,6 +82,17 @@ public class CustomFormCommands extends Command {
                     Server.getInstance().getScheduler().scheduleDelayedTask(CustomFormMain.plugin, () -> Server.getInstance().dispatchCommand(sender, strings[2]), Integer.parseInt(strings[3]));
                 }
                 break;
+            case "broadcastmsg":
+                if (commandSender.isPlayer() && !commandSender.isOp()) {
+                    return false;
+                }
+                if (strings.length == 2) {
+                    for (Player player : Server.getInstance().getOnlinePlayers().values()) {
+                        player.sendMessage(strings[1]);
+                    }
+                    CustomFormMain.plugin.getLogger().info(strings[1]);
+                }
+                break;
             case "savenbt":
                 if (strings.length == 2) {
                     if (commandSender.isPlayer() && commandSender.isOp()) {
