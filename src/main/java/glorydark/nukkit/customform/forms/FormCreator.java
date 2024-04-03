@@ -417,7 +417,7 @@ public class FormCreator {
                     String type = (String) component.getOrDefault("type", "");
                     switch (type) {
                         case "StepSlider":
-                        case "Dropdown": {
+                        case "Dropdown":
                             List<SimpleResponseExecuteData> data = new ArrayList<>();
                             List<Map<String, Object>> maps = (List<Map<String, Object>>) component.getOrDefault("responses", new ArrayList<>());
                             List<ConfigModification> configModifications = new ArrayList<>();
@@ -456,20 +456,19 @@ public class FormCreator {
                             }
                             out.add(new StepResponseExecuteData(data));
                             break;
-                        }
                         case "PlayerListDropdown":
-                            DropdownPlayerListResponse data = new DropdownPlayerListResponse((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-                            data.setStartDate(stringToDate((String) component.getOrDefault("start_time", "")));
-                            data.setExpiredDate(stringToDate((String) component.getOrDefault("expire_time", "")));
+                            DropdownPlayerListResponse dropdownPlayerListResponse = new DropdownPlayerListResponse((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+                            dropdownPlayerListResponse.setStartDate(stringToDate((String) component.getOrDefault("start_time", "")));
+                            dropdownPlayerListResponse.setExpiredDate(stringToDate((String) component.getOrDefault("expire_time", "")));
                             if (component.containsKey("requirements")) {
                                 List<Requirements> requirementsList = new ArrayList<>();
                                 Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                                 for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
                                     requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                                 }
-                                data.setRequirements(requirementsList);
+                                dropdownPlayerListResponse.setRequirements(requirementsList);
                             }
-                            List<ConfigModification> configModifications = new ArrayList<>();
+                            List<ConfigModification> configModificationsForPlayerListDropDown = new ArrayList<>();
                             if (component.containsKey("configs")) {
                                 for (Map<String, Object> configEntry : (List<Map<String, Object>>) component.getOrDefault("configs", new ArrayList<>())) {
                                     int configType = (int) configEntry.get("type");
@@ -498,22 +497,21 @@ public class FormCreator {
                                             continue;
                                     }
                                     ConfigModification modification = new ConfigModification(configType, extraData, configEntry.get("deal_value"), modificationType);
-                                    configModifications.add(modification);
+                                    configModificationsForPlayerListDropDown.add(modification);
                                 }
                             }
-                            data.setConfigModifications(configModifications);
-                            out.add(data);
+                            dropdownPlayerListResponse.setConfigModifications(configModificationsForPlayerListDropDown);
+                            out.add(dropdownPlayerListResponse);
                             break;
                         case "Toggle":
-                            Map<String, Object> maps = (Map<String, Object>) component.getOrDefault("responses", new LinkedHashMap<>());
-                            ToggleResponseExecuteData toggleResponseExecuteData = new ToggleResponseExecuteData((List<String>) maps.getOrDefault("true_commands", new ArrayList<>()), (List<String>) maps.getOrDefault("true_messages", new ArrayList<>()), (List<String>) maps.getOrDefault("false_commands", new ArrayList<>()), (List<String>) maps.getOrDefault("false_messages", new ArrayList<>()));
-                            toggleResponseExecuteData.setStartDate(stringToDate((String) maps.getOrDefault("start_time", "")));
-                            toggleResponseExecuteData.setExpiredDate(stringToDate((String) maps.getOrDefault("expire_time", "")));
+                            Map<String, Object> toggleMap = (Map<String, Object>) component.getOrDefault("responses", new LinkedHashMap<>());
+                            ToggleResponseExecuteData toggleResponseExecuteData = new ToggleResponseExecuteData((List<String>) toggleMap.getOrDefault("true_commands", new ArrayList<>()), (List<String>) toggleMap.getOrDefault("true_messages", new ArrayList<>()), (List<String>) toggleMap.getOrDefault("false_commands", new ArrayList<>()), (List<String>) toggleMap.getOrDefault("false_messages", new ArrayList<>()));
+                            toggleResponseExecuteData.setStartDate(stringToDate((String) toggleMap.getOrDefault("start_time", "")));
+                            toggleResponseExecuteData.setExpiredDate(stringToDate((String) toggleMap.getOrDefault("expire_time", "")));
                             out.add(toggleResponseExecuteData);
                             break;
                         case "Input":
-                            configModifications = new ArrayList<>();
-                            out = new ArrayList<>();
+                            configModificationsForPlayerListDropDown = new ArrayList<>();
                             for (Map<String, Object> configEntry : (List<Map<String, Object>>) component.getOrDefault("configs", new ArrayList<>())) {
                                 int configType = (int) configEntry.get("type");
                                 String config_name = configEntry.get("key_name").toString();
@@ -536,9 +534,9 @@ public class FormCreator {
                                         continue;
                                 }
                                 ConfigModification modification = new ConfigModification(configType, config_name, configEntry.get("deal_value"), modificationType);
-                                configModifications.add(modification);
+                                configModificationsForPlayerListDropDown.add(modification);
                             }
-                            SimpleResponseExecuteData simpleResponseExecuteData = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()), new ArrayList<>(), configModifications);
+                            SimpleResponseExecuteData simpleResponseExecuteData = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()), new ArrayList<>(), configModificationsForPlayerListDropDown);
                             simpleResponseExecuteData.setStartDate(stringToDate((String) component.getOrDefault("start_time", "")));
                             simpleResponseExecuteData.setExpiredDate(stringToDate((String) component.getOrDefault("expire_time", "")));
                             if (component.containsKey("requirements")) {
