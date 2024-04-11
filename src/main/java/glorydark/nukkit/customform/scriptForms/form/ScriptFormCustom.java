@@ -295,6 +295,7 @@ public class ScriptFormCustom implements ScriptForm {
      * Refracted in order to expand the usages easily.
      */
     public String replace(String string, Player player, boolean replaceBreak) {
+        string = string.replace("{player}", player.getName());
         if (CustomFormMain.enableTips) {
             string = Api.strReplace(string, player);
         }

@@ -169,6 +169,7 @@ public class ScriptFormSimple implements ScriptForm {
     }
 
     public String replace(String string, Player player, boolean replaceBreak, boolean enableRsNPCX, boolean enableTips) {
+        string = string.replace("{player}", player.getName());
         if (CustomFormMain.enableTips && enableTips) {
             string = Api.strReplace(string, player);
         }

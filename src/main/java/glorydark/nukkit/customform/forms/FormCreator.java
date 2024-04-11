@@ -141,7 +141,10 @@ public class FormCreator {
     // This function can use as a way to customize your form.
     public static void showScriptForm(Player player, ScriptForm script, String identifier) {
         if (player.namedTag.contains("lastFormRequestMillis") && System.currentTimeMillis() - player.namedTag.getLong("lastFormRequestMillis") < CustomFormMain.coolDownMillis) {
-            player.sendMessage(CustomFormMain.language.translateString(player, "operation_so_fast"));
+            String tip = CustomFormMain.language.translateString(player, "operation_so_fast");
+            if (!tip.equals("")) {
+                player.sendMessage(tip);
+            }
             return;
         }
         if (CustomFormMain.enableCameraAnimation) {
