@@ -107,27 +107,29 @@ public class FormCreator {
                 return;
             }
             boolean allowOpen = false;
-            if (!script.getOpenPermissions().contains(PermissionEnum.DEFAULT) && !script.getOpenPermissionWhitelist().contains(player.getName())) {
-                for (PermissionEnum openPermission : script.getOpenPermissions()) {
-                    if (openPermission == PermissionEnum.ONLY_USER) {
-                        if (!player.isOp()) {
-                            allowOpen = true;
-                            break;
-                        }
-                    } else if (openPermission == PermissionEnum.OP) {
-                        if (player.isOp()) {
-                            allowOpen = true;
-                            break;
-                        }
-                    } else if (openPermission == PermissionEnum.CONSOLE) {
-                        if (consoleExecute) {
-                            allowOpen = true;
-                            break;
+            if (script.getOpenPermissionWhitelist().size() == 0 || script.getOpenPermissionWhitelist().contains(player.getName())) {
+                if (!script.getOpenPermissions().contains(PermissionEnum.DEFAULT)) {
+                    for (PermissionEnum openPermission : script.getOpenPermissions()) {
+                        if (openPermission == PermissionEnum.ONLY_USER) {
+                            if (!player.isOp()) {
+                                allowOpen = true;
+                                break;
+                            }
+                        } else if (openPermission == PermissionEnum.OP) {
+                            if (player.isOp()) {
+                                allowOpen = true;
+                                break;
+                            }
+                        } else if (openPermission == PermissionEnum.CONSOLE) {
+                            if (consoleExecute) {
+                                allowOpen = true;
+                                break;
+                            }
                         }
                     }
+                } else {
+                    allowOpen = true;
                 }
-            } else {
-                allowOpen = true;
             }
             if (allowOpen) {
                 showScriptForm(player, script, identifier);
