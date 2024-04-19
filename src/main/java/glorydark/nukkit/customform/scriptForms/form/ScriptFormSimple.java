@@ -57,19 +57,22 @@ public class ScriptFormSimple implements ScriptForm {
             for (String permission : permissions) {
                 switch (permission) {
                     case "op":
-                        openPermissions.add(PermissionEnum.OP);
+                        this.openPermissions.add(PermissionEnum.OP);
                         break;
                     case "console":
-                        openPermissions.add(PermissionEnum.CONSOLE);
+                        this.openPermissions.add(PermissionEnum.CONSOLE);
                         break;
                     case "user-only":
-                        openPermissions.add(PermissionEnum.ONLY_USER);
+                        this.openPermissions.add(PermissionEnum.ONLY_USER);
                         break;
                 }
             }
-            openPermissionWhitelist.addAll((List<String>) openPermissionMap.getOrDefault("whitelist", new ArrayList<>()));
+            if (this.openPermissions.size() == 0) {
+                this.openPermissions.add(PermissionEnum.DEFAULT);
+            }
+            this.openPermissionWhitelist.addAll((List<String>) openPermissionMap.getOrDefault("whitelist", new ArrayList<>()));
         } else {
-            openPermissions.add(PermissionEnum.DEFAULT);
+            this.openPermissions.add(PermissionEnum.DEFAULT);
         }
     }
 
