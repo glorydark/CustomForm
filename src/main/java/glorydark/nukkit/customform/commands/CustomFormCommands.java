@@ -7,10 +7,12 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.ConfigSection;
 import cn.nukkit.utils.TextFormat;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.chestMenu.ChestMenuMain;
 import glorydark.nukkit.customform.forms.FormCreator;
+import glorydark.nukkit.customform.scriptForms.form.ScriptForm;
 import glorydark.nukkit.customform.utils.InventoryUtils;
 
 import java.io.File;
@@ -38,6 +40,70 @@ public class CustomFormCommands extends Command {
                     commandSender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", s));
                 }
                 break;
+            case "whitelist": // whitelist add 菜单名 玩家名
+                if (strings.length == 4) {
+                    String formId = strings[2];
+                    String playerName = strings[3];
+                    switch (strings[1]) {
+                        case "add":
+                            ScriptForm scriptForm = FormCreator.formScripts.get(formId);
+                            if (scriptForm == null) {
+                                commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.form.not_found", formId));
+                            } else {
+                                if (!scriptForm.getOpenPermissionWhitelist().contains(playerName)) {
+                                    scriptForm.getOpenPermissionWhitelist().add(playerName);
+                                }
+                                Config config = null;
+                                File file = new File(CustomFormMain.path + "/forms/" + formId + ".json");
+                                if (file.exists()) {
+                                    config = new Config(file, Config.JSON);
+                                } else {
+                                    file = new File(CustomFormMain.path + "/forms/" + formId + ".yml");
+                                    if (file.exists()) {
+                                        config = new Config(file, Config.YAML);
+                                    }
+                                }
+                                if (config != null) {
+                                    ConfigSection section = config.getSection("open_permissions");
+                                    section.set("whitelist", scriptForm.getOpenPermissionWhitelist());
+                                    config.set("open_permissions", section);
+                                    config.save();
+                                    commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.whitelist.add.success", playerName, formId));
+                                } else {
+                                    commandSender.sendMessage(TextFormat.RED + "Found an exception in finding file: " + formId);
+                                }
+                            }
+                            break;
+                        case "remove":
+                            scriptForm = FormCreator.formScripts.get(formId);
+                            if (scriptForm == null) {
+                                commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.form.not_found", formId));
+                            } else {
+                                scriptForm.getOpenPermissionWhitelist().remove(playerName);
+                                Config config = null;
+                                File file = new File(CustomFormMain.path + "/forms/" + formId + ".json");
+                                if (file.exists()) {
+                                    config = new Config(file, Config.JSON);
+                                } else {
+                                    file = new File(CustomFormMain.path + "/forms/" + formId + ".yml");
+                                    if (file.exists()) {
+                                        config = new Config(file, Config.YAML);
+                                    }
+                                }
+                                if (config != null) {
+                                    ConfigSection section = config.getSection("open_permissions");
+                                    section.set("whitelist", scriptForm.getOpenPermissionWhitelist());
+                                    config.set("open_permissions", section);
+                                    config.save();
+                                    commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.whitelist.remove.success", playerName, formId));
+                                } else {
+                                    commandSender.sendMessage(TextFormat.RED + "Found an exception in finding file: " + formId);
+                                }
+                            }
+                            break;
+                    }
+                }
+                break;
             case "show":
                 if (commandSender.isPlayer()) {
                     if (strings.length == 2) {
@@ -51,6 +117,8 @@ public class CustomFormCommands extends Command {
                         } else {
                             commandSender.sendMessage(CustomFormMain.language.translateString(null, "command_player_not_found", strings[1]));
                         }
+                    } else {
+                        commandSender.sendMessage(CustomFormMain.language.translateString(null, "command_use_in_game"));
                     }
                 }
                 break;
@@ -60,7 +128,7 @@ public class CustomFormCommands extends Command {
                         ChestMenuMain.showMinecartChestMenu((Player) commandSender, strings[1]);
                     }
                 } else {
-                    commandSender.sendMessage(CustomFormMain.language.translateString(null, "command_player_not_found", strings[1]));
+                    commandSender.sendMessage(CustomFormMain.language.translateString(null, "command_use_in_game", strings[1]));
                 }
                 break;
             case "list":
