@@ -70,7 +70,7 @@ public class CustomFormMain extends PluginBase {
         this.saveResource("languages/zh_cn.properties", false);
         this.saveResource("languages/en_us.properties", false);
         Config config = new Config(path + "/config.yml", Config.YAML);
-        debug = config.getBoolean("debug", true); // todo
+        debug = config.getBoolean("debug", false); // todo
         enableDoubleCheckMenu = config.getBoolean("enable_doubleCheckMenu", true);
         enableCameraAnimation = config.getBoolean("enable_cameraAnimation", false);
         coolDownMillis = config.getLong("coolDown", 200L);
