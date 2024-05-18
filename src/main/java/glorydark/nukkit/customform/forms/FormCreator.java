@@ -31,12 +31,14 @@ import glorydark.nukkit.customform.scriptForms.data.requirement.tips.TipsRequire
 import glorydark.nukkit.customform.scriptForms.data.requirement.tips.TipsRequirementType;
 import glorydark.nukkit.customform.scriptForms.form.*;
 import glorydark.nukkit.customform.utils.CameraUtils;
+import glorydark.nukkit.customform.utils.Tools;
 import lombok.Data;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class FormCreator {
     public static final LinkedHashMap<String, WindowInfo> UI_CACHE = new LinkedHashMap<>();
@@ -331,7 +333,7 @@ public class FormCreator {
         0: simple  1: custom  2: modal
      */
     public static boolean loadForm(String identifier, Map<String, Object> config) {
-        ScriptForm scriptForm = getScriptFormByMap(config);
+        ScriptForm scriptForm = getScriptFormByMap(identifier, config);
         if (scriptForm != null) {
             FormCreator.formScripts.put(identifier, scriptForm);
             return true;
@@ -342,7 +344,8 @@ public class FormCreator {
     }
 
     @Api
-    public static ScriptForm getScriptFormByMap(Map<String, Object> config) {
+    public static ScriptForm getScriptFormByMap(String identifier, Map<String, Object> config) {
+        long startMillis = System.currentTimeMillis();
         switch ((int) config.get("type")) {
             case 0:
                 //simple
@@ -354,7 +357,7 @@ public class FormCreator {
                             List<Requirements> requirementsList = new ArrayList<>();
                             Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                             for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                                requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                                CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
                             }
                             data.setRequirements(requirementsList);
                         }
@@ -396,7 +399,6 @@ public class FormCreator {
                         simpleResponseExecuteDataList.add(data);
                     }
                 }
-
                 List<Requirements> openRequirementsList = new ArrayList<>();
                 if (config.containsKey("open_requirements")) {
                     Map<String, Object> requirementData = (Map<String, Object>) config.get("open_requirements");
@@ -412,6 +414,9 @@ public class FormCreator {
                 simple.setStartDate(stringToDate(config.getOrDefault("start_time", "").toString()));
                 simple.setExpiredDate(stringToDate(config.getOrDefault("expire_time", "").toString()));
                 if (simple.getWindow() != null) {
+                    if (CustomFormMain.debug) {
+                        CustomFormMain.plugin.getLogger().alert("[DEBUG] Loading form <" + identifier + ">, cost time: " + Tools.formatTimeDiff(System.currentTimeMillis(), startMillis));
+                    }
                     return simple;
                 }
                 break;
@@ -469,7 +474,7 @@ public class FormCreator {
                                 List<Requirements> requirementsList = new ArrayList<>();
                                 Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                                 for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                                    requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                                    CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
                                 }
                                 dropdownPlayerListResponse.setRequirements(requirementsList);
                             }
@@ -545,12 +550,10 @@ public class FormCreator {
                             simpleResponseExecuteData.setStartDate(stringToDate((String) component.getOrDefault("start_time", "")));
                             simpleResponseExecuteData.setExpiredDate(stringToDate((String) component.getOrDefault("expire_time", "")));
                             if (component.containsKey("requirements")) {
-                                List<Requirements> requirements = new ArrayList<>();
                                 Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                                 for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                                    requirements.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                                     CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> simpleResponseExecuteData.getRequirements().add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
                                 }
-                                simpleResponseExecuteData.setRequirements(requirements);
                             }
                             out.add(simpleResponseExecuteData);
                             break;
@@ -574,6 +577,9 @@ public class FormCreator {
                 custom.setStartDate(stringToDate(config.getOrDefault("start_time", "").toString()));
                 custom.setExpiredDate(stringToDate(config.getOrDefault("expire_time", "").toString()));
                 if (custom.getWindow() != null) {
+                    if (CustomFormMain.debug) {
+                        CustomFormMain.plugin.getLogger().alert("[DEBUG] Loading form <" + identifier + ">, cost time: " + Tools.formatTimeDiff(System.currentTimeMillis(), startMillis));
+                    }
                     return custom;
                 }
                 break;
@@ -583,12 +589,10 @@ public class FormCreator {
                 for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
                     SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
                     if (component.containsKey("requirements")) {
-                        List<Requirements> requirementsList = new ArrayList<>();
                         Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                         for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                            requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                            CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> data.getRequirements().add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
                         }
-                        data.setRequirements(requirementsList);
                     }
                     data.setStartDate(stringToDate((String) component.getOrDefault("start_time", "")));
                     data.setExpiredDate(stringToDate((String) component.getOrDefault("expire_time", "")));
@@ -609,6 +613,9 @@ public class FormCreator {
                 modal.setStartDate(stringToDate(config.getOrDefault("start_time", "").toString()));
                 modal.setExpiredDate(stringToDate(config.getOrDefault("expire_time", "").toString()));
                 if (modal.getWindow() != null) {
+                    if (CustomFormMain.debug) {
+                        CustomFormMain.plugin.getLogger().alert("[DEBUG] Loading form <" + identifier + ">, cost time: " + Tools.formatTimeDiff(System.currentTimeMillis(), startMillis));
+                    }
                     return modal;
                 }
                 break;

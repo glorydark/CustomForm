@@ -16,6 +16,7 @@ import glorydark.nukkit.customform.scriptForms.form.ScriptForm;
 import glorydark.nukkit.customform.utils.InventoryUtils;
 
 import java.io.File;
+import java.util.concurrent.Executors;
 
 /**
  * @author glorydark
@@ -33,8 +34,7 @@ public class CustomFormCommands extends Command {
         switch (strings[0].toLowerCase()) {
             case "reload":
                 if (commandSender.isOp() || !commandSender.isPlayer()) {
-                    CustomFormMain.plugin.loadScriptWindows(new File(CustomFormMain.path + "/forms/"));
-                    CustomFormMain.plugin.loadScriptMineCartWindows(new File(CustomFormMain.path + "/minecart_chest_windows/"));
+                    CustomFormMain.plugin.loadAll();
                     commandSender.sendMessage(CustomFormMain.language.translateString(commandSender.isPlayer() ? (Player) commandSender : null, "plugin_reloaded"));
                 } else {
                     commandSender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", s));
@@ -105,6 +105,9 @@ public class CustomFormCommands extends Command {
                 }
                 break;
             case "show":
+                if (!CustomFormMain.ready) {
+                    return false;
+                }
                 if (commandSender.isPlayer()) {
                     if (strings.length == 2) {
                         FormCreator.showScriptForm((Player) commandSender, strings[1], false);
@@ -123,6 +126,9 @@ public class CustomFormCommands extends Command {
                 }
                 break;
             case "showminecartmenu":
+                if (!CustomFormMain.ready) {
+                    return false;
+                }
                 if (commandSender.isPlayer()) {
                     if (strings.length == 2) {
                         ChestMenuMain.showMinecartChestMenu((Player) commandSender, strings[1]);

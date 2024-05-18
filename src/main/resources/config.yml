@@ -5,3 +5,4 @@ enable_tips: true
 enable_rsNPCX: true
 enable_doubleCheckMenu: true
 enable_cameraAnimation: false
+debug: true

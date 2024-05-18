@@ -2,11 +2,15 @@ package glorydark.nukkit.customform.utils;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.ConfigSection;
 import glorydark.nukkit.customform.CustomFormMain;
 
 import java.io.File;
+import java.util.LinkedHashMap;
 
 public class InventoryUtils {
+
+    public static ConfigSection itemStringCaches = new ConfigSection();
 
     private static byte[] hexStringToBytes(String hexString) {
         if (hexString == null || hexString.equals("null")) {
@@ -101,17 +105,13 @@ public class InventoryUtils {
     }
 
     public static Item getItemFromConfig(String key) {
-        File file = new File(CustomFormMain.path + "/save_nbt_cache.yml");
-        if (file.exists()) {
-            Config config = new Config(file, Config.YAML);
-            String[] strings = key.split(":");
-            if (config.exists(strings[0])) {
-                Item item = toItem(config.getString(strings[0]));
-                if (strings.length == 2) {
-                    item.setCount(Integer.parseInt(strings[1]));
-                }
-                return item;
+        String[] strings = key.split(":");
+        if (itemStringCaches.exists(strings[0])) {
+            Item item = toItem(itemStringCaches.getString(strings[0]));
+            if (strings.length == 2) {
+                item.setCount(Integer.parseInt(strings[1]));
             }
+            return item;
         }
         CustomFormMain.plugin.getLogger().error("Error in parsing item string, caused by: cannot find the key { " + key + " } in the save_nbt_cache.yml");
         return Item.get(0);

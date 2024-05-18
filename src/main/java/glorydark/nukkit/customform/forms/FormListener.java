@@ -26,7 +26,16 @@ public class FormListener implements Listener {
         if (event.getPacket() instanceof ModalFormResponsePacket) {
             ModalFormResponsePacket pk = (ModalFormResponsePacket) event.getPacket();
             if (pk.formId == FormCreator.formId) {
-                dealResponse(player, FormCreator.UI_CACHE.get(player.getName()).getFormWindow(), pk.data);
+                FormCreator.WindowInfo windowInfo = FormCreator.UI_CACHE.get(player.getName());
+                if (windowInfo == null) {
+                    FormCreator.UI_CACHE.remove(player.getName());
+                    return;
+                }
+                if (windowInfo.getFormWindow() == null) {
+                    FormCreator.UI_CACHE.remove(player.getName());
+                    return;
+                }
+                dealResponse(player, windowInfo.getFormWindow(), pk.data);
             }
         }
     }
