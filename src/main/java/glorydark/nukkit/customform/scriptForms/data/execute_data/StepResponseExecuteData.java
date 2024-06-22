@@ -45,7 +45,7 @@ public class StepResponseExecuteData implements ResponseExecuteData {
             }
         }
         for (String message : responses.get(responseId).getMessages()) {
-            player.sendMessage(replace(message, player, false, params[0]));
+            player.sendMessage(replace(message, player, false, responseId, params[0]));
         }
     }
 
