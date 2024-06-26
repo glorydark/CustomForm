@@ -11,6 +11,8 @@ import glorydark.nukkit.customform.forms.FormCreator;
 import glorydark.nukkit.customform.forms.FormListener;
 import glorydark.nukkit.customform.utils.InventoryUtils;
 import glorydark.nukkit.customform.utils.Tools;
+import glorydark.nukkit.exception.LoadDataException;
+import glorydark.nukkit.utils.LanguageReader;
 import tip.utils.Api;
 
 import java.io.File;
@@ -47,6 +49,8 @@ public class CustomFormMain extends PluginBase {
 
     public static boolean enablePlaceHolderAPI;
 
+    public static boolean enableLanguageAPI;
+
     // Set the intervals for player to open the next form.
     public static long coolDownMillis;
 
@@ -81,6 +85,16 @@ public class CustomFormMain extends PluginBase {
         enablePoints = checkSoftDepend("playerPoints");
         enableRsNPCX = checkSoftDepend("RsNPC") && config.getBoolean("enable_rsNPCX", true);
         enablePlaceHolderAPI = checkSoftDepend("PlaceholderAPI");
+        enableLanguageAPI = checkSoftDepend("LanguageAPI");
+        if (enableLanguageAPI) {
+            File customLangDic = new File(path + "/custom_languages/");
+            customLangDic.mkdirs();
+            try {
+                LanguageReader.loadLanguageFromDictionary(this, customLangDic);
+            } catch (LoadDataException e) {
+                throw new RuntimeException(e);
+            }
+        }
         if (enableRsNPCX) {
             VariableManage.removeVariable("%npcName%");
             VariableManage.addVariable("%npcName%", (player, rsNpcConfig) -> {

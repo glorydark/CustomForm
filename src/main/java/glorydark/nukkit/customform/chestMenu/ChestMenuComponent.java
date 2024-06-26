@@ -5,6 +5,8 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
+import glorydark.nukkit.LanguageMain;
+import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import lombok.Data;
 
@@ -130,6 +132,9 @@ public class ChestMenuComponent {
     }
 
     public String replace(String text, Player player) {
+        if (CustomFormMain.enableLanguageAPI) {
+            text = LanguageMain.getInstance().getTranslation(CustomFormMain.plugin, player, text);
+        }
         return text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "").replaceFirst("op#", "");
     }
 }

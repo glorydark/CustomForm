@@ -7,6 +7,7 @@ import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowModal;
 import com.creeperface.nukkit.placeholderapi.api.PlaceholderAPI;
 import com.smallaswater.npc.variable.VariableManage;
+import glorydark.nukkit.LanguageMain;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.SimpleResponseExecuteData;
@@ -142,6 +143,9 @@ public class ScriptFormModal implements ScriptForm {
      * Refracted in order to expand the usages easily.
      */
     public String replace(String string, Player player, boolean replaceBreak) {
+        if (CustomFormMain.enableLanguageAPI) {
+            string = LanguageMain.getInstance().getTranslation(CustomFormMain.plugin, player, string);
+        }
         string = string.replace("{player}", player.getName());
         if (CustomFormMain.enableTips) {
             string = Api.strReplace(string, player);

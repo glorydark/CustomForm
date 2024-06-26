@@ -9,6 +9,7 @@ import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowSimple;
 import com.creeperface.nukkit.placeholderapi.api.PlaceholderAPI;
 import com.smallaswater.npc.variable.VariableManage;
+import glorydark.nukkit.LanguageMain;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.SimpleResponseExecuteData;
@@ -172,6 +173,9 @@ public class ScriptFormSimple implements ScriptForm {
     }
 
     public String replace(String string, Player player, boolean replaceBreak, boolean enableRsNPCX, boolean enableTips) {
+        if (CustomFormMain.enableLanguageAPI) {
+            string = LanguageMain.getInstance().getTranslation(CustomFormMain.plugin, player, string);
+        }
         string = string.replace("{player}", player.getName());
         if (CustomFormMain.enableTips && enableTips) {
             string = Api.strReplace(string, player);
