@@ -11,7 +11,6 @@ import glorydark.nukkit.customform.forms.FormCreator;
 import glorydark.nukkit.customform.forms.FormListener;
 import glorydark.nukkit.customform.utils.InventoryUtils;
 import glorydark.nukkit.customform.utils.Tools;
-import glorydark.nukkit.exception.LoadDataException;
 import glorydark.nukkit.utils.LanguageReader;
 import tip.utils.Api;
 
@@ -89,11 +88,7 @@ public class CustomFormMain extends PluginBase {
         if (enableLanguageAPI) {
             File customLangDic = new File(path + "/custom_languages/");
             customLangDic.mkdirs();
-            try {
-                LanguageReader.loadLanguageFromDictionary(this, customLangDic);
-            } catch (LoadDataException e) {
-                throw new RuntimeException(e);
-            }
+            LanguageReader.loadLanguageFromDictionary(this, customLangDic);
         }
         if (enableRsNPCX) {
             VariableManage.removeVariable("%npcName%");

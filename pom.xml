@@ -6,7 +6,7 @@
 
     <groupId>glorydark.nukkit</groupId>
     <artifactId>CustomForm</artifactId>
-    <version>1.1.1.7-SNAPSHOT</version>
+    <version>1.1.1.8-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -98,7 +98,7 @@
         <dependency>
             <groupId>glorydark.nukkit</groupId>
             <artifactId>LanguageAPI</artifactId>
-            <version>1.0.7</version>
+            <version>1.1.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
