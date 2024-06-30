@@ -8,6 +8,7 @@ import glorydark.nukkit.LanguageMain;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import glorydark.nukkit.customform.utils.CommandUtils;
+import glorydark.nukkit.customform.utils.Tools;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -26,9 +27,9 @@ public class ChestMenuComponent {
     private boolean isEnchanted;
     private List<Requirements> requirements = new ArrayList<>();
 
-    public ChestMenuComponent(String name, String description, String item, boolean isEnchanted) {
+    public ChestMenuComponent(String name, List<String> descriptions, String item, boolean isEnchanted) {
         this.name = name;
-        this.description = description;
+        this.description = Tools.toString(descriptions);
         this.isEnchanted = isEnchanted;
         /* Deal with item String */
         String[] strings = item.split(":");

@@ -39,7 +39,7 @@ public class ChestMenuMain {
             MinecartChestMenu menu = new MinecartChestMenu(identifier, (String) config.get("title"));
             List<Map<String, Object>> peComponents = (List<Map<String, Object>>) config.getOrDefault("pe_components", new ArrayList<>());
             for (Map<String, Object> component : peComponents) {
-                ChestMenuComponent chestMenuComponent = new ChestMenuComponent((String) component.get("name"), (String) component.get("descriptions"), (String) component.get("item"), (Boolean) component.get("isEnchanted"));
+                ChestMenuComponent chestMenuComponent = new ChestMenuComponent((String) component.get("name"), (List<String>) component.get("descriptions"), (String) component.get("item"), (Boolean) component.get("isEnchanted"));
                 chestMenuComponent.setFailedMessages((List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
                 chestMenuComponent.setFailedCommands((List<String>) component.getOrDefault("failed_commands", new ArrayList<>()));
                 chestMenuComponent.setSuccessMessages((List<String>) component.getOrDefault("messages", new ArrayList<>()));
@@ -56,7 +56,7 @@ public class ChestMenuMain {
             }
             List<Map<String, Object>> pcComponents = (List<Map<String, Object>>) config.getOrDefault("pc_components", new ArrayList<>());
             for (Map<String, Object> component : pcComponents) {
-                ChestMenuComponent chestMenuComponent = new ChestMenuComponent((String) component.get("name"), (String) component.get("descriptions"), (String) component.get("item"), (Boolean) component.get("isEnchanted"));
+                ChestMenuComponent chestMenuComponent = new ChestMenuComponent((String) component.get("name"), (List<String>) component.get("descriptions"), (String) component.get("item"), (Boolean) component.get("isEnchanted"));
                 chestMenuComponent.setFailedMessages((List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
                 chestMenuComponent.setFailedCommands((List<String>) component.getOrDefault("failed_commands", new ArrayList<>()));
                 chestMenuComponent.setSuccessMessages((List<String>) component.getOrDefault("messages", new ArrayList<>()));

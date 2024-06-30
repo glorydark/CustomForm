@@ -2,6 +2,8 @@ package glorydark.nukkit.customform.utils;
 
 import cn.nukkit.utils.TextFormat;
 
+import java.util.List;
+
 /**
  * @author glorydark
  */
@@ -27,4 +29,14 @@ public class Tools {
         return prefix + minute + "m" + second + "s" + millis + "ms";
     }
 
+    public static String toString(List<String> stringList) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < stringList.size(); i++) {
+            builder.append(stringList.get(i));
+            if (i != stringList.size() - 1) {
+                builder.append("\n");
+            }
+        }
+        return builder.toString();
+    }
 }
