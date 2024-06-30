@@ -1,7 +1,7 @@
 package glorydark.nukkit.customform.scriptForms.data.execute_data;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
+import glorydark.nukkit.customform.utils.CommandUtils;
 import lombok.Data;
 import tip.utils.Api;
 
@@ -30,19 +30,7 @@ public class StepResponseExecuteData implements ResponseExecuteData {
             return;
         }
         for (String command : responses.get(responseId).getCommands()) {
-            if (command.startsWith("console#")) {
-                Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, true, responseId, params[0]));
-            } else if (command.startsWith("op#")) {
-                if (player.isOp()) {
-                    Server.getInstance().dispatchCommand(player, replace(command, player, true, responseId, params[0]));
-                } else {
-                    Server.getInstance().addOp(player.getName());
-                    Server.getInstance().dispatchCommand(player, replace(command, player, true, responseId, params[0]));
-                    Server.getInstance().removeOp(player.getName());
-                }
-            } else {
-                Server.getInstance().dispatchCommand(player, replace(command, player, true, responseId, params[0]));
-            }
+            CommandUtils.executeCommand(player, replace(command, player, true, responseId, params[0]));
         }
         for (String message : responses.get(responseId).getMessages()) {
             player.sendMessage(replace(message, player, false, responseId, params[0]));

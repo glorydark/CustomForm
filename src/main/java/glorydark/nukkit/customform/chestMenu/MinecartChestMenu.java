@@ -164,7 +164,7 @@ public class MinecartChestMenu {
                 maxIndex = i;
             }
         }
-        int maxPage = maxIndex / (pc? 17: 23);
+        int maxPage = maxIndex / (pc ? 17 : 23);
         if (maxPage < 1) {
             maxPage = 1;
         } else {

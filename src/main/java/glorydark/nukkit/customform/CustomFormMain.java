@@ -56,12 +56,9 @@ public class CustomFormMain extends PluginBase {
     public static Language language;
 
     public static boolean debug;
-
-    public ExecutorService executor; // 创建一个拥有5个线程的线程池
-
     public static List<CompletableFuture<?>> completableFutureList = new ArrayList<>();
-
     public static boolean ready = false;
+    public ExecutorService executor; // 创建一个拥有5个线程的线程池
 
     @Override
     public void onEnable() {

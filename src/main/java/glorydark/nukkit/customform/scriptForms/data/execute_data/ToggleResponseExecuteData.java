@@ -1,7 +1,7 @@
 package glorydark.nukkit.customform.scriptForms.data.execute_data;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
+import glorydark.nukkit.customform.utils.CommandUtils;
 import lombok.Data;
 
 import java.util.Date;
@@ -33,19 +33,7 @@ public class ToggleResponseExecuteData implements ResponseExecuteData {
         switch (responseId) {
             case 0:
                 for (String command : true_commands) {
-                    if (command.startsWith("console#")) {
-                        Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, true));
-                    } else if (command.startsWith("op#")) {
-                        if (player.isOp()) {
-                            Server.getInstance().dispatchCommand(player, replace(command, player, true));
-                        } else {
-                            Server.getInstance().addOp(player.getName());
-                            Server.getInstance().dispatchCommand(player, replace(command, player, true));
-                            Server.getInstance().removeOp(player.getName());
-                        }
-                    } else {
-                        Server.getInstance().dispatchCommand(player, replace(command, player, true, params));
-                    }
+                    CommandUtils.executeCommand(player, replace(command, player, true));
                 }
                 for (String message : true_messages) {
                     player.sendMessage(replace(message, player, false, params));
@@ -53,19 +41,7 @@ public class ToggleResponseExecuteData implements ResponseExecuteData {
                 break;
             case 1:
                 for (String command : false_commands) {
-                    if (command.startsWith("console#")) {
-                        Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, true));
-                    } else if (command.startsWith("op#")) {
-                        if (player.isOp()) {
-                            Server.getInstance().dispatchCommand(player, replace(command, player, true));
-                        } else {
-                            Server.getInstance().addOp(player.getName());
-                            Server.getInstance().dispatchCommand(player, replace(command, player, true));
-                            Server.getInstance().removeOp(player.getName());
-                        }
-                    } else {
-                        Server.getInstance().dispatchCommand(player, replace(command, player, true, params));
-                    }
+                    CommandUtils.executeCommand(player, replace(command, player, true));
                 }
                 for (String message : false_messages) {
                     player.sendMessage(replace(message, player, false, params));

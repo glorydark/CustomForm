@@ -1,12 +1,8 @@
 package glorydark.nukkit.customform.utils;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.utils.Config;
 import cn.nukkit.utils.ConfigSection;
 import glorydark.nukkit.customform.CustomFormMain;
-
-import java.io.File;
-import java.util.LinkedHashMap;
 
 public class InventoryUtils {
 

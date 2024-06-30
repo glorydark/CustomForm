@@ -1,7 +1,6 @@
 package glorydark.nukkit.customform.scriptForms.data.requirement;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import glorydark.dcurrency.CurrencyAPI;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.annotations.Developing;
@@ -9,6 +8,7 @@ import glorydark.nukkit.customform.scriptForms.data.requirement.config.ConfigReq
 import glorydark.nukkit.customform.scriptForms.data.requirement.economy.EconomyRequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.item.ItemRequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.tips.TipsRequirementData;
+import glorydark.nukkit.customform.utils.CommandUtils;
 import me.onebone.economyapi.EconomyAPI;
 import net.player.api.Point;
 import tip.utils.Api;
@@ -154,19 +154,7 @@ public class Requirements {
 
     public void executeSuccessCommand(Player player) {
         for (String command : commands) {
-            if (command.startsWith("console#")) {
-                Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
-            } else if (command.startsWith("op#")) {
-                if (player.isOp()) {
-                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
-                } else {
-                    Server.getInstance().addOp(player.getName());
-                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
-                    Server.getInstance().removeOp(player.getName());
-                }
-            } else {
-                Server.getInstance().dispatchCommand(player, replace(command, player));
-            }
+            CommandUtils.executeCommand(player, replace(command, player));
         }
         for (String message : messages) {
             player.sendMessage(replace(message, player));
@@ -175,19 +163,7 @@ public class Requirements {
 
     public void executeFailedCommand(Player player) {
         for (String command : failedCommands) {
-            if (command.startsWith("console#")) {
-                Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
-            } else if (command.startsWith("op#")) {
-                if (player.isOp()) {
-                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
-                } else {
-                    Server.getInstance().addOp(player.getName());
-                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player));
-                    Server.getInstance().removeOp(player.getName());
-                }
-            } else {
-                Server.getInstance().dispatchCommand(player, replace(command, player));
-            }
+            CommandUtils.executeCommand(player, replace(command, player));
         }
         for (String message : failedMessages) {
             player.sendMessage(replace(message, player));
@@ -195,7 +171,9 @@ public class Requirements {
     }
 
     public String replace(String text, Player player) {
-        String out = text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "");
+        String out = text
+                .replace("%player%", player.getName())
+                .replace("%level%", player.getLevel().getName());
         return Api.strReplace(out, player);
     }
 }

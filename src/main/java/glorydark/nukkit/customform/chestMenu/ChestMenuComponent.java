@@ -1,13 +1,13 @@
 package glorydark.nukkit.customform.chestMenu;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import glorydark.nukkit.LanguageMain;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
+import glorydark.nukkit.customform.utils.CommandUtils;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -90,19 +90,7 @@ public class ChestMenuComponent {
                 }
             }
             for (String successCommand : successCommands) {
-                if (successCommand.startsWith("console#")) {
-                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(successCommand, player));
-                } else if (successCommand.startsWith("op#")) {
-                    if (player.isOp()) {
-                        Server.getInstance().dispatchCommand(player, replace(successCommand, player));
-                    } else {
-                        Server.getInstance().addOp(player.getName());
-                        Server.getInstance().dispatchCommand(player, replace(successCommand, player));
-                        Server.getInstance().removeOp(player.getName());
-                    }
-                } else {
-                    Server.getInstance().dispatchCommand(player, replace(successCommand, player));
-                }
+                CommandUtils.executeCommand(player, replace(successCommand, player));
             }
 
             for (String successMessage : successMessages) {
@@ -110,19 +98,7 @@ public class ChestMenuComponent {
             }
         } else {
             for (String failedCommand : failedCommands) {
-                if (failedCommand.startsWith("console#")) {
-                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(failedCommand, player));
-                } else if (failedCommand.startsWith("op#")) {
-                    if (player.isOp()) {
-                        Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
-                    } else {
-                        Server.getInstance().addOp(player.getName());
-                        Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
-                        Server.getInstance().removeOp(player.getName());
-                    }
-                } else {
-                    Server.getInstance().dispatchCommand(player, replace(failedCommand, player));
-                }
+                CommandUtils.executeCommand(player, replace(failedCommand, player));
             }
 
             for (String failedMessage : failedMessages) {

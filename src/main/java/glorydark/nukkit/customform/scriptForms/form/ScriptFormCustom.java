@@ -1,7 +1,6 @@
 package glorydark.nukkit.customform.scriptForms.form;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.form.element.*;
 import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseCustom;
@@ -15,6 +14,7 @@ import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.ResponseExecuteData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.element.ElementPlayerListDropdown;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
+import glorydark.nukkit.customform.utils.CommandUtils;
 import lombok.Data;
 import tip.utils.Api;
 
@@ -136,19 +136,7 @@ public class ScriptFormCustom implements ScriptForm {
                     command = command.replace(replacePrefixDropDownContent, responseCustom.getStepSliderResponse(i).getElementContent());
                 }
             }
-            if (command.startsWith("console#")) {
-                Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), command.replace("console#", ""));
-            } else if (command.startsWith("op#")) {
-                if (player.isOp()) {
-                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), command.replace("op#", ""));
-                } else {
-                    Server.getInstance().addOp(player.getName());
-                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), command.replace("op#", ""));
-                    Server.getInstance().removeOp(player.getName());
-                }
-            } else {
-                Server.getInstance().dispatchCommand(player, command);
-            }
+            CommandUtils.executeCommand(player, replace(command, player));
         });
         responsesMap.forEach((key, value) -> {
             ResponseExecuteData responseExecuteData = data.get(key);

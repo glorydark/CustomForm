@@ -1,10 +1,10 @@
 package glorydark.nukkit.customform.scriptForms.data.execute_data;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.utils.Config;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.config.ConfigModification;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
+import glorydark.nukkit.customform.utils.CommandUtils;
 import glorydark.nukkit.customform.utils.ConfigUtils;
 import lombok.Data;
 
@@ -70,19 +70,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
                     for (int time = 0; time < multiply; time++) {
                         one.executeSuccessCommand(player);
                         for (String command : commands) {
-                            if (command.startsWith("console#")) {
-                                Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, true, params));
-                            } else if (command.startsWith("op#")) {
-                                if (player.isOp()) {
-                                    Server.getInstance().dispatchCommand(player, replace(command, player, true, params));
-                                } else {
-                                    Server.getInstance().addOp(player.getName());
-                                    Server.getInstance().dispatchCommand(player, replace(command, player, true, params));
-                                    Server.getInstance().removeOp(player.getName());
-                                }
-                            } else {
-                                Server.getInstance().dispatchCommand(player, replace(command, player, true, params));
-                            }
+                            CommandUtils.executeCommand(player, command);
                         }
                         for (String message : messages) {
                             player.sendMessage(replace(message, player, false, params));
@@ -96,19 +84,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
             }
             if (!success) {
                 for (String command : failed_commands) {
-                    if (command.startsWith("console#")) {
-                        Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, true, params));
-                    } else if (command.startsWith("op#")) {
-                        if (player.isOp()) {
-                            Server.getInstance().dispatchCommand(player, replace(command, player, true, params));
-                        } else {
-                            Server.getInstance().addOp(player.getName());
-                            Server.getInstance().dispatchCommand(player, replace(command, player, true, params));
-                            Server.getInstance().removeOp(player.getName());
-                        }
-                    } else {
-                        Server.getInstance().dispatchCommand(player, replace(command, player, true, params));
-                    }
+                    CommandUtils.executeCommand(player, command);
                 }
                 for (String message : failed_messages) {
                     player.sendMessage(replace(message, player, false, params));
@@ -116,19 +92,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
             }
         } else {
             for (String command : commands) {
-                if (command.startsWith("console#")) {
-                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, true, params));
-                } else if (command.startsWith("op#")) {
-                    if (player.isOp()) {
-                        Server.getInstance().dispatchCommand(player, replace(command, player, true, params));
-                    } else {
-                        Server.getInstance().addOp(player.getName());
-                        Server.getInstance().dispatchCommand(player, replace(command, player, true, params));
-                        Server.getInstance().removeOp(player.getName());
-                    }
-                } else {
-                    Server.getInstance().dispatchCommand(player, replace(command, player, true, params));
-                }
+                CommandUtils.executeCommand(player, command);
             }
             for (String message : messages) {
                 player.sendMessage(replace(message, player, false, params));

@@ -552,7 +552,7 @@ public class FormCreator {
                             if (component.containsKey("requirements")) {
                                 Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                                 for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                                     CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> simpleResponseExecuteData.getRequirements().add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
+                                    CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> simpleResponseExecuteData.getRequirements().add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
                                 }
                             }
                             out.add(simpleResponseExecuteData);
