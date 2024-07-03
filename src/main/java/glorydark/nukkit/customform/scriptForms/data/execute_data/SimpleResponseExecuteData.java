@@ -70,7 +70,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
                     for (int time = 0; time < multiply; time++) {
                         one.executeSuccessCommand(player);
                         for (String command : commands) {
-                            CommandUtils.executeCommand(player, command);
+                            CommandUtils.executeCommand(player, replace(command, player, false));
                         }
                         for (String message : messages) {
                             player.sendMessage(replace(message, player, false, params));
@@ -84,7 +84,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
             }
             if (!success) {
                 for (String command : failed_commands) {
-                    CommandUtils.executeCommand(player, command);
+                    CommandUtils.executeCommand(player, replace(command, player, false));
                 }
                 for (String message : failed_messages) {
                     player.sendMessage(replace(message, player, false, params));
@@ -92,7 +92,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
             }
         } else {
             for (String command : commands) {
-                CommandUtils.executeCommand(player, command);
+                CommandUtils.executeCommand(player, replace(command, player, false));
             }
             for (String message : messages) {
                 player.sendMessage(replace(message, player, false, params));
@@ -191,17 +191,33 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
     public String replace(String text, Player player, boolean addQuotationMark, Object... params) {
         if (addQuotationMark) {
             if (params.length < 1) {
-                return text.replace("%player%", "\"" + player.getName() + "\"").replace("%level%", "\"" + player.getLevel().getName() + "\"").replaceFirst("console#", "").replaceFirst("op#", "");
+                return text.replace("%player%", "\"" + player.getName() + "\"")
+                        .replace("{player}", "\"" + player.getName() + "\"")
+                        .replace("%level%", "\"" + player.getLevel().getName() + "\"")
+                        .replaceFirst("console#", "")
+                        .replaceFirst("op#", "");
             } else {
-                String ready = text.replace("%player%", "\"" + player.getName() + "\"").replace("%level%", player.getLevel().getName());
-                return ready.replace("%get%", String.valueOf(params[0])).replaceFirst("console#", "").replaceFirst("op#", "");
+                String ready = text.replace("%player%", "\"" + player.getName() + "\"")
+                        .replace("{player}", "\"" + player.getName() + "\"")
+                        .replace("%level%", player.getLevel().getName());
+                return ready.replace("%get%", String.valueOf(params[0]))
+                        .replaceFirst("console#", "")
+                        .replaceFirst("op#", "");
             }
         } else {
             if (params.length < 1) {
-                return text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "").replaceFirst("op#", "");
+                return text.replace("%player%", player.getName())
+                        .replace("{player}", player.getName())
+                        .replace("%level%", player.getLevel().getName())
+                        .replaceFirst("console#", "")
+                        .replaceFirst("op#", "");
             } else {
-                String ready = text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName());
-                return ready.replace("%get%", String.valueOf(params[0])).replaceFirst("console#", "").replaceFirst("op#", "");
+                String ready = text.replace("%player%", player.getName())
+                        .replace("{player}", player.getName())
+                        .replace("%level%", player.getLevel().getName());
+                return ready.replace("%get%", String.valueOf(params[0]))
+                        .replaceFirst("console#", "")
+                        .replaceFirst("op#", "");
             }
         }
     }

@@ -44,10 +44,17 @@ public class DropdownPlayerListResponse extends SimpleResponseExecuteData {
     public String replace(String text, Player player, boolean addQuotationMark, Object... params) {
         String ready;
         if (addQuotationMark) {
-            ready = text.replace("%player%", "\"" + player.getName() + "\"").replace("%level%", player.getLevel().getName());
+            ready = text.replace("%player%", "\"" + player.getName() + "\"")
+                    .replace("{player}", "\"" + player.getName() + "\"")
+                    .replace("%level%", player.getLevel().getName());
         } else {
-            ready = text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName());
+            ready = text.replace("%player%", player.getName())
+                    .replace("{player}", player.getName())
+                    .replace("%level%", player.getLevel().getName());
         }
-        return Api.strReplace(ready.replace("%content%", String.valueOf(params[1])).replace("%contentId%", String.valueOf(params[0])).replaceFirst("console#", "").replaceFirst("op#", ""), player);
+        return Api.strReplace(ready.replace("%content%", String.valueOf(params[1]))
+                .replace("%contentId%", String.valueOf(params[0]))
+                .replaceFirst("console#", "")
+                .replaceFirst("op#", ""), player);
     }
 }

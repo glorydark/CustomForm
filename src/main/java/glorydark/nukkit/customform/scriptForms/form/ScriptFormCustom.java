@@ -290,7 +290,8 @@ public class ScriptFormCustom implements ScriptForm {
         if (CustomFormMain.enableLanguageAPI) {
             string = LanguageMain.getInstance().getTranslation(CustomFormMain.plugin, player, string);
         }
-        string = string.replace("{player}", player.getName());
+        string = string.replace("{player}", player.getName())
+                .replace("%player%", player.getName());
         if (CustomFormMain.enableTips) {
             string = Api.strReplace(string, player);
         }

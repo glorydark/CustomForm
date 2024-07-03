@@ -53,17 +53,30 @@ public class ToggleResponseExecuteData implements ResponseExecuteData {
     public String replace(String text, Player player, boolean addQuotationMark, Object... params) {
         if (addQuotationMark) {
             if (params.length < 1) {
-                return text.replace("%player%", "\"" + player.getName() + "\"").replace("%level%", "\"" + player.getLevel().getName() + "\"").replaceFirst("console#", "").replaceFirst("op#", "");
+                return text.replace("%player%", "\"" + player.getName() + "\"")
+                        .replace("{player}", "\"" + player.getName() + "\"")
+                        .replace("%level%", "\"" + player.getLevel().getName() + "\"")
+                        .replaceFirst("console#", "")
+                        .replaceFirst("op#", "");
             } else {
-                String ready = text.replace("%player%", "\"" + player.getName() + "\"").replace("%level%", player.getLevel().getName());
+                String ready = text.replace("%player%", "\"" + player.getName() + "\"")
+                        .replace("{player}", "\"" + player.getName() + "\"")
+                        .replace("%level%", player.getLevel().getName());
                 return ready.replace("%get%", String.valueOf(params[0])).replaceFirst("console#", "").replaceFirst("op#", "");
             }
         } else {
             if (params.length < 1) {
-                return text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "").replaceFirst("op#", "");
+                return text.replace("%player%", player.getName())
+                        .replace("{player}", player.getName())
+                        .replace("%level%", player.getLevel().getName())
+                        .replaceFirst("console#", "").replaceFirst("op#", "");
             } else {
-                String ready = text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName());
-                return ready.replace("%get%", String.valueOf(params[0])).replaceFirst("console#", "").replaceFirst("op#", "");
+                String ready = text.replace("%player%", player.getName())
+                        .replace("{player}", player.getName())
+                        .replace("%level%", player.getLevel().getName());
+                return ready.replace("%get%", String.valueOf(params[0]))
+                        .replaceFirst("console#", "")
+                        .replaceFirst("op#", "");
             }
         }
     }
