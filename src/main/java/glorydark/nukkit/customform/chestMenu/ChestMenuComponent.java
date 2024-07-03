@@ -112,6 +112,10 @@ public class ChestMenuComponent {
         if (CustomFormMain.enableLanguageAPI) {
             text = LanguageMain.getInstance().getTranslation(CustomFormMain.plugin, player, text);
         }
-        return text.replace("%player%", player.getName()).replace("%level%", player.getLevel().getName()).replaceFirst("console#", "").replaceFirst("op#", "");
+        return text.replace("%player%", player.getName())
+                .replace("{player}", player.getName())
+                .replace("%level%", player.getLevel().getName())
+                .replaceFirst("console#", "")
+                .replaceFirst("op#", "");
     }
 }
