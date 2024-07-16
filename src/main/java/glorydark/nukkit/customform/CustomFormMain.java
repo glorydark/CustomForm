@@ -1,8 +1,14 @@
 package glorydark.nukkit.customform;
 
+import cn.nukkit.Server;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.plugin.PluginBase;
+import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.ConfigSection;
+import com.smallaswater.npc.data.RsNpcConfig;
+import com.smallaswater.npc.utils.exception.RsNpcConfigLoadException;
+import com.smallaswater.npc.utils.exception.RsNpcLoadException;
 import com.smallaswater.npc.variable.VariableManage;
 import glorydark.nukkit.customform.chestMenu.ChestMenuListener;
 import glorydark.nukkit.customform.chestMenu.ChestMenuMain;
@@ -59,6 +65,7 @@ public class CustomFormMain extends PluginBase {
     public static List<CompletableFuture<?>> completableFutureList = new ArrayList<>();
     public static boolean ready = false;
     public ExecutorService executor; // 创建一个拥有5个线程的线程池
+    public static RsNpcConfig rsNpcConfig = null;
 
     @Override
     public void onEnable() {
@@ -87,14 +94,38 @@ public class CustomFormMain extends PluginBase {
             customLangDic.mkdirs();
             LanguageReader.loadLanguageFromDictionary(this, customLangDic);
         }
+        Config config1 = new Config(path + "/rsnpc_cache.yml", Config.YAML);
+        config1.set("坐标", new ConfigSection() {
+            {
+                this.put("level", Server.getInstance().getDefaultLevel().getName());
+                this.put("x", 0);
+                this.put("y", 0);
+                this.put("z", 0);
+            }
+        });
         if (enableRsNPCX) {
-            VariableManage.removeVariable("%npcName%");
-            VariableManage.addVariable("%npcName%", (player, rsNpcConfig) -> {
-                if (rsNpcConfig == null) {
-                    return "";
+            Server.getInstance().getScheduler().scheduleRepeatingTask(this, new Task() {
+                int tryTimes = 0;
+                @Override
+                public void onRun(int i) {
+                    enableRsNPCX = false;
+                    tryTimes++;
+                    if (tryTimes > 10) {
+                        CustomFormMain.plugin.getLogger().error("Failed to create a RsNpcConfig object! Disabling the RsNPC variable support!");
+                        this.cancel();
+                    }
+                    // hack: to create a file to make constructor believe that this exists.
+                    try {
+                        rsNpcConfig = new RsNpcConfig("", config1);
+                    } catch (RsNpcConfigLoadException | RsNpcLoadException | NoClassDefFoundError ignored) {
+                        CustomFormMain.plugin.getLogger().error("Failed to create a RsNpcConfig object! [" + tryTimes + "/10]");
+                        return;
+                    }
+                    enableRsNPCX = true;
+                    CustomFormMain.plugin.getLogger().info("Successfully create a RsNpcConfig object!");
+                    this.cancel();
                 }
-                return rsNpcConfig.getName();
-            });
+            }, 20);
         }
         if (enableTips) {
             if (config.getBoolean("enable_expansion_variable", true)) {

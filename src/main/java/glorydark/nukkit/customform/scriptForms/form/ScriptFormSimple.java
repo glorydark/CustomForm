@@ -7,7 +7,11 @@ import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseSimple;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowSimple;
+import cn.nukkit.utils.Config;
 import com.creeperface.nukkit.placeholderapi.api.PlaceholderAPI;
+import com.smallaswater.npc.data.RsNpcConfig;
+import com.smallaswater.npc.utils.exception.RsNpcConfigLoadException;
+import com.smallaswater.npc.utils.exception.RsNpcLoadException;
 import com.smallaswater.npc.variable.VariableManage;
 import glorydark.nukkit.LanguageMain;
 import glorydark.nukkit.customform.CustomFormMain;
@@ -181,8 +185,8 @@ public class ScriptFormSimple implements ScriptForm {
         if (CustomFormMain.enableTips && enableTips) {
             string = Api.strReplace(string, player);
         }
-        if (CustomFormMain.enableRsNPCX && enableRsNPCX) {
-            string = VariableManage.stringReplace(player, string, null);
+        if (CustomFormMain.enableRsNPCX) {
+            string = VariableManage.stringReplace(player, string, CustomFormMain.rsNpcConfig);
         }
         if (CustomFormMain.enablePlaceHolderAPI) {
             string = PlaceholderAPI.getInstance().translateString(string);
