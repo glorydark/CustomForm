@@ -13,27 +13,28 @@ public class CommandUtils {
         if (command.startsWith("console#")) {
             Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replacePrefix(command));
         } else if (command.startsWith("op#")) {
-            if (player.isOp()) {
-                Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replacePrefix(command));
-            } else {
+            boolean needCancelOP = false;
+            if (!player.isOp()) {
+                needCancelOP = true;
                 PlayerPermissionCheckTask.addCheck(player);
-                Server.getInstance().addOp(player.getName());
-                try {
-                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replacePrefix(command));
-                } catch (Exception e) {
-                    CustomFormMain.plugin.getLogger().error(
-                            "OP权限执行命令时出现错误！"
-                                    + " 指令:" + command +
-                                    " 玩家:" + player.getName() +
-                                    " 错误:", e
-                    );
-                } finally {
-                    Server.getInstance().removeOp(player.getName());
+                player.setOp(true);
+            }
+            try {
+                player.sendMessage("op: " + player.isOp());
+                player.sendMessage("command: " + replacePrefix(command));
+                Server.getInstance().dispatchCommand(player, replacePrefix(command));
+            } catch (Exception e) {
+                CustomFormMain.plugin.getLogger().error(
+                        "OP权限执行命令时出现错误！指令:" + command +
+                                " 玩家:" + player.getName() +
+                                " 错误:", e);
+            } finally {
+                if (needCancelOP) {
+                    player.setOp(false);
                 }
-                Server.getInstance().removeOp(player.getName());
             }
         } else {
-            Server.getInstance().dispatchCommand(player, replacePrefix(command));
+            Server.getInstance().dispatchCommand(player, command);
         }
     }
 

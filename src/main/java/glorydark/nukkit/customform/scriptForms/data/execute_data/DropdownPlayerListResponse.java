@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.config.ConfigModification;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
+import glorydark.nukkit.customform.utils.CommandUtils;
 import tip.utils.Api;
 
 import java.util.List;
@@ -20,19 +21,7 @@ public class DropdownPlayerListResponse extends SimpleResponseExecuteData {
     @Override
     public void execute(Player player, int responseId, Object... params) {
         for (String command : commands) {
-            if (command.startsWith("console#")) {
-                Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), replace(command, player, true, responseId, params[0]));
-            } else if (command.startsWith("op#")) {
-                if (player.isOp()) {
-                    Server.getInstance().dispatchCommand(player, replace(command, player, true, responseId, params[0]));
-                } else {
-                    Server.getInstance().addOp(player.getName());
-                    Server.getInstance().dispatchCommand(player, replace(command, player, true, responseId, params[0]));
-                    Server.getInstance().removeOp(player.getName());
-                }
-            } else {
-                Server.getInstance().dispatchCommand(player, replace(command, player, true, responseId, params[0]));
-            }
+            CommandUtils.executeCommand(player, replace(command, player, true, responseId, params[0]));
         }
         for (String message : messages) {
             player.sendMessage(replace(message, player, false, responseId, params[0]));
@@ -53,8 +42,6 @@ public class DropdownPlayerListResponse extends SimpleResponseExecuteData {
                     .replace("%level%", player.getLevel().getName());
         }
         return Api.strReplace(ready.replace("%content%", String.valueOf(params[1]))
-                .replace("%contentId%", String.valueOf(params[0]))
-                .replaceFirst("console#", "")
-                .replaceFirst("op#", ""), player);
+                .replace("%contentId%", String.valueOf(params[0])), player);
     }
 }

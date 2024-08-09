@@ -146,7 +146,7 @@ public class CustomFormCommands extends Command {
                 if (commandSender.isPlayer() && !commandSender.isOp()) {
                     return false;
                 }
-                if (strings.length == 4) {
+                if (strings.length == 4) { // form executewithdelay console xxx
                     CommandSender sender;
                     if ("console".equals(strings[1])) {
                         sender = Server.getInstance().getConsoleSender();

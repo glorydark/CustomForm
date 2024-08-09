@@ -114,8 +114,6 @@ public class ChestMenuComponent {
         }
         return text.replace("%player%", player.getName())
                 .replace("{player}", player.getName())
-                .replace("%level%", player.getLevel().getName())
-                .replaceFirst("console#", "")
-                .replaceFirst("op#", "");
+                .replace("%level%", player.getLevel().getName());
     }
 }

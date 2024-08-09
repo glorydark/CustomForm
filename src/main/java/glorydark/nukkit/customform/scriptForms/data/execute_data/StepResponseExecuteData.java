@@ -42,33 +42,25 @@ public class StepResponseExecuteData implements ResponseExecuteData {
             if (params.length < 1) {
                 return Api.strReplace(text.replace("%player%", "\"" + player.getName() + "\"")
                         .replace("{player}", "\"" + player.getName() + "\"")
-                        .replace("%level%", "\"" + player.getLevel().getName() + "\"")
-                        .replaceFirst("console#", "")
-                        .replaceFirst("op#", ""), player);
+                        .replace("%level%", "\"" + player.getLevel().getName() + "\""), player);
             } else {
                 String ready = text.replace("%player%", "\"" + player.getName() + "\"")
                         .replace("{player}", "\"" + player.getName() + "\"")
                         .replace("%level%", player.getLevel().getName());
                 return Api.strReplace(ready.replace("%content%", String.valueOf(params[1]))
-                        .replace("%contentId%", String.valueOf(params[0]))
-                        .replaceFirst("console#", "")
-                        .replaceFirst("op#", ""), player);
+                        .replace("%contentId%", String.valueOf(params[0])), player);
             }
         } else {
             if (params.length < 1) {
                 return Api.strReplace(text.replace("%player%", player.getName())
                         .replace("{player}", player.getName())
-                        .replace("%level%", player.getLevel().getName())
-                        .replaceFirst("console#", "")
-                        .replaceFirst("op#", ""), player);
+                        .replace("%level%", player.getLevel().getName()), player);
             } else {
                 String ready = text.replace("%player%", player.getName())
                         .replace("{player}", player.getName())
                         .replace("%level%", player.getLevel().getName());
                 return Api.strReplace(ready.replace("%content%", String.valueOf(params[1]))
-                        .replace("%contentId%", String.valueOf(params[0]))
-                        .replaceFirst("console#", "")
-                        .replaceFirst("op#", ""), player);
+                        .replace("%contentId%", String.valueOf(params[0])), player);
             }
         }
     }

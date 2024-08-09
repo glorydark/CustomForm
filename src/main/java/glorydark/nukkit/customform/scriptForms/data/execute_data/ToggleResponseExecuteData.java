@@ -55,28 +55,23 @@ public class ToggleResponseExecuteData implements ResponseExecuteData {
             if (params.length < 1) {
                 return text.replace("%player%", "\"" + player.getName() + "\"")
                         .replace("{player}", "\"" + player.getName() + "\"")
-                        .replace("%level%", "\"" + player.getLevel().getName() + "\"")
-                        .replaceFirst("console#", "")
-                        .replaceFirst("op#", "");
+                        .replace("%level%", "\"" + player.getLevel().getName() + "\"");
             } else {
                 String ready = text.replace("%player%", "\"" + player.getName() + "\"")
                         .replace("{player}", "\"" + player.getName() + "\"")
                         .replace("%level%", player.getLevel().getName());
-                return ready.replace("%get%", String.valueOf(params[0])).replaceFirst("console#", "").replaceFirst("op#", "");
+                return ready.replace("%get%", String.valueOf(params[0]));
             }
         } else {
             if (params.length < 1) {
                 return text.replace("%player%", player.getName())
                         .replace("{player}", player.getName())
-                        .replace("%level%", player.getLevel().getName())
-                        .replaceFirst("console#", "").replaceFirst("op#", "");
+                        .replace("%level%", player.getLevel().getName());
             } else {
                 String ready = text.replace("%player%", player.getName())
                         .replace("{player}", player.getName())
                         .replace("%level%", player.getLevel().getName());
-                return ready.replace("%get%", String.valueOf(params[0]))
-                        .replaceFirst("console#", "")
-                        .replaceFirst("op#", "");
+                return ready.replace("%get%", String.valueOf(params[0]));
             }
         }
     }
