@@ -20,8 +20,6 @@ public class CommandUtils {
                 player.setOp(true);
             }
             try {
-                player.sendMessage("op: " + player.isOp());
-                player.sendMessage("command: " + replacePrefix(command));
                 Server.getInstance().dispatchCommand(player, replacePrefix(command));
             } catch (Exception e) {
                 CustomFormMain.plugin.getLogger().error(
