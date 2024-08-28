@@ -9,7 +9,6 @@ import cn.nukkit.utils.ConfigSection;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.utils.exception.RsNpcConfigLoadException;
 import com.smallaswater.npc.utils.exception.RsNpcLoadException;
-import com.smallaswater.npc.variable.VariableManage;
 import glorydark.nukkit.customform.chestMenu.ChestMenuListener;
 import glorydark.nukkit.customform.chestMenu.ChestMenuMain;
 import glorydark.nukkit.customform.commands.CustomFormCommands;

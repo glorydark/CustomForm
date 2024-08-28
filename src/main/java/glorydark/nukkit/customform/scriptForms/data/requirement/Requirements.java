@@ -154,26 +154,30 @@ public class Requirements {
 
     public void executeSuccessCommand(Player player) {
         for (String command : commands) {
-            CommandUtils.executeCommand(player, replace(command, player));
+            CommandUtils.executeCommand(player, replace(command, player, true));
         }
         for (String message : messages) {
-            player.sendMessage(replace(message, player));
+            player.sendMessage(replace(message, player, false));
         }
     }
 
     public void executeFailedCommand(Player player) {
         for (String command : failedCommands) {
-            CommandUtils.executeCommand(player, replace(command, player));
+            CommandUtils.executeCommand(player, replace(command, player, true));
         }
         for (String message : failedMessages) {
-            player.sendMessage(replace(message, player));
+            player.sendMessage(replace(message, player, false));
         }
     }
 
-    public String replace(String text, Player player) {
+    public String replace(String text, Player player, boolean quotationMark) {
         String out = text
-                .replace("%player%", player.getName())
                 .replace("%level%", player.getLevel().getName());
+        if (quotationMark) {
+            out = out.replace("%player%", "\"" + player.getName() + "\"");
+        } else {
+            out = out.replace("%player%", player.getName());
+        }
         return Api.strReplace(out, player);
     }
 }

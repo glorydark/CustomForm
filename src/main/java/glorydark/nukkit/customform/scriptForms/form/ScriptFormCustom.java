@@ -6,11 +6,7 @@ import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseCustom;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
-import cn.nukkit.utils.Config;
 import com.creeperface.nukkit.placeholderapi.api.PlaceholderAPI;
-import com.smallaswater.npc.data.RsNpcConfig;
-import com.smallaswater.npc.utils.exception.RsNpcConfigLoadException;
-import com.smallaswater.npc.utils.exception.RsNpcLoadException;
 import com.smallaswater.npc.variable.VariableManage;
 import glorydark.nukkit.LanguageMain;
 import glorydark.nukkit.customform.CustomFormMain;
@@ -284,18 +280,22 @@ public class ScriptFormCustom implements ScriptForm {
     }
 
     public String replace(String string, Player player) {
-        return replace(string, player, false);
+        return replace(string, player, false, true);
     }
 
     /**
      * Refracted in order to expand the usages easily.
      */
-    public String replace(String string, Player player, boolean replaceBreak) {
+    public String replace(String string, Player player, boolean replaceBreak, boolean quotationMark) {
         if (CustomFormMain.enableLanguageAPI) {
             string = LanguageMain.getInstance().getTranslation(CustomFormMain.plugin, player, string);
         }
-        string = string.replace("{player}", player.getName())
-                .replace("%player%", player.getName());
+        string = string.replace("{player}", player.getName());
+        if (quotationMark) {
+            string = string.replace("%player%", "\"" + player.getName() + "\"");
+        } else {
+            string = string.replace("%player%", player.getName());
+        }
         if (CustomFormMain.enableTips) {
             string = Api.strReplace(string, player);
         }

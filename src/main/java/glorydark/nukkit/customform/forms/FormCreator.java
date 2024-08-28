@@ -109,7 +109,7 @@ public class FormCreator {
                 return;
             }
             boolean allowOpen = false;
-            if (script.getOpenPermissionWhitelist().size() == 0 || script.getOpenPermissionWhitelist().contains(player.getName())) {
+            if (script.getOpenPermissionWhitelist().isEmpty() || script.getOpenPermissionWhitelist().contains(player.getName())) {
                 if (!script.getOpenPermissions().contains(PermissionEnum.DEFAULT)) {
                     for (PermissionEnum openPermission : script.getOpenPermissions()) {
                         if (openPermission == PermissionEnum.ONLY_USER) {
@@ -146,7 +146,7 @@ public class FormCreator {
     public static void showScriptForm(Player player, ScriptForm script, String identifier) {
         if (player.namedTag.contains("lastFormRequestMillis") && System.currentTimeMillis() - player.namedTag.getLong("lastFormRequestMillis") < CustomFormMain.coolDownMillis) {
             String tip = CustomFormMain.language.translateString(player, "operation_so_fast");
-            if (!tip.equals("")) {
+            if (!tip.isEmpty()) {
                 player.sendMessage(tip);
             }
             return;
@@ -155,7 +155,7 @@ public class FormCreator {
             CameraUtils.sendFormOpen(player);
         }
         FormWindow window = script.getWindow(player);
-        if (script.getOpenRequirements().size() > 0) {
+        if (!script.getOpenRequirements().isEmpty()) {
             boolean b = false;
             for (Requirements openRequirement : script.getOpenRequirements()) {
                 if (openRequirement.isAllQualified(player)) {
@@ -352,7 +352,7 @@ public class FormCreator {
                 List<SimpleResponseExecuteData> simpleResponseExecuteDataList = new ArrayList<>();
                 if (config.containsKey("components")) {
                     for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
-                        SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>());
+                        SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()), (List<List<String>>) component.getOrDefault("random_commands", new ArrayList<>()), new ArrayList<>(), new ArrayList<>());
                         if (component.containsKey("requirements")) {
                             List<Requirements> requirementsList = new ArrayList<>();
                             Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
@@ -459,7 +459,7 @@ public class FormCreator {
                                 }
                             }
                             for (Map<String, Object> map : maps) {
-                                SimpleResponseExecuteData simpleResponseExecuteData = new SimpleResponseExecuteData((List<String>) map.getOrDefault("commands", new ArrayList<>()), (List<String>) map.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), configModifications);
+                                SimpleResponseExecuteData simpleResponseExecuteData = new SimpleResponseExecuteData((List<String>) map.getOrDefault("commands", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), (List<List<String>>) component.getOrDefault("random_commands", new ArrayList<>()), new ArrayList<>(), configModifications);
                                 simpleResponseExecuteData.setStartDate(stringToDate((String) map.getOrDefault("start_time", "")));
                                 simpleResponseExecuteData.setExpiredDate(stringToDate((String) map.getOrDefault("expire_time", "")));
                                 data.add(simpleResponseExecuteData);
@@ -546,7 +546,7 @@ public class FormCreator {
                                 ConfigModification modification = new ConfigModification(configType, config_name, configEntry.get("deal_value"), modificationType);
                                 configModificationsForPlayerListDropDown.add(modification);
                             }
-                            SimpleResponseExecuteData simpleResponseExecuteData = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()), new ArrayList<>(), configModificationsForPlayerListDropDown);
+                            SimpleResponseExecuteData simpleResponseExecuteData = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()), (List<List<String>>) component.getOrDefault("random_commands", new ArrayList<>()), new ArrayList<>(), configModificationsForPlayerListDropDown);
                             simpleResponseExecuteData.setStartDate(stringToDate((String) component.getOrDefault("start_time", "")));
                             simpleResponseExecuteData.setExpiredDate(stringToDate((String) component.getOrDefault("expire_time", "")));
                             if (component.containsKey("requirements")) {
@@ -587,7 +587,7 @@ public class FormCreator {
                 //modal
                 simpleResponseExecuteDataList = new ArrayList<>();
                 for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
-                    SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+                    SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), (List<List<String>>) component.getOrDefault("random_commands", new ArrayList<>()), new ArrayList<>(), new ArrayList<>());
                     if (component.containsKey("requirements")) {
                         Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                         for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {

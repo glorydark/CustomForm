@@ -1,12 +1,12 @@
 package glorydark.nukkit.customform.scriptForms.data.execute_data;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.config.ConfigModification;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import glorydark.nukkit.customform.utils.CommandUtils;
 import tip.utils.Api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +15,7 @@ import java.util.List;
 public class DropdownPlayerListResponse extends SimpleResponseExecuteData {
 
     public DropdownPlayerListResponse(List<String> commands, List<String> messages, List<String> failed_commands, List<String> failed_messages, List<Requirements> requirements, List<ConfigModification> configModifications) {
-        super(commands, messages, failed_commands, failed_messages, requirements, configModifications);
+        super(commands, messages, failed_commands, failed_messages, new ArrayList<>(), requirements, configModifications);
     }
 
     @Override

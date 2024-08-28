@@ -10,6 +10,7 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 // Concerning: Button, Input, Slider
 @Data
@@ -18,6 +19,8 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
     List<String> commands;
 
     List<String> messages;
+
+    List<List<String>> randomCommands;
 
     List<String> failed_commands;
 
@@ -31,11 +34,12 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
 
     Date expiredDate = new Date(-1);
 
-    public SimpleResponseExecuteData(List<String> commands, List<String> messages, List<String> failed_commands, List<String> failed_messages, List<Requirements> requirements, List<ConfigModification> configModifications) {
+    public SimpleResponseExecuteData(List<String> commands, List<String> messages, List<String> failed_commands, List<String> failed_messages, List<List<String>> randomCommands, List<Requirements> requirements, List<ConfigModification> configModifications) {
         this.commands = commands;
         this.messages = messages;
         this.failed_commands = failed_commands;
         this.failed_messages = failed_messages;
+        this.randomCommands = randomCommands;
         this.requirements = requirements;
         this.configModifications = configModifications;
     }
@@ -70,7 +74,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
                     for (int time = 0; time < multiply; time++) {
                         one.executeSuccessCommand(player);
                         for (String command : commands) {
-                            CommandUtils.executeCommand(player, replace(command, player, false));
+                            CommandUtils.executeCommand(player, replace(command, player, true));
                         }
                         for (String message : messages) {
                             player.sendMessage(replace(message, player, false, params));
@@ -84,7 +88,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
             }
             if (!success) {
                 for (String command : failed_commands) {
-                    CommandUtils.executeCommand(player, replace(command, player, false));
+                    CommandUtils.executeCommand(player, replace(command, player, true));
                 }
                 for (String message : failed_messages) {
                     player.sendMessage(replace(message, player, false, params));
@@ -92,12 +96,15 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
             }
         } else {
             for (String command : commands) {
-                CommandUtils.executeCommand(player, replace(command, player, false));
+                CommandUtils.executeCommand(player, replace(command, player, true));
             }
             for (String message : messages) {
                 player.sendMessage(replace(message, player, false, params));
             }
             executeConfigModification(player);
+        }
+        for (List<String> randomCommand : randomCommands) {
+            CommandUtils.executeCommand(player, replace(randomCommand.get(ThreadLocalRandom.current().nextInt(randomCommand.size())), player, true));
         }
     }
 
