@@ -48,7 +48,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
         if (!this.isInStartDate(player)) {
             return;
         }
-        if (requirements.size() > 0) {
+        if (!requirements.isEmpty()) {
             boolean success = false;
             int multiply = 1;
             try {

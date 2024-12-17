@@ -1,7 +1,6 @@
 package glorydark.nukkit.customform.chestMenu;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import glorydark.nukkit.LanguageMain;
@@ -35,13 +34,13 @@ public class ChestMenuComponent {
         String[] strings = item.split(":");
         switch (strings.length) {
             case 1:
-                this.item = Block.get(Integer.parseInt(strings[0])).toItem();
+                this.item = Item.get(Integer.parseInt(strings[0]));
                 break;
             case 2:
-                this.item = Block.get(Integer.parseInt(strings[0]), Integer.parseInt(strings[1])).toItem();
+                this.item = Item.get(Integer.parseInt(strings[0]), Integer.parseInt(strings[1]));
                 break;
             default:
-                this.item = Block.get(1).toItem();
+                this.item = Item.get(1);
                 break;
         }
         this.item.setLore(description.replace("\\n", "\n"));
