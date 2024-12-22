@@ -46,7 +46,7 @@ public class ChestItemInfo {
 
     public Item getItem(Player player) {
         Item item1 = this.item.clone();
-        item1.setCustomName(ReplaceStringUtils.replace(item1.getCustomName(), player));
+        item1.setCustomName(ReplaceStringUtils.replace(this.getName(), player));
         item1.setLore(this.getDescription());
         String[] lore = item1.getLore().clone();
         for (int i = 0; i < item1.getLore().length; i++) {
