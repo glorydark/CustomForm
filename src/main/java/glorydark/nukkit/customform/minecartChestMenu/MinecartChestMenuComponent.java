@@ -78,27 +78,33 @@ public class MinecartChestMenuComponent {
 
     public void execute(Player player) {
         // To check whether player is qualified or not
-        boolean success;
         Requirements successRequire = null;
         if (!requirements.isEmpty()) {
-            success = false;
             for (Requirements require : requirements) {
-                if (require.isAllQualified(player)) {
+                if (require != null && require.isAllQualified(player)) {
                     successRequire = require;
-                    success = true;
+                }
+            }
+            // Execute corresponding commands and messages
+            if (successRequire != null) {
+                successRequire.reduceAllCosts(player, 1);
+                for (String successCommand : successCommands) {
+                    CommandUtils.executeCommand(player, ReplaceStringUtils.replace(successCommand, player, true, true));
+                }
+
+                for (String successMessage : successMessages) {
+                    player.sendMessage(ReplaceStringUtils.replace(successMessage, player));
+                }
+            } else {
+                for (String failedCommand : failedCommands) {
+                    CommandUtils.executeCommand(player, ReplaceStringUtils.replace(failedCommand, player, true, true));
+                }
+
+                for (String failedMessage : failedMessages) {
+                    player.sendMessage(ReplaceStringUtils.replace(failedMessage, player));
                 }
             }
         } else {
-            success = true;
-        }
-
-        // Execute corresponding commands and messages
-        if (success) {
-            if (successRequire != null) {
-                if (successRequire.isAllQualified(player)) {
-                    successRequire.reduceAllCosts(player, 1);
-                }
-            }
             for (String successCommand : successCommands) {
                 CommandUtils.executeCommand(player, ReplaceStringUtils.replace(successCommand, player, true, true));
             }
@@ -106,14 +112,7 @@ public class MinecartChestMenuComponent {
             for (String successMessage : successMessages) {
                 player.sendMessage(ReplaceStringUtils.replace(successMessage, player));
             }
-        } else {
-            for (String failedCommand : failedCommands) {
-                CommandUtils.executeCommand(player, ReplaceStringUtils.replace(failedCommand, player, true, true));
-            }
-
-            for (String failedMessage : failedMessages) {
-                player.sendMessage(ReplaceStringUtils.replace(failedMessage, player));
-            }
         }
+
     }
 }
