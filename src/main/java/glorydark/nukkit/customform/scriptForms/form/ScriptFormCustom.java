@@ -132,7 +132,7 @@ public class ScriptFormCustom implements ScriptForm {
                     command = command.replace(replacePrefixDropDownContent, responseCustom.getStepSliderResponse(i).getElementContent());
                 }
             }
-            CommandUtils.executeCommand(player, ReplaceStringUtils.replace(command, player));
+            CommandUtils.executeCommand(player, ReplaceStringUtils.replace(command, player, true, true));
         });
         responsesMap.forEach((key, value) -> {
             ResponseExecuteData responseExecuteData = data.get(key);

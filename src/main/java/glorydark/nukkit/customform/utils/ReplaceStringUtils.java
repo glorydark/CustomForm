@@ -20,10 +20,11 @@ public class ReplaceStringUtils {
         if (CustomFormMain.enableLanguageAPI) {
             string = LanguageMain.getInstance().getTranslation(CustomFormMain.plugin, player, string);
         }
-        string = string.replace("{player}", player.getName());
         if (quotationMark) {
+            string = string.replace("{player}", "\"" + player.getName() + "\"");
             string = string.replace("%player%", "\"" + player.getName() + "\"");
         } else {
+            string = string.replace("{player}", player.getName());
             string = string.replace("%player%", player.getName());
         }
         if (CustomFormMain.enableTips) {

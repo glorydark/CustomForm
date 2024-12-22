@@ -100,7 +100,7 @@ public class ChestMenuComponent {
                 }
             }
             for (String successCommand : successCommands) {
-                CommandUtils.executeCommand(player, successCommand);
+                CommandUtils.executeCommand(player, ReplaceStringUtils.replace(successCommand, player, true, true));
             }
 
             for (String successMessage : successMessages) {
@@ -108,7 +108,7 @@ public class ChestMenuComponent {
             }
         } else {
             for (String failedCommand : failedCommands) {
-                CommandUtils.executeCommand(player, failedCommand);
+                CommandUtils.executeCommand(player, ReplaceStringUtils.replace(failedCommand, player, true, true));
             }
 
             for (String failedMessage : failedMessages) {
