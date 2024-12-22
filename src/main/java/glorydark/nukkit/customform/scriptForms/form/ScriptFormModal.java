@@ -5,15 +5,12 @@ import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseModal;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowModal;
-import com.creeperface.nukkit.placeholderapi.api.PlaceholderAPI;
-import com.smallaswater.npc.variable.VariableManage;
-import glorydark.nukkit.LanguageMain;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.SimpleResponseExecuteData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
+import glorydark.nukkit.customform.utils.ReplaceStringUtils;
 import lombok.Data;
-import tip.utils.Api;
 
 import java.util.*;
 
@@ -115,8 +112,8 @@ public class ScriptFormModal implements ScriptForm {
     public FormWindowModal getWindow(Player player) {
         if (CustomFormMain.enableTips || CustomFormMain.enableRsNPCX) {
             FormWindowModal modal = this.getModifiableWindow();
-            modal.setContent(replace(modal.getContent(), player, true));
-            modal.setTitle(replace(modal.getTitle(), player));
+            modal.setContent(ReplaceStringUtils.replace(modal.getContent(), player, true, false));
+            modal.setTitle(ReplaceStringUtils.replace(modal.getTitle(), player));
             return modal;
         }
         return this.getModifiableWindow();
@@ -129,37 +126,5 @@ public class ScriptFormModal implements ScriptForm {
     @Override
     public SoundData getOpenSound() {
         return openSound;
-    }
-
-    public String replaceBreak(String string) {
-        return string.replace("\\n", "\n");
-    }
-
-    public String replace(String string, Player player) {
-        return replace(string, player, false);
-    }
-
-    /**
-     * Refracted in order to expand the usages easily.
-     */
-    public String replace(String string, Player player, boolean replaceBreak) {
-        if (CustomFormMain.enableLanguageAPI) {
-            string = LanguageMain.getInstance().getTranslation(CustomFormMain.plugin, player, string);
-        }
-        string = string.replace("{player}", player.getName())
-                .replace("%player%", player.getName());
-        if (CustomFormMain.enableTips) {
-            string = Api.strReplace(string, player);
-        }
-        if (CustomFormMain.enableRsNPCX) {
-            string = VariableManage.stringReplace(player, string, CustomFormMain.rsNpcConfig);
-        }
-        if (CustomFormMain.enablePlaceHolderAPI) {
-            string = PlaceholderAPI.getInstance().translateString(string);
-        }
-        if (replaceBreak) {
-            string = replaceBreak(string);
-        }
-        return string;
     }
 }

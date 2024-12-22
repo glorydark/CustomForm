@@ -53,7 +53,7 @@ public class MinecartChestMenu {
                 ChestMenuComponent component = chestMenuPCComponents.getOrDefault(i, null);
                 int relativeIndex = i - base;
                 if (component != null) {
-                    items.put(relativeIndex, component.getItem());
+                    items.put(relativeIndex, component.getItem(player));
                 } else {
                     items.put(relativeIndex, new BlockAir().toItem());
                 }
@@ -77,7 +77,7 @@ public class MinecartChestMenu {
                 ChestMenuComponent component = chestMenuPEComponents.getOrDefault(i, null);
                 int relativeIndex = i - base;
                 if (component != null) {
-                    items.put(relativeIndex, component.getItem());
+                    items.put(relativeIndex, component.getItem(player));
                 } else {
                     items.put(relativeIndex, new BlockAir().toItem());
                 }

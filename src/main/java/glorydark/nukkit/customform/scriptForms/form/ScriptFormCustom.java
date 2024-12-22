@@ -6,17 +6,13 @@ import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseCustom;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
-import com.creeperface.nukkit.placeholderapi.api.PlaceholderAPI;
-import com.smallaswater.npc.variable.VariableManage;
-import glorydark.nukkit.LanguageMain;
-import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.ResponseExecuteData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.element.ElementPlayerListDropdown;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import glorydark.nukkit.customform.utils.CommandUtils;
+import glorydark.nukkit.customform.utils.ReplaceStringUtils;
 import lombok.Data;
-import tip.utils.Api;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -136,7 +132,7 @@ public class ScriptFormCustom implements ScriptForm {
                     command = command.replace(replacePrefixDropDownContent, responseCustom.getStepSliderResponse(i).getElementContent());
                 }
             }
-            CommandUtils.executeCommand(player, replace(command, player));
+            CommandUtils.executeCommand(player, ReplaceStringUtils.replace(command, player));
         });
         responsesMap.forEach((key, value) -> {
             ResponseExecuteData responseExecuteData = data.get(key);
@@ -164,38 +160,38 @@ public class ScriptFormCustom implements ScriptForm {
     public FormWindowCustom getWindow(Player player) {
         FormWindowCustom custom_temp = this.getModifiableWindow();
         int elementId = 0;
-        custom_temp.setTitle(replace(custom_temp.getTitle(), player));
+        custom_temp.setTitle(ReplaceStringUtils.replace(custom_temp.getTitle(), player));
         for (Element element : new ArrayList<>(custom_temp.getElements())) {
             if (element instanceof ElementLabel) {
-                ((ElementLabel) element).setText(replace(((ElementLabel) element).getText(), player));
+                ((ElementLabel) element).setText(ReplaceStringUtils.replace(((ElementLabel) element).getText(), player));
                 custom_temp.getElements().set(elementId, element);
             } else if (element instanceof ElementInput) {
                 ElementInput input = ((ElementInput) element);
-                input.setDefaultText(replace(input.getDefaultText(), player));
-                input.setText(replace(input.getText(), player));
-                input.setPlaceHolder(replace(input.getPlaceHolder(), player));
+                input.setDefaultText(ReplaceStringUtils.replace(input.getDefaultText(), player));
+                input.setText(ReplaceStringUtils.replace(input.getText(), player));
+                input.setPlaceHolder(ReplaceStringUtils.replace(input.getPlaceHolder(), player));
                 custom_temp.getElements().set(elementId, input);
             } else if (element instanceof ElementDropdown) {
                 if (element instanceof ElementPlayerListDropdown) {
                     ElementPlayerListDropdown playerListDropdown = ((ElementPlayerListDropdown) element).copyNew();
-                    playerListDropdown.setText(replace(playerListDropdown.getText(), player));
+                    playerListDropdown.setText(ReplaceStringUtils.replace(playerListDropdown.getText(), player));
                     custom_temp.getElements().set(elementId, playerListDropdown);
                 } else {
                     ElementDropdown dropdown = ((ElementDropdown) element);
-                    dropdown.setText(replace(dropdown.getText(), player));
-                    dropdown.getOptions().replaceAll(string -> replace(string, player));
+                    dropdown.setText(ReplaceStringUtils.replace(dropdown.getText(), player));
+                    dropdown.getOptions().replaceAll(string -> ReplaceStringUtils.replace(string, player));
                     custom_temp.getElements().set(elementId, dropdown);
                 }
             } else if (element instanceof ElementToggle) {
-                ((ElementToggle) element).setText(replace(((ElementToggle) element).getText(), player));
+                ((ElementToggle) element).setText(ReplaceStringUtils.replace(((ElementToggle) element).getText(), player));
                 custom_temp.getElements().set(elementId, element);
             } else if (element instanceof ElementSlider) {
-                ((ElementSlider) element).setText(replace(((ElementSlider) element).getText(), player));
+                ((ElementSlider) element).setText(ReplaceStringUtils.replace(((ElementSlider) element).getText(), player));
                 custom_temp.getElements().set(elementId, element);
             } else if (element instanceof ElementStepSlider) {
                 ElementStepSlider stepSlider = ((ElementStepSlider) element);
-                stepSlider.setText(replace(stepSlider.getText(), player));
-                stepSlider.getSteps().replaceAll(string -> replace(string, player));
+                stepSlider.setText(ReplaceStringUtils.replace(stepSlider.getText(), player));
+                stepSlider.getSteps().replaceAll(string -> ReplaceStringUtils.replace(string, player));
                 custom_temp.getElements().set(elementId, stepSlider);
             }
             elementId++;
@@ -273,41 +269,5 @@ public class ScriptFormCustom implements ScriptForm {
             }
         }
         return custom;
-    }
-
-    public String replaceBreak(String string) {
-        return string.replace("\\n", "\n");
-    }
-
-    public String replace(String string, Player player) {
-        return replace(string, player, false, true);
-    }
-
-    /**
-     * Refracted in order to expand the usages easily.
-     */
-    public String replace(String string, Player player, boolean replaceBreak, boolean quotationMark) {
-        if (CustomFormMain.enableLanguageAPI) {
-            string = LanguageMain.getInstance().getTranslation(CustomFormMain.plugin, player, string);
-        }
-        string = string.replace("{player}", player.getName());
-        if (quotationMark) {
-            string = string.replace("%player%", "\"" + player.getName() + "\"");
-        } else {
-            string = string.replace("%player%", player.getName());
-        }
-        if (CustomFormMain.enableTips) {
-            string = Api.strReplace(string, player);
-        }
-        if (CustomFormMain.enableRsNPCX) {
-            string = VariableManage.stringReplace(player, string, CustomFormMain.rsNpcConfig);
-        }
-        if (CustomFormMain.enablePlaceHolderAPI) {
-            string = PlaceholderAPI.getInstance().translateString(string);
-        }
-        if (replaceBreak) {
-            string = replaceBreak(string);
-        }
-        return string;
     }
 }

@@ -3,10 +3,9 @@ package glorydark.nukkit.customform.chestMenu;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
-import glorydark.nukkit.LanguageMain;
-import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import glorydark.nukkit.customform.utils.CommandUtils;
+import glorydark.nukkit.customform.utils.ReplaceStringUtils;
 import glorydark.nukkit.customform.utils.Tools;
 import lombok.Data;
 
@@ -20,10 +19,10 @@ public class ChestMenuComponent {
     protected List<String> successMessages = new ArrayList<>();
     protected List<String> failedCommands = new ArrayList<>();
     protected List<String> failedMessages = new ArrayList<>();
-    private String name;
-    private String description;
-    private Item item;
-    private boolean isEnchanted;
+    private final String name;
+    private final String description;
+    private final Item item;
+    private final boolean isEnchanted;
     private List<Requirements> requirements = new ArrayList<>();
 
     public ChestMenuComponent(String name, List<String> descriptions, String item, boolean isEnchanted) {
@@ -43,11 +42,22 @@ public class ChestMenuComponent {
                 this.item = Item.get(1);
                 break;
         }
-        this.item.setLore(description.replace("\\n", "\n"));
-        this.item.setCustomName(name);
+        this.item.setLore(this.description);
+        this.item.setCustomName(this.name);
         if (isEnchanted) {
             this.item.addEnchantment(Enchantment.get(Enchantment.ID_DURABILITY).setLevel(1));
         }
+    }
+
+    public Item getItem(Player player) {
+        Item item1 = this.item.clone();
+        item1.setCustomName(ReplaceStringUtils.replace(item1.getCustomName(), player));
+        String[] lore = item1.getLore().clone();
+        for (int i = 0; i < item1.getLore().length; i++) {
+            lore[i] = ReplaceStringUtils.replace(lore[i], player);
+        }
+        item1.setLore(lore);
+        return item1;
     }
 
     public void setSuccessMessages(List<String> successMessages) {
@@ -70,7 +80,7 @@ public class ChestMenuComponent {
         // To check whether player is qualified or not
         boolean success;
         Requirements successRequire = null;
-        if (requirements.size() > 0) {
+        if (!requirements.isEmpty()) {
             success = false;
             for (Requirements require : requirements) {
                 if (require.isAllQualified(player)) {
@@ -90,29 +100,20 @@ public class ChestMenuComponent {
                 }
             }
             for (String successCommand : successCommands) {
-                CommandUtils.executeCommand(player, replace(successCommand, player));
+                CommandUtils.executeCommand(player, successCommand);
             }
 
             for (String successMessage : successMessages) {
-                player.sendMessage(successMessage);
+                player.sendMessage(ReplaceStringUtils.replace(successMessage, player));
             }
         } else {
             for (String failedCommand : failedCommands) {
-                CommandUtils.executeCommand(player, replace(failedCommand, player));
+                CommandUtils.executeCommand(player, failedCommand);
             }
 
             for (String failedMessage : failedMessages) {
-                player.sendMessage(failedMessage);
+                player.sendMessage(ReplaceStringUtils.replace(failedMessage, player));
             }
         }
-    }
-
-    public String replace(String text, Player player) {
-        if (CustomFormMain.enableLanguageAPI) {
-            text = LanguageMain.getInstance().getTranslation(CustomFormMain.plugin, player, text);
-        }
-        return text.replace("%player%", player.getName())
-                .replace("{player}", player.getName())
-                .replace("%level%", player.getLevel().getName());
     }
 }

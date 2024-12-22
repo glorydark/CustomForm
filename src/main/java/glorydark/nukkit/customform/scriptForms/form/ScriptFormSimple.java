@@ -7,15 +7,11 @@ import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseSimple;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowSimple;
-import com.creeperface.nukkit.placeholderapi.api.PlaceholderAPI;
-import com.smallaswater.npc.variable.VariableManage;
-import glorydark.nukkit.LanguageMain;
-import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.SimpleResponseExecuteData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
+import glorydark.nukkit.customform.utils.ReplaceStringUtils;
 import lombok.Data;
-import tip.utils.Api;
 
 import java.util.*;
 
@@ -29,10 +25,6 @@ public class ScriptFormSimple implements ScriptForm {
     private FormWindowSimple window;
 
     private SoundData openSound;
-
-    private List<Boolean> enableTipsVariableReplacement = new ArrayList<>();
-
-    private List<Boolean> enableRsNPCXVariableReplacement = new ArrayList<>();
 
     private Date startDate = new Date(-1);
 
@@ -89,14 +81,12 @@ public class ScriptFormSimple implements ScriptForm {
         FormWindowSimple simple_temp = this.getModifiableWindow();
         int elementId = 0;
         for (ElementButton button : new ArrayList<>(simple_temp.getButtons())) {
-            boolean tipsEnabled = enableTipsVariableReplacement.get(elementId);
-            boolean rsNPCXEnabled = enableRsNPCXVariableReplacement.get(elementId);
-            button.setText(replace(button.getText(), player, true, rsNPCXEnabled, tipsEnabled));
+            button.setText(ReplaceStringUtils.replace(button.getText(), player));
             simple_temp.getButtons().set(elementId, button);
             elementId++;
         }
-        simple_temp.setContent(replace(simple_temp.getContent(), player, true));
-        simple_temp.setTitle(replace(simple_temp.getTitle(), player));
+        simple_temp.setContent(ReplaceStringUtils.replace(simple_temp.getContent(), player));
+        simple_temp.setTitle(ReplaceStringUtils.replace(simple_temp.getTitle(), player));
         return simple_temp;
     }
 
@@ -136,8 +126,6 @@ public class ScriptFormSimple implements ScriptForm {
             simple = new FormWindowSimple((String) config.getOrDefault("title", ""), content);
         }
         for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
-            enableTipsVariableReplacement.add((Boolean) component.getOrDefault("enable_tips_variable", true));
-            enableRsNPCXVariableReplacement.add((Boolean) component.getOrDefault("enable_rsNPCX_variable", true));
             String picPath = (String) component.getOrDefault("pic", "");
             if (picPath.equals("")) {
                 simple.addButton(new ElementButton((String) component.getOrDefault("text", "")));
@@ -154,43 +142,6 @@ public class ScriptFormSimple implements ScriptForm {
             }
         }
         return simple;
-    }
-
-    public String replaceBreak(String string) {
-        return string.replace("\\n", "\n");
-    }
-
-    public String replace(String string, Player player) {
-        return this.replace(string, player, false);
-    }
-
-    /**
-     * Refracted in order to expand the usages easily.
-     */
-
-    public String replace(String string, Player player, boolean replaceBreak) {
-        return this.replace(string, player, replaceBreak, true, true);
-    }
-
-    public String replace(String string, Player player, boolean replaceBreak, boolean enableRsNPCX, boolean enableTips) {
-        if (CustomFormMain.enableLanguageAPI) {
-            string = LanguageMain.getInstance().getTranslation(CustomFormMain.plugin, player, string);
-        }
-        string = string.replace("{player}", player.getName())
-                .replace("%player%", player.getName());
-        if (CustomFormMain.enableTips && enableTips) {
-            string = Api.strReplace(string, player);
-        }
-        if (CustomFormMain.enableRsNPCX) {
-            string = VariableManage.stringReplace(player, string, CustomFormMain.rsNpcConfig);
-        }
-        if (CustomFormMain.enablePlaceHolderAPI) {
-            string = PlaceholderAPI.getInstance().translateString(string);
-        }
-        if (replaceBreak) {
-            string = replaceBreak(string);
-        }
-        return string;
     }
 
     public List<ElementButton> cloneButtons(List<ElementButton> elementButtons) {
