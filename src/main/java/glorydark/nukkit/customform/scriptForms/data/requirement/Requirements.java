@@ -9,6 +9,7 @@ import glorydark.nukkit.customform.scriptForms.data.requirement.economy.EconomyR
 import glorydark.nukkit.customform.scriptForms.data.requirement.item.ItemRequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.tips.TipsRequirementData;
 import glorydark.nukkit.customform.utils.CommandUtils;
+import lombok.ToString;
 import me.onebone.economyapi.EconomyAPI;
 import net.player.api.Point;
 import tip.utils.Api;
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Developing
+@ToString
 public class Requirements {
 
     // First, register new requirementData here
@@ -74,21 +76,23 @@ public class Requirements {
         int multiply = params.length == 1 ? (int) params[0] : 1;
 
         // Deal with different kinds of requirementData
+        int i = 0;
         for (EconomyRequirementData datum : economyRequirementData) {
+            i++;
             BigDecimal difference;
             if (!datum.isQualified(player, multiply)) {
                 switch (datum.getType()) {
                     case Points:
                         difference = BigDecimal.valueOf(datum.getAmount()).subtract(BigDecimal.valueOf(Point.getPoint(player.getUniqueId())).multiply(new BigDecimal(multiply)));
-                        player.sendMessage(CustomFormMain.language.translateString(player, "requirements_points_not_qualified", params[0], difference));
+                        player.sendMessage(CustomFormMain.language.translateString(player, "requirements_points_not_qualified", i, difference));
                         break;
                     case DCurrency:
                         difference = BigDecimal.valueOf(datum.getAmount()).subtract(BigDecimal.valueOf(CurrencyAPI.getCurrencyBalance(player.getName(), (String) datum.getExtraData()[0], 0d))).multiply(new BigDecimal(multiply));
-                        player.sendMessage(CustomFormMain.language.translateString(player, "requirements_currencyAPI_not_qualified", params[0], datum.getExtraData()[0], difference));
+                        player.sendMessage(CustomFormMain.language.translateString(player, "requirements_currencyAPI_not_qualified", i, datum.getExtraData()[0], difference));
                         break;
                     case EconomyAPI:
                         difference = BigDecimal.valueOf(datum.getAmount()).subtract(BigDecimal.valueOf(EconomyAPI.getInstance().myMoney(player))).multiply(new BigDecimal(multiply));
-                        player.sendMessage(CustomFormMain.language.translateString(player, "requirements_economyAPI_not_qualified", params[0], difference));
+                        player.sendMessage(CustomFormMain.language.translateString(player, "requirements_economyAPI_not_qualified", i, difference));
                         break;
                 }
                 return false;

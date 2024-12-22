@@ -1,10 +1,12 @@
 package glorydark.nukkit.customform.scriptForms.data.requirement.tips;
 
 import cn.nukkit.Player;
+import lombok.ToString;
 import tip.utils.Api;
 
 import java.util.List;
 
+@ToString
 public class TipsRequirementData {
 
     TipsRequirementType requirementType;

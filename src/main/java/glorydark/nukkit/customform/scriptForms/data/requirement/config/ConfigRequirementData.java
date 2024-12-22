@@ -3,9 +3,11 @@ package glorydark.nukkit.customform.scriptForms.data.requirement.config;
 import cn.nukkit.Player;
 import cn.nukkit.utils.Config;
 import glorydark.nukkit.customform.utils.ConfigUtils;
+import lombok.ToString;
 
 import java.util.List;
 
+@ToString
 public class ConfigRequirementData {
 
     ConfigRequirementType requirementType;

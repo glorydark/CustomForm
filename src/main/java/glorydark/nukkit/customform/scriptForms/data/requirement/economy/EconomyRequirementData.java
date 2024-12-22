@@ -4,12 +4,14 @@ import cn.nukkit.Player;
 import glorydark.dcurrency.CurrencyAPI;
 import glorydark.nukkit.customform.CustomFormMain;
 import lombok.Data;
+import lombok.ToString;
 import me.onebone.economyapi.EconomyAPI;
 import net.player.api.Point;
 
 import java.math.BigDecimal;
 
 @Data
+@ToString
 public class EconomyRequirementData {
     // Tips / EconomyAPI / DCurrency
     EconomyRequirementType type;

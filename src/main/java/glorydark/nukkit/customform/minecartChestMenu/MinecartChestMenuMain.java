@@ -52,7 +52,7 @@ public class MinecartChestMenuMain {
                     }
                     minecartChestMenuComponent.setRequirements(requirements);
                 }
-                menu.addComponent((Integer) component.get("slot"), minecartChestMenuComponent);
+                menu.addPEComponent((Integer) component.get("slot"), minecartChestMenuComponent);
             }
             List<Map<String, Object>> pcComponents = (List<Map<String, Object>>) config.getOrDefault("pc_components", new ArrayList<>());
             for (Map<String, Object> component : pcComponents) {
@@ -69,7 +69,7 @@ public class MinecartChestMenuMain {
                     }
                     minecartChestMenuComponent.setRequirements(requirements);
                 }
-                menu.addPEComponent((Integer) component.get("slot"), minecartChestMenuComponent);
+                menu.addPCComponent((Integer) component.get("slot"), minecartChestMenuComponent);
             }
             chestMenus.put(identifier, menu);
             return true;

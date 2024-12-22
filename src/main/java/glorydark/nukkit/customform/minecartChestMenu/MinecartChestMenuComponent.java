@@ -8,11 +8,13 @@ import glorydark.nukkit.customform.utils.CommandUtils;
 import glorydark.nukkit.customform.utils.ReplaceStringUtils;
 import glorydark.nukkit.customform.utils.Tools;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@ToString
 public class MinecartChestMenuComponent {
 
     protected List<String> successCommands = new ArrayList<>();
@@ -78,11 +80,12 @@ public class MinecartChestMenuComponent {
 
     public void execute(Player player) {
         // To check whether player is qualified or not
-        Requirements successRequire = null;
-        if (!requirements.isEmpty()) {
-            for (Requirements require : requirements) {
+        if (!this.requirements.isEmpty()) {
+            Requirements successRequire = null;
+            for (Requirements require : this.requirements) {
                 if (require != null && require.isAllQualified(player)) {
                     successRequire = require;
+                    break;
                 }
             }
             // Execute corresponding commands and messages

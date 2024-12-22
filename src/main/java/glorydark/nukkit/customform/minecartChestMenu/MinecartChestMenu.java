@@ -149,7 +149,7 @@ public class MinecartChestMenu {
         }
     }
 
-    public void addComponent(int slot, MinecartChestMenuComponent component) {
+    public void addPCComponent(int slot, MinecartChestMenuComponent component) {
         chestMenuPCComponents.put(slot, component);
     }
 
@@ -159,17 +159,34 @@ public class MinecartChestMenu {
 
     public int getMaxPage(boolean pc) {
         int maxIndex = 0;
-        for (int i : this.getChestMenuPCComponents().keySet()) {
-            if (i > maxIndex) {
-                maxIndex = i;
+        int maxPage;
+        if (pc) {
+            for (int i : this.getChestMenuPCComponents().keySet()) {
+                if (i > maxIndex) {
+                    maxIndex = i;
+                }
             }
-        }
-        int maxPage = maxIndex / (pc ? 17 : 23);
-        if (maxPage < 1) {
-            maxPage = 1;
+            maxPage = maxIndex / 17;
+            if (maxPage < 1) {
+                maxPage = 1;
+            } else {
+                if (maxIndex % 17 > 0) {
+                    maxPage++;
+                }
+            }
         } else {
-            if (maxIndex % 17 > 0) {
-                maxPage++;
+            for (int i : this.getChestMenuPEComponents().keySet()) {
+                if (i > maxIndex) {
+                    maxIndex = i;
+                }
+            }
+            maxPage = maxIndex / 23;
+            if (maxPage < 1) {
+                maxPage = 1;
+            } else {
+                if (maxIndex % 23 > 0) {
+                    maxPage++;
+                }
             }
         }
         return maxPage;
