@@ -1,4 +1,4 @@
-package glorydark.nukkit.customform.chestMenu;
+package glorydark.nukkit.customform.minecartChestMenu;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
@@ -16,7 +16,7 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.MinecartChestInventory;
 import glorydark.nukkit.customform.CustomFormMain;
 
-public class ChestMenuListener implements Listener {
+public class MinecartChestMenuListener implements Listener {
 
     @EventHandler
     public void InventoryPickupItemEvent(InventoryPickupItemEvent event) {
@@ -48,7 +48,7 @@ public class ChestMenuListener implements Listener {
             event.setCancelled(true);
             if (event.getInventory() instanceof MinecartChestInventory) {
                 EntityMinecartChest entity = ((MinecartChestInventory) event.getInventory()).getHolder();
-                ChestMenuMain.PlayerMinecartChestTempData data = ChestMenuMain.mineCartChests.get(player);
+                MinecartChestMenuMain.PlayerMinecartChestTempData data = MinecartChestMenuMain.mineCartChests.get(player);
                 int page = getPage(entity);
                 boolean pc = MinecartChestMenu.isPC(player);
                 if (pc) {
@@ -84,9 +84,9 @@ public class ChestMenuListener implements Listener {
                                         }
                                     }
                                     int clickId = event.getSlot() + (page - 1) * 18;
-                                    ChestMenuComponent component = data.getMenu().getChestMenuPCComponents().get(clickId);
+                                    MinecartChestMenuComponent component = data.getMenu().getChestMenuPCComponents().get(clickId);
                                     component.execute(player);
-                                    ChestMenuMain.closeDoubleChestInventory(player);
+                                    MinecartChestMenuMain.closeDoubleChestInventory(player);
                                 }
                                 break;
                         }
@@ -98,9 +98,9 @@ public class ChestMenuListener implements Listener {
                                 break;
                             case 15:
                                 int clickId = data.getDoubleCheckComponentId();
-                                ChestMenuComponent component = data.getMenu().getChestMenuPCComponents().get(clickId);
+                                MinecartChestMenuComponent component = data.getMenu().getChestMenuPCComponents().get(clickId);
                                 component.execute(player);
-                                ChestMenuMain.closeDoubleChestInventory(player);
+                                MinecartChestMenuMain.closeDoubleChestInventory(player);
                                 break;
                         }
                     }
@@ -137,9 +137,9 @@ public class ChestMenuListener implements Listener {
                                         }
                                     }
                                     int clickId = event.getSlot() + (page - 1) * 23;
-                                    ChestMenuComponent component = data.getMenu().getChestMenuPEComponents().get(clickId);
+                                    MinecartChestMenuComponent component = data.getMenu().getChestMenuPEComponents().get(clickId);
                                     component.execute(player);
-                                    ChestMenuMain.closeDoubleChestInventory(player);
+                                    MinecartChestMenuMain.closeDoubleChestInventory(player);
                                 }
                                 break;
                         }
@@ -151,9 +151,9 @@ public class ChestMenuListener implements Listener {
                                 break;
                             case 15:
                                 int clickId = data.getDoubleCheckComponentId();
-                                ChestMenuComponent component = data.getMenu().getChestMenuPEComponents().get(clickId);
+                                MinecartChestMenuComponent component = data.getMenu().getChestMenuPEComponents().get(clickId);
                                 component.execute(player);
-                                ChestMenuMain.closeDoubleChestInventory(player);
+                                MinecartChestMenuMain.closeDoubleChestInventory(player);
                                 break;
                         }
                     }
@@ -164,15 +164,15 @@ public class ChestMenuListener implements Listener {
 
     @EventHandler
     public void PlayerQuitEvent(PlayerQuitEvent event) {
-        if (ChestMenuMain.mineCartChests.containsKey(event.getPlayer())) {
-            ChestMenuMain.closeDoubleChestInventory(event.getPlayer());
+        if (MinecartChestMenuMain.mineCartChests.containsKey(event.getPlayer())) {
+            MinecartChestMenuMain.closeDoubleChestInventory(event.getPlayer());
         }
     }
 
     @EventHandler
     public void InventoryCloseEvent(InventoryCloseEvent event) {
-        if (ChestMenuMain.mineCartChests.containsKey(event.getPlayer())) {
-            ChestMenuMain.closeDoubleChestInventory(event.getPlayer());
+        if (MinecartChestMenuMain.mineCartChests.containsKey(event.getPlayer())) {
+            MinecartChestMenuMain.closeDoubleChestInventory(event.getPlayer());
         }
     }
 
@@ -240,7 +240,7 @@ public class ChestMenuListener implements Listener {
         if (entity instanceof EntityMinecartChest) {
             if (entity.namedTag != null) {
                 if (entity.namedTag.contains("page")) {
-                    ChestMenuMain.PlayerMinecartChestTempData tempData = ChestMenuMain.mineCartChests.get(player);
+                    MinecartChestMenuMain.PlayerMinecartChestTempData tempData = MinecartChestMenuMain.mineCartChests.get(player);
                     tempData.setDoubleCheckComponentId(clickId);
                     ((EntityMinecartChest) entity).getInventory().setContents(tempData.getMenu().getDoubleCheckItem(player, clickId));
                 }
@@ -253,7 +253,7 @@ public class ChestMenuListener implements Listener {
             if (entity.namedTag != null) {
                 if (entity.namedTag.contains("page")) {
                     entity.namedTag.putInt("page", page);
-                    ChestMenuMain.PlayerMinecartChestTempData tempData = ChestMenuMain.mineCartChests.get(player);
+                    MinecartChestMenuMain.PlayerMinecartChestTempData tempData = MinecartChestMenuMain.mineCartChests.get(player);
                     ((EntityMinecartChest) entity).getInventory().setContents(tempData.getMenu().getItems(player, page));
                 }
             }

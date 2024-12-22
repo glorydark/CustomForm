@@ -1,4 +1,4 @@
-package glorydark.nukkit.customform.chestMenu;
+package glorydark.nukkit.customform.minecartChestMenu;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockAir;
@@ -23,9 +23,9 @@ public class MinecartChestMenu {
 
     private String title;
 
-    private HashMap<Integer, ChestMenuComponent> chestMenuPCComponents = new HashMap<>();
+    private HashMap<Integer, MinecartChestMenuComponent> chestMenuPCComponents = new HashMap<>();
 
-    private HashMap<Integer, ChestMenuComponent> chestMenuPEComponents = new HashMap<>();
+    private HashMap<Integer, MinecartChestMenuComponent> chestMenuPEComponents = new HashMap<>();
 
     public MinecartChestMenu(String identifier, String title) {
         this.identifier = identifier;
@@ -50,7 +50,7 @@ public class MinecartChestMenu {
         if (pc) {
             base = (page - 1) * 18;
             for (int i = base; i < 18 * page; i++) {
-                ChestMenuComponent component = chestMenuPCComponents.getOrDefault(i, null);
+                MinecartChestMenuComponent component = chestMenuPCComponents.getOrDefault(i, null);
                 int relativeIndex = i - base;
                 if (component != null) {
                     items.put(relativeIndex, component.getItem(player));
@@ -74,7 +74,7 @@ public class MinecartChestMenu {
         } else {
             base = (page - 1) * 23;
             for (int i = base; i < 23 * page; i++) {
-                ChestMenuComponent component = chestMenuPEComponents.getOrDefault(i, null);
+                MinecartChestMenuComponent component = chestMenuPEComponents.getOrDefault(i, null);
                 int relativeIndex = i - base;
                 if (component != null) {
                     items.put(relativeIndex, component.getItem(player));
@@ -114,7 +114,7 @@ public class MinecartChestMenu {
         chest.setImmobile(true);
         chest.spawnTo(player);
         player.addWindow(chest.getInventory());
-        ChestMenuMain.mineCartChests.put(player, new ChestMenuMain.PlayerMinecartChestTempData(chest, this));
+        MinecartChestMenuMain.mineCartChests.put(player, new MinecartChestMenuMain.PlayerMinecartChestTempData(chest, this));
     }
 
     public Map<Integer, Item> getDoubleCheckItem(Player player, int checkComponentIndex) {
@@ -149,11 +149,11 @@ public class MinecartChestMenu {
         }
     }
 
-    public void addComponent(int slot, ChestMenuComponent component) {
+    public void addComponent(int slot, MinecartChestMenuComponent component) {
         chestMenuPCComponents.put(slot, component);
     }
 
-    public void addPEComponent(int slot, ChestMenuComponent component) {
+    public void addPEComponent(int slot, MinecartChestMenuComponent component) {
         chestMenuPEComponents.put(slot, component);
     }
 

@@ -9,8 +9,9 @@ import cn.nukkit.utils.ConfigSection;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.utils.exception.RsNpcConfigLoadException;
 import com.smallaswater.npc.utils.exception.RsNpcLoadException;
-import glorydark.nukkit.customform.chestMenu.ChestMenuListener;
-import glorydark.nukkit.customform.chestMenu.ChestMenuMain;
+import glorydark.nukkit.customform.chestForm.ChestFormMain;
+import glorydark.nukkit.customform.minecartChestMenu.MinecartChestMenuListener;
+import glorydark.nukkit.customform.minecartChestMenu.MinecartChestMenuMain;
 import glorydark.nukkit.customform.commands.CustomFormCommands;
 import glorydark.nukkit.customform.forms.FormCreator;
 import glorydark.nukkit.customform.forms.FormListener;
@@ -55,6 +56,8 @@ public class CustomFormMain extends PluginBase {
 
     public static boolean enableLanguageAPI;
 
+    public static boolean enableGameAPI;
+
     // Set the intervals for player to open the next form.
     public static long coolDownMillis;
 
@@ -86,6 +89,7 @@ public class CustomFormMain extends PluginBase {
         enableEconomyAPI = checkSoftDepend("EconomyAPI");
         enablePoints = checkSoftDepend("playerPoints");
         enableRsNPCX = checkSoftDepend("RsNPC") && config.getBoolean("enable_rsNPCX", true);
+        enableGameAPI = checkSoftDepend("GameAPI");
         enablePlaceHolderAPI = checkSoftDepend("PlaceholderAPI");
         enableLanguageAPI = checkSoftDepend("LanguageAPI");
         if (enableLanguageAPI) {
@@ -150,12 +154,13 @@ public class CustomFormMain extends PluginBase {
         this.getLogger().info("CustomForm onLoad");
         this.getServer().getCommandMap().register("", new CustomFormCommands());
         this.getServer().getPluginManager().registerEvents(new FormListener(), this);
-        this.getServer().getPluginManager().registerEvents(new ChestMenuListener(), this);
+        this.getServer().getPluginManager().registerEvents(new MinecartChestMenuListener(), this);
     }
 
     public void loadAll() {
         ready = false;
         executor = Executors.newFixedThreadPool(5);
+        ChestFormMain.loadAll();
         this.loadItemStringCaches();
         this.loadScriptMineCartWindows(new File(path + "/minecart_chest_windows/"));
         this.loadScriptWindows(new File(path + "/forms/"));
@@ -171,9 +176,9 @@ public class CustomFormMain extends PluginBase {
 
     @Override
     public void onDisable() {
-        ChestMenuMain.mineCartChests.forEach((player, playerMineCartChestTempData) -> {
+        MinecartChestMenuMain.mineCartChests.forEach((player, playerMineCartChestTempData) -> {
             player.removeWindow(playerMineCartChestTempData.getEntityMinecartChest().getInventory());
-            ChestMenuMain.closeDoubleChestInventory(player);
+            MinecartChestMenuMain.closeDoubleChestInventory(player);
         });
     }
 
@@ -198,12 +203,12 @@ public class CustomFormMain extends PluginBase {
     }
 
     public void loadScriptMineCartWindows(File dic) {
-        ChestMenuMain.mineCartChests.forEach((player, playerMineCartChestTempData) -> {
+        MinecartChestMenuMain.mineCartChests.forEach((player, playerMineCartChestTempData) -> {
             player.removeWindow(playerMineCartChestTempData.getEntityMinecartChest().getInventory());
-            ChestMenuMain.closeDoubleChestInventory(player);
+            MinecartChestMenuMain.closeDoubleChestInventory(player);
         });
-        ChestMenuMain.mineCartChests.clear();
-        ChestMenuMain.chestMenus.clear();
+        MinecartChestMenuMain.mineCartChests.clear();
+        MinecartChestMenuMain.chestMenus.clear();
         for (File file : Objects.requireNonNull(dic.listFiles())) {
             if (file.isDirectory()) {
                 String subFolder = file.getName() + "/";
@@ -214,7 +219,7 @@ public class CustomFormMain extends PluginBase {
                 loadScriptMinecartWindow(file, "");
             }
         }
-        this.getLogger().info(language.translateString(null, "chest_window_minecart_loaded_in_total", ChestMenuMain.chestMenus.keySet().size()));
+        this.getLogger().info(language.translateString(null, "chest_window_minecart_loaded_in_total", MinecartChestMenuMain.chestMenus.keySet().size()));
     }
 
     protected void loadScriptMinecartWindow(File file, String prefix) {
@@ -225,7 +230,7 @@ public class CustomFormMain extends PluginBase {
         } else {
             Map<String, Object> mainMap = FormCreator.convertConfigToMap(file);
             String identifier = prefix + file.getName().replace(".json", "").replace(".yml", "");
-            if (ChestMenuMain.registerMinecartChestMenu(identifier, mainMap)) {
+            if (MinecartChestMenuMain.registerMinecartChestMenu(identifier, mainMap)) {
                 this.getLogger().info(language.translateString(null, "chest_window_minecart_loaded", identifier));
             } else {
                 this.getLogger().error(language.translateString(null, "chest_window_minecart_loaded_failed", identifier));

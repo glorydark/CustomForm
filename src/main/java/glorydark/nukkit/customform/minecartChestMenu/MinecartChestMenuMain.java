@@ -1,4 +1,4 @@
-package glorydark.nukkit.customform.chestMenu;
+package glorydark.nukkit.customform.minecartChestMenu;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.item.EntityMinecartChest;
@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ChestMenuMain {
+public class MinecartChestMenuMain {
 
     public static HashMap<String, MinecartChestMenu> chestMenus = new HashMap<>();
 
@@ -39,37 +39,37 @@ public class ChestMenuMain {
             MinecartChestMenu menu = new MinecartChestMenu(identifier, (String) config.get("title"));
             List<Map<String, Object>> peComponents = (List<Map<String, Object>>) config.getOrDefault("pe_components", new ArrayList<>());
             for (Map<String, Object> component : peComponents) {
-                ChestMenuComponent chestMenuComponent = new ChestMenuComponent((String) component.get("name"), (List<String>) component.get("descriptions"), (String) component.get("item"), (Boolean) component.get("isEnchanted"));
-                chestMenuComponent.setFailedMessages((List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
-                chestMenuComponent.setFailedCommands((List<String>) component.getOrDefault("failed_commands", new ArrayList<>()));
-                chestMenuComponent.setSuccessMessages((List<String>) component.getOrDefault("messages", new ArrayList<>()));
-                chestMenuComponent.setSuccessCommands((List<String>) component.getOrDefault("commands", new ArrayList<>()));
+                MinecartChestMenuComponent minecartChestMenuComponent = new MinecartChestMenuComponent((String) component.get("name"), (List<String>) component.get("descriptions"), (String) component.get("item"), (Boolean) component.get("isEnchanted"));
+                minecartChestMenuComponent.setFailedMessages((List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
+                minecartChestMenuComponent.setFailedCommands((List<String>) component.getOrDefault("failed_commands", new ArrayList<>()));
+                minecartChestMenuComponent.setSuccessMessages((List<String>) component.getOrDefault("messages", new ArrayList<>()));
+                minecartChestMenuComponent.setSuccessCommands((List<String>) component.getOrDefault("commands", new ArrayList<>()));
                 if (component.containsKey("requirements")) {
                     List<Requirements> requirements = new ArrayList<>();
                     Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                     for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
                         requirements.add(FormCreator.buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                     }
-                    chestMenuComponent.setRequirements(requirements);
+                    minecartChestMenuComponent.setRequirements(requirements);
                 }
-                menu.addComponent((Integer) component.get("slot"), chestMenuComponent);
+                menu.addComponent((Integer) component.get("slot"), minecartChestMenuComponent);
             }
             List<Map<String, Object>> pcComponents = (List<Map<String, Object>>) config.getOrDefault("pc_components", new ArrayList<>());
             for (Map<String, Object> component : pcComponents) {
-                ChestMenuComponent chestMenuComponent = new ChestMenuComponent((String) component.get("name"), (List<String>) component.get("descriptions"), (String) component.get("item"), (Boolean) component.get("isEnchanted"));
-                chestMenuComponent.setFailedMessages((List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
-                chestMenuComponent.setFailedCommands((List<String>) component.getOrDefault("failed_commands", new ArrayList<>()));
-                chestMenuComponent.setSuccessMessages((List<String>) component.getOrDefault("messages", new ArrayList<>()));
-                chestMenuComponent.setSuccessCommands((List<String>) component.getOrDefault("commands", new ArrayList<>()));
+                MinecartChestMenuComponent minecartChestMenuComponent = new MinecartChestMenuComponent((String) component.get("name"), (List<String>) component.get("descriptions"), (String) component.get("item"), (Boolean) component.get("isEnchanted"));
+                minecartChestMenuComponent.setFailedMessages((List<String>) component.getOrDefault("failed_messages", new ArrayList<>()));
+                minecartChestMenuComponent.setFailedCommands((List<String>) component.getOrDefault("failed_commands", new ArrayList<>()));
+                minecartChestMenuComponent.setSuccessMessages((List<String>) component.getOrDefault("messages", new ArrayList<>()));
+                minecartChestMenuComponent.setSuccessCommands((List<String>) component.getOrDefault("commands", new ArrayList<>()));
                 if (component.containsKey("requirements")) {
                     List<Requirements> requirements = new ArrayList<>();
                     Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                     for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
                         requirements.add(FormCreator.buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                     }
-                    chestMenuComponent.setRequirements(requirements);
+                    minecartChestMenuComponent.setRequirements(requirements);
                 }
-                menu.addPEComponent((Integer) component.get("slot"), chestMenuComponent);
+                menu.addPEComponent((Integer) component.get("slot"), minecartChestMenuComponent);
             }
             chestMenus.put(identifier, menu);
             return true;

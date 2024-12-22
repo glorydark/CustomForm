@@ -1,13 +1,13 @@
 main: glorydark.nukkit.customform.CustomFormMain
 name: CustomForm
-version: "1.1.5"
+version: "1.2.0"
 api: 1.0.0
 author: Glorydark
 description: CustomForm
 softdepend:
   - DCurrency
-  - playerPoints
   - EconomyAPI
   - Tips
   - RsNPC
   - LanguageAPI
+  - GameAPI

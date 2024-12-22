@@ -1,4 +1,4 @@
-package glorydark.nukkit.customform.chestMenu;
+package glorydark.nukkit.customform.minecartChestMenu;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class ChestMenuComponent {
+public class MinecartChestMenuComponent {
 
     protected List<String> successCommands = new ArrayList<>();
     protected List<String> successMessages = new ArrayList<>();
@@ -25,7 +25,7 @@ public class ChestMenuComponent {
     private final boolean isEnchanted;
     private List<Requirements> requirements = new ArrayList<>();
 
-    public ChestMenuComponent(String name, List<String> descriptions, String item, boolean isEnchanted) {
+    public MinecartChestMenuComponent(String name, List<String> descriptions, String item, boolean isEnchanted) {
         this.name = name;
         this.description = Tools.toString(descriptions);
         this.isEnchanted = isEnchanted;
