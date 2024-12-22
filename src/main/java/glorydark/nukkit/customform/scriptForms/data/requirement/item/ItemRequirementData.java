@@ -25,7 +25,7 @@ public class ItemRequirementData {
     }
 
     public boolean checkItemIsPossess(Player player, boolean reducing, int multiply) {
-        if (needItems.size() > 0) {
+        if (!needItems.isEmpty()) {
             List<NeedItem> costItems = new ArrayList<>();
             for (NeedItem s : needItems) {
                 if (s.getItem().getId() != 0) {
@@ -84,7 +84,7 @@ public class ItemRequirementData {
                         costNeed -= hasItem.getCount();
                         if (costNeed <= 0) {
                             int surplus = Math.abs(costNeed);
-                            Item newItem = Item.fromString(hasItem.getNamespaceId() + ":" + hasItem.getDamage());
+                            Item newItem = hasItem.clone();
                             newItem.setCount(surplus);
                             newItem.setCompoundTag(hasItem.getCompoundTag());
                             player.getInventory().addItem(newItem);
@@ -161,6 +161,9 @@ public class ItemRequirementData {
     public boolean equalToMustHaveTag(Map<String, Object> tag, CompoundTag itemTag, Player player) {
         if (itemTag == null) {
             return tag.isEmpty();
+        }
+        if (tag == null) {
+            return true;
         }
         for (Map.Entry<String, Object> entry : tag.entrySet()) {
             String key = entry.getKey();

@@ -48,7 +48,6 @@ public class ChestFormMain {
                     chestForm.addItem(id,
                             new ResponsiveElementSlotItem(itemInfo.getItem(player))
                                     .onRespond((player1, blockInventoryResponse) -> {
-                                        Requirements successRequirements = null;
                                         if (itemInfo.isCloseForm()) {
                                             blockInventoryResponse.getInventory().closeForPlayer(player1);
                                         }
@@ -60,6 +59,7 @@ public class ChestFormMain {
                                                 player1.sendMessage(ReplaceStringUtils.replace(successMessage, player1));
                                             }
                                         } else {
+                                            Requirements successRequirements = null;
                                             for (Requirements requirement : itemInfo.getRequirements()) {
                                                 if (requirement != null && requirement.isAllQualified(player1)) {
                                                     successRequirements = requirement;
@@ -67,6 +67,7 @@ public class ChestFormMain {
                                                 }
                                             }
                                             if (successRequirements != null) {
+                                                successRequirements.reduceAllCosts(player, 1);
                                                 for (String successCommand : itemInfo.getSuccessCommands()) {
                                                     CommandUtils.executeCommand(player1, ReplaceStringUtils.replace(successCommand, player1, true, true));
                                                 }
