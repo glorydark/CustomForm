@@ -12,6 +12,7 @@ import cn.nukkit.utils.ConfigSection;
 import cn.nukkit.utils.TextFormat;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.chestForm.ChestFormMain;
+import glorydark.nukkit.customform.hopperform.HopperFormMain;
 import glorydark.nukkit.customform.minecartChestMenu.MinecartChestMenuMain;
 import glorydark.nukkit.customform.forms.FormCreator;
 import glorydark.nukkit.customform.scriptForms.form.ScriptForm;
@@ -126,18 +127,49 @@ public class CustomFormCommands extends Command {
                     }
                 }
                 break;
+            case "showhopperform":
+                if (!CustomFormMain.ready) {
+                    return false;
+                }
+                if (commandSender.isPlayer()) {
+                    if (strings.length >= 2) {
+                        Player player = (Player) commandSender;
+                        int delay = strings.length == 3? Integer.parseInt(strings[2]): 0;
+                        if (delay == 0) {
+                            HopperFormMain.showToPlayer(player, strings[1]);
+                        } else {
+                            Server.getInstance().getScheduler().scheduleDelayedTask(CustomFormMain.plugin, new Task() {
+                                @Override
+                                public void onRun(int i) {
+                                    HopperFormMain.showToPlayer(player, strings[1]);
+                                }
+                            }, delay);
+                        }
+                    } else {
+                        commandSender.sendMessage(TextFormat.RED + "Unable to open form: " + strings[1]);
+                    }
+                } else {
+                    commandSender.sendMessage(CustomFormMain.language.translateString(null, "command_use_in_game", strings[1]));
+                }
+                break;
             case "showchestform":
                 if (!CustomFormMain.ready) {
                     return false;
                 }
                 if (commandSender.isPlayer()) {
-                    if (strings.length == 2) {
-                        Server.getInstance().getScheduler().scheduleDelayedTask(CustomFormMain.plugin, new Task() {
-                            @Override
-                            public void onRun(int i) {
-                                ChestFormMain.showToPlayer((Player) commandSender, strings[1]);
-                            }
-                        }, 10);
+                    if (strings.length >= 2) {
+                        Player player = (Player) commandSender;
+                        int delay = strings.length == 3? Integer.parseInt(strings[2]): 0;
+                        if (delay == 0) {
+                            ChestFormMain.showToPlayer(player, strings[1]);
+                        } else {
+                            Server.getInstance().getScheduler().scheduleDelayedTask(CustomFormMain.plugin, new Task() {
+                                @Override
+                                public void onRun(int i) {
+                                    ChestFormMain.showToPlayer(player, strings[1]);
+                                }
+                            }, delay);
+                        }
                     } else {
                         commandSender.sendMessage(TextFormat.RED + "Unable to open form: " + strings[1]);
                     }

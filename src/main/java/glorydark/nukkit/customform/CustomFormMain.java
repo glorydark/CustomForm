@@ -10,6 +10,7 @@ import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.utils.exception.RsNpcConfigLoadException;
 import com.smallaswater.npc.utils.exception.RsNpcLoadException;
 import glorydark.nukkit.customform.chestForm.ChestFormMain;
+import glorydark.nukkit.customform.hopperform.HopperFormMain;
 import glorydark.nukkit.customform.minecartChestMenu.MinecartChestMenuListener;
 import glorydark.nukkit.customform.minecartChestMenu.MinecartChestMenuMain;
 import glorydark.nukkit.customform.commands.CustomFormCommands;
@@ -161,6 +162,7 @@ public class CustomFormMain extends PluginBase {
         ready = false;
         executor = Executors.newFixedThreadPool(5);
         ChestFormMain.loadAll();
+        HopperFormMain.loadAll();
         this.loadItemStringCaches();
         this.loadScriptMineCartWindows(new File(path + "/minecart_chest_windows/"));
         this.loadScriptWindows(new File(path + "/forms/"));

@@ -15,6 +15,8 @@ import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.MinecartChestInventory;
 import glorydark.nukkit.customform.CustomFormMain;
+import glorydark.nukkit.customform.chestForm.ChestFormMain;
+import glorydark.nukkit.customform.hopperform.HopperFormMain;
 
 public class MinecartChestMenuListener implements Listener {
 
@@ -164,9 +166,12 @@ public class MinecartChestMenuListener implements Listener {
 
     @EventHandler
     public void PlayerQuitEvent(PlayerQuitEvent event) {
-        if (MinecartChestMenuMain.mineCartChests.containsKey(event.getPlayer())) {
-            MinecartChestMenuMain.closeDoubleChestInventory(event.getPlayer());
+        Player player = event.getPlayer();
+        if (MinecartChestMenuMain.mineCartChests.containsKey(player)) {
+            MinecartChestMenuMain.closeDoubleChestInventory(player);
         }
+        ChestFormMain.players.remove(player);
+        HopperFormMain.players.remove(player);
     }
 
     @EventHandler

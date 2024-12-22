@@ -1,8 +1,8 @@
-package glorydark.nukkit.customform.chestForm;
+package glorydark.nukkit.customform.hopperform;
 
 import cn.nukkit.Player;
 import cn.nukkit.utils.TextFormat;
-import gameapi.form.AdvancedDoubleChestForm;
+import gameapi.form.AdvancedHopperForm;
 import gameapi.form.element.ResponsiveElementSlotItem;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.forms.FormCreator;
@@ -11,28 +11,30 @@ import glorydark.nukkit.customform.utils.CommandUtils;
 import glorydark.nukkit.customform.utils.ReplaceStringUtils;
 
 import java.io.File;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author glorydark
  */
-public class ChestFormMain {
+public class HopperFormMain {
 
-    public static Map<Player, AdvancedDoubleChestForm> players = new LinkedHashMap<>();
+    public static Map<Player, AdvancedHopperForm> players = new LinkedHashMap<>();
 
-    protected static Map<String, ChestData> chestForms = new LinkedHashMap<>();
+    protected static Map<String, HopperFormData> forms = new LinkedHashMap<>();
 
     public static void loadAll() {
         if (!CustomFormMain.enableGameAPI) {
             return;
         }
-        chestForms.clear();
-        File file = new File(CustomFormMain.path + "/chest_forms/");
+        forms.clear();
+        File file = new File(CustomFormMain.path + "/hopper_forms/");
         file.mkdirs();
         for (File listFile : Objects.requireNonNull(file.listFiles())) {
             Map<String, Object> map = FormCreator.convertConfigToMap(listFile);
             String name = listFile.getName().substring(0, listFile.getName().lastIndexOf("."));
-            chestForms.put(name, ChestData.parse(map));
+            forms.put(name, HopperFormData.parse(map));
             CustomFormMain.plugin.getLogger().info(TextFormat.GREEN + "成功加载箱子菜单: " + name);
         }
     }
@@ -42,15 +44,15 @@ public class ChestFormMain {
             player.sendMessage(TextFormat.RED + "您点的太快了，请稍后再试！");
             return false;
         }
-        if (chestForms.containsKey(identifier)) {
-            ChestData chestData = chestForms.get(identifier);
-            if (chestData != null) {
-                AdvancedDoubleChestForm chestForm = new AdvancedDoubleChestForm(chestData.getTitle());
-                players.put(player, chestForm);
-                for (Map.Entry<Integer, ChestItemInfo> entry : chestData.getItemInfos().entrySet()) {
+        if (forms.containsKey(identifier)) {
+            HopperFormData hopperFormData = forms.get(identifier);
+            if (hopperFormData != null) {
+                AdvancedHopperForm hopperForm = new AdvancedHopperForm(hopperFormData.getTitle());
+                players.put(player, hopperForm);
+                for (Map.Entry<Integer, HopperFormItemInfo> entry : hopperFormData.getItemInfos().entrySet()) {
                     int id = entry.getKey();
-                    ChestItemInfo itemInfo = entry.getValue();
-                    chestForm.addItem(id,
+                    HopperFormItemInfo itemInfo = entry.getValue();
+                    hopperForm.addItem(id,
                             new ResponsiveElementSlotItem(itemInfo.getItem(player))
                                     .onRespond((player1, blockInventoryResponse) -> {
                                         if (itemInfo.isCloseForm()) {
@@ -90,9 +92,9 @@ public class ChestFormMain {
                                         }
                                     })
                     );
-                    chestForm.onClose(player1 -> players.remove(player1));
+                    hopperForm.onClose(player1 -> players.remove(player1));
                 }
-                chestForm.showToPlayer(player);
+                hopperForm.showToPlayer(player);
                 return true;
             }
         }
