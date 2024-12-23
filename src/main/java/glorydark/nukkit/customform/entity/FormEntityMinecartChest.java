@@ -11,10 +11,16 @@ public class FormEntityMinecartChest extends EntityMinecartChest {
 
     public FormEntityMinecartChest(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        this.setImmobile(true);
     }
 
     @Override
     public void dropItem() {
+        // no-do
+    }
+
+    @Override
+    public void kill() {
         // no-do
     }
 }

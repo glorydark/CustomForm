@@ -56,20 +56,20 @@ public class MinecartChestMenuListener implements Listener {
                 if (pc) {
                     if (data.getDoubleCheckComponentId() == -1) {
                         switch (event.getSlot()) {
-                            case 18:
+                            case MinecartChestMenu.SLOT_ITEM_PREV_PAGE_PC:
                                 if (page > 1) {
                                     setPage(player, entity, page - 1);
                                 }
                                 break;
-                            case 26:
+                            case MinecartChestMenu.SLOT_ITEM_NEXT_PAGE_PC:
                                 if (page < data.getMenu().getMaxPage(true)) {
                                     setPage(player, entity, page + 1);
                                 }
                                 break;
                             default:
-                                if (event.getSlot() <= 18) {
+                                if (event.getSlot() <= MinecartChestMenu.MAX_ITEM_SLOTS_PC) {
                                     if (CustomFormMain.enableDoubleCheckMenu) {
-                                        int clickId = event.getSlot() + (page - 1) * 18;
+                                        int clickId = event.getSlot() + (page - 1) * MinecartChestMenu.MAX_ITEM_SLOTS_PC;
                                         showConfirmPage(player, entity, clickId);
                                         event.setCancelled(true);
                                         return;
@@ -85,7 +85,7 @@ public class MinecartChestMenuListener implements Listener {
                                             return;
                                         }
                                     }
-                                    int clickId = event.getSlot() + (page - 1) * 18;
+                                    int clickId = event.getSlot() + (page - 1) * MinecartChestMenu.MAX_ITEM_SLOTS_PC;
                                     MinecartChestMenuComponent component = data.getMenu().getChestMenuPCComponents().get(clickId);
                                     component.execute(player);
                                     MinecartChestMenuMain.closeDoubleChestInventory(player);
@@ -94,11 +94,11 @@ public class MinecartChestMenuListener implements Listener {
                         }
                     } else {
                         switch (event.getSlot()) {
-                            case 11:
+                            case MinecartChestMenu.SLOT_ITEM_CANCEL_PC:
                                 setPage(player, entity, page);
                                 data.setDoubleCheckComponentId(-1);
                                 break;
-                            case 15:
+                            case MinecartChestMenu.SLOT_ITEM_CONFIRM_PC:
                                 int clickId = data.getDoubleCheckComponentId();
                                 MinecartChestMenuComponent component = data.getMenu().getChestMenuPCComponents().get(clickId);
                                 component.execute(player);
@@ -109,20 +109,20 @@ public class MinecartChestMenuListener implements Listener {
                 } else {
                     if (data.getDoubleCheckComponentId() == -1) {
                         switch (event.getSlot()) {
-                            case 24:
+                            case MinecartChestMenu.SLOT_ITEM_PREV_PAGE_PE:
                                 if (page > 1) {
                                     setPage(player, entity, page - 1);
                                 }
                                 break;
-                            case 26:
+                            case MinecartChestMenu.SLOT_ITEM_NEXT_PAGE_PE:
                                 if (page < data.getMenu().getMaxPage(false)) {
                                     setPage(player, entity, page + 1);
                                 }
                                 break;
                             default:
-                                if (event.getSlot() <= 23) {
+                                if (event.getSlot() <= MinecartChestMenu.MAX_ITEM_SLOTS_PE) {
                                     if (CustomFormMain.enableDoubleCheckMenu) {
-                                        int clickId = event.getSlot() + (page - 1) * 23;
+                                        int clickId = event.getSlot() + (page - 1) * MinecartChestMenu.MAX_ITEM_SLOTS_PE;
                                         showConfirmPage(player, entity, clickId);
                                         event.setCancelled(true);
                                         return;
@@ -138,7 +138,7 @@ public class MinecartChestMenuListener implements Listener {
                                             return;
                                         }
                                     }
-                                    int clickId = event.getSlot() + (page - 1) * 23;
+                                    int clickId = event.getSlot() + (page - 1) * MinecartChestMenu.MAX_ITEM_SLOTS_PE;
                                     MinecartChestMenuComponent component = data.getMenu().getChestMenuPEComponents().get(clickId);
                                     component.execute(player);
                                     MinecartChestMenuMain.closeDoubleChestInventory(player);
@@ -147,11 +147,11 @@ public class MinecartChestMenuListener implements Listener {
                         }
                     } else {
                         switch (event.getSlot()) {
-                            case 11:
+                            case MinecartChestMenu.SLOT_ITEM_CANCEL_PE:
                                 setPage(player, entity, page);
                                 data.setDoubleCheckComponentId(-1);
                                 break;
-                            case 15:
+                            case MinecartChestMenu.SLOT_ITEM_CONFIRM_PE:
                                 int clickId = data.getDoubleCheckComponentId();
                                 MinecartChestMenuComponent component = data.getMenu().getChestMenuPEComponents().get(clickId);
                                 component.execute(player);
