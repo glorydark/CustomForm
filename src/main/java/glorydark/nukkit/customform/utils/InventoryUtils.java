@@ -64,8 +64,9 @@ public class InventoryUtils {
 
     public static Item toItem(String itemString) {
         String[] strings = itemString.split(":");
-        if (strings.length < 4) {
-            return getItemFromConfig(itemString);
+        Item item = getItemFromConfig(itemString);
+        if (item != null) {
+            return item;
         }
         boolean isNumericId = false;
         try {
@@ -75,14 +76,9 @@ public class InventoryUtils {
 
         }
         if (isNumericId) {
-            Item item = Item.get(Integer.parseInt(strings[0]), Integer.parseInt(strings[1]), Integer.parseInt(strings[2]));
+            item = Item.get(Integer.parseInt(strings[0]), strings.length >= 2? Integer.parseInt(strings[1]):0, strings.length >= 2? Integer.parseInt(strings[2]):1);
             item.setCompoundTag(hexStringToBytes(strings[3]));
-            if (item.getId() == 0) {
-                CustomFormMain.plugin.getLogger().error("Error in parsing item string, caused by: cannot parse the item string { " + item + " } in the save_nbt_cache.yml");
-            }
-            return item;
         } else {
-            int countIndex = strings.length - 2;
             StringBuilder identifierAndMeta = new StringBuilder();
             for (int i = 0; i < strings.length - 2; i++) {
                 identifierAndMeta.append(strings[i]);
@@ -90,14 +86,16 @@ public class InventoryUtils {
                     identifierAndMeta.append(":");
                 }
             }
-            Item item = Item.fromString(identifierAndMeta.toString());
-            item.setCount(Integer.parseInt(strings[countIndex]));
-            item.setCompoundTag(hexStringToBytes(strings[countIndex + 1]));
-            if (item.getId() == 0) {
-                CustomFormMain.plugin.getLogger().error("Error in parsing item string, caused by: cannot parse the item string { " + item + " } in the save_nbt_cache.yml");
+            item = Item.fromString(identifierAndMeta.toString());
+            item.setCount(strings.length >= 3? Integer.parseInt(strings[strings.length - 2]): 1);
+            if (strings.length >= 4) {
+                item.setCompoundTag(hexStringToBytes(strings[strings.length - 1]));
             }
-            return item;
         }
+        if (item.getId() == 0) {
+            CustomFormMain.plugin.getLogger().error("Error in parsing item string, caused by: cannot parse the item string { " + item + " } in the save_nbt_cache.yml");
+        }
+        return item;
     }
 
     public static Item getItemFromConfig(String key) {
@@ -109,7 +107,6 @@ public class InventoryUtils {
             }
             return item;
         }
-        CustomFormMain.plugin.getLogger().error("Error in parsing item string, caused by: cannot find the key { " + key + " } in the save_nbt_cache.yml");
         return Item.get(0);
     }
 }
