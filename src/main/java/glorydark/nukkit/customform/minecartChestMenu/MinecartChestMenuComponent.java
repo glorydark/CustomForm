@@ -5,6 +5,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import glorydark.nukkit.customform.utils.CommandUtils;
+import glorydark.nukkit.customform.utils.InventoryUtils;
 import glorydark.nukkit.customform.utils.ReplaceStringUtils;
 import glorydark.nukkit.customform.utils.Tools;
 import lombok.Data;
@@ -31,19 +32,7 @@ public class MinecartChestMenuComponent {
         this.name = name;
         this.description = Tools.toString(descriptions);
         this.isEnchanted = isEnchanted;
-        /* Deal with item String */
-        String[] strings = item.split(":");
-        switch (strings.length) {
-            case 1:
-                this.item = Item.get(Integer.parseInt(strings[0]));
-                break;
-            case 2:
-                this.item = Item.get(Integer.parseInt(strings[0]), Integer.parseInt(strings[1]));
-                break;
-            default:
-                this.item = Item.get(1);
-                break;
-        }
+        this.item = InventoryUtils.toItem(item);
         this.item.setLore(this.description);
         this.item.setCustomName(this.name);
         if (isEnchanted) {
