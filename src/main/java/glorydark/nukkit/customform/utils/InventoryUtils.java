@@ -64,8 +64,12 @@ public class InventoryUtils {
 
     public static Item toItem(String itemString) {
         String[] strings = itemString.split(":");
+        if (strings.length == 0) {
+            CustomFormMain.plugin.getLogger().error("Error in parsing item string, caused by: cannot parse the item string { " + itemString + " } in the save_nbt_cache.yml");
+            return Item.AIR_ITEM;
+        }
         Item item = getItemFromConfig(itemString);
-        if (item != null) {
+        if (item.getId() != 0) {
             return item;
         }
         boolean isNumericId = false;
@@ -76,24 +80,21 @@ public class InventoryUtils {
 
         }
         if (isNumericId) {
-            item = Item.get(Integer.parseInt(strings[0]), strings.length >= 2? Integer.parseInt(strings[1]):0, strings.length >= 2? Integer.parseInt(strings[2]):1);
-            item.setCompoundTag(hexStringToBytes(strings[3]));
-        } else {
-            StringBuilder identifierAndMeta = new StringBuilder();
-            for (int i = 0; i < strings.length - 2; i++) {
-                identifierAndMeta.append(strings[i]);
-                if (i != strings.length - 3) {
-                    identifierAndMeta.append(":");
-                }
-            }
-            item = Item.fromString(identifierAndMeta.toString());
-            item.setCount(strings.length >= 3? Integer.parseInt(strings[strings.length - 2]): 1);
+            item = Item.get(Integer.parseInt(strings[0]), strings.length >= 2? Integer.parseInt(strings[1]) : 0, strings.length >= 3? Integer.parseInt(strings[2]):1);
             if (strings.length >= 4) {
-                item.setCompoundTag(hexStringToBytes(strings[strings.length - 1]));
+                item.setCompoundTag(hexStringToBytes(strings[3]));
+            }
+        } else {
+            item = Item.fromString(itemString);
+            item.setCount(strings.length >= 3? Integer.parseInt(strings[2]): 1);
+            if (strings.length >= 4) {
+                item.setCompoundTag(hexStringToBytes(strings[3]));
             }
         }
         if (item.getId() == 0) {
             CustomFormMain.plugin.getLogger().error("Error in parsing item string, caused by: cannot parse the item string { " + item + " } in the save_nbt_cache.yml");
+        } else {
+            System.out.println(item.getId());
         }
         return item;
     }
