@@ -92,7 +92,13 @@ public class InventoryUtils {
             } catch (Exception ignored) {
 
             }
-            item = Item.fromString(itemString);
+            String identifierAndMeta;
+            if (hasClassIdentifier) {
+                identifierAndMeta = strings[0] + ":" + strings[1] + (strings.length > 2? ":" + strings[2] : "");
+            } else {
+                identifierAndMeta = strings[0] + ":" + (strings.length > 1? strings[1] : "");
+            }
+            item = Item.fromString(identifierAndMeta);
             int countRequiredLength = hasClassIdentifier? 4: 3;
             item.setCount(strings.length >= countRequiredLength? Integer.parseInt(strings[countRequiredLength - 1]): 1);
             if (strings.length >= countRequiredLength + 1) {
