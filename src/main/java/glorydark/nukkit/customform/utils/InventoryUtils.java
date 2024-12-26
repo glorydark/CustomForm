@@ -85,16 +85,22 @@ public class InventoryUtils {
                 item.setCompoundTag(hexStringToBytes(strings[3]));
             }
         } else {
+            boolean hasClassIdentifier = false;
+            try {
+                int countTest = Integer.parseInt(strings[1]);
+                hasClassIdentifier = true;
+            } catch (Exception ignored) {
+
+            }
             item = Item.fromString(itemString);
-            item.setCount(strings.length >= 3? Integer.parseInt(strings[2]): 1);
-            if (strings.length >= 4) {
-                item.setCompoundTag(hexStringToBytes(strings[3]));
+            int countRequiredLength = hasClassIdentifier? 4: 3;
+            item.setCount(strings.length >= countRequiredLength? Integer.parseInt(strings[countRequiredLength - 1]): 1);
+            if (strings.length >= countRequiredLength + 1) {
+                item.setCompoundTag(hexStringToBytes(strings[countRequiredLength]));
             }
         }
         if (item.getId() == 0) {
-            CustomFormMain.plugin.getLogger().error("Error in parsing item string, caused by: cannot parse the item string { " + item + " } in the save_nbt_cache.yml");
-        } else {
-            System.out.println(item.getId());
+            CustomFormMain.plugin.getLogger().error("Error in parsing item string, caused by: cannot parse the item string { " + itemString + " } in the save_nbt_cache.yml");
         }
         return item;
     }
