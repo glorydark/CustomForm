@@ -4,6 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.utils.ConfigSection;
 import glorydark.nukkit.customform.CustomFormMain;
 
+import java.util.Arrays;
+
 public class InventoryUtils {
 
     public static ConfigSection itemStringCaches = new ConfigSection();
@@ -85,24 +87,31 @@ public class InventoryUtils {
                 item.setCompoundTag(hexStringToBytes(strings[3]));
             }
         } else {
-            boolean hasClassIdentifier = false;
             try {
-                int countTest = Integer.parseInt(strings[1]);
-                hasClassIdentifier = true;
-            } catch (Exception ignored) {
-
-            }
-            String identifierAndMeta;
-            if (hasClassIdentifier) {
-                identifierAndMeta = strings[0] + ":" + strings[1] + (strings.length > 2? ":" + strings[2] : "");
-            } else {
-                identifierAndMeta = strings[0] + ":" + (strings.length > 1? strings[1] : "");
-            }
-            item = Item.fromString(identifierAndMeta);
-            int countRequiredLength = hasClassIdentifier? 4: 3;
-            item.setCount(strings.length >= countRequiredLength? Integer.parseInt(strings[countRequiredLength - 1]): 1);
-            if (strings.length >= countRequiredLength + 1) {
-                item.setCompoundTag(hexStringToBytes(strings[countRequiredLength]));
+                boolean hasClassIdentifier = true;
+                if (strings.length == 1) {
+                    hasClassIdentifier = false;
+                } else {
+                    try {
+                        int countTest = Integer.parseInt(strings[1]);
+                        hasClassIdentifier = false;
+                    } catch (Exception ignored) {
+                    }
+                }
+                String identifierAndMeta;
+                if (hasClassIdentifier) {
+                    identifierAndMeta = strings[0] + ":" + strings[1] + (strings.length > 2? ":" + strings[2] : "");
+                } else {
+                    identifierAndMeta = strings[0] + ":" + (strings.length > 1? strings[1] : "");
+                }
+                item = Item.fromString(identifierAndMeta);
+                int countRequiredLength = hasClassIdentifier? 4: 3;
+                item.setCount(strings.length >= countRequiredLength? Integer.parseInt(strings[countRequiredLength - 1]): 1);
+                if (strings.length >= countRequiredLength) {
+                    item.setCompoundTag(hexStringToBytes(strings[countRequiredLength]));
+                }
+            } catch (Exception e) {
+                CustomFormMain.plugin.getLogger().error("Error in parsing item string, caused by: cannot parse the item string { " + itemString + " } in the save_nbt_cache.yml");
             }
         }
         if (item.getId() == 0) {
