@@ -17,8 +17,4 @@ public abstract class RequirementData {
     public abstract boolean isQualified(Player player, int multiply);
 
     public abstract void sendFailedMessage(Player player);
-
-    public static RequirementData parse(Map<String, Object> map) {
-        return null;
-    }
 }
