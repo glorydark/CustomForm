@@ -3,8 +3,9 @@ package glorydark.nukkit.customform.scriptForms.data.requirement;
 import cn.nukkit.Player;
 import glorydark.dcurrency.CurrencyAPI;
 import glorydark.nukkit.customform.CustomFormMain;
-import glorydark.nukkit.customform.annotations.Developing;
 import glorydark.nukkit.customform.scriptForms.data.requirement.config.ConfigRequirementData;
+import glorydark.nukkit.customform.scriptForms.data.requirement.custom.ReducibleRequirementData;
+import glorydark.nukkit.customform.scriptForms.data.requirement.custom.RequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.economy.EconomyRequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.item.ItemRequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.tips.TipsRequirementData;
@@ -17,7 +18,6 @@ import tip.utils.Api;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Developing
 @ToString
 public class Requirements {
 
@@ -30,6 +30,8 @@ public class Requirements {
 
     List<ConfigRequirementData> configRequirementData;
 
+    List<RequirementData> customRequirementData;
+
     List<String> messages;
 
     List<String> commands;
@@ -40,11 +42,12 @@ public class Requirements {
 
     boolean chargeable;
 
-    public Requirements(List<EconomyRequirementData> economyRequirementData, List<TipsRequirementData> tipsRequirementData, List<ItemRequirementData> itemRequirementData, List<ConfigRequirementData> configRequirementData, List<String> commands, List<String> messages, List<String> failedCommands, List<String> failedMessages, boolean chargeable) {
+    public Requirements(List<EconomyRequirementData> economyRequirementData, List<TipsRequirementData> tipsRequirementData, List<ItemRequirementData> itemRequirementData, List<ConfigRequirementData> configRequirementData, List<RequirementData> customRequirementData, List<String> commands, List<String> messages, List<String> failedCommands, List<String> failedMessages, boolean chargeable) {
         this.economyRequirementData = economyRequirementData;
         this.tipsRequirementData = tipsRequirementData;
         this.itemRequirementData = itemRequirementData;
         this.configRequirementData = configRequirementData;
+        this.customRequirementData = customRequirementData;
         this.chargeable = chargeable;
         this.commands = commands;
         this.messages = messages;
@@ -72,12 +75,11 @@ public class Requirements {
         Check if player can meet the all requirements here.
     */
     public boolean isAllQualified(Player player, Object... params) {
-
         int multiply = params.length == 1 ? (int) params[0] : 1;
 
         // Deal with different kinds of requirementData
         int i = 0;
-        for (EconomyRequirementData datum : economyRequirementData) {
+        for (EconomyRequirementData datum : this.economyRequirementData) {
             i++;
             BigDecimal difference;
             if (!datum.isQualified(player, multiply)) {
@@ -99,39 +101,57 @@ public class Requirements {
             }
         }
 
-        for (TipsRequirementData datum : tipsRequirementData) {
+        for (TipsRequirementData datum : this.tipsRequirementData) {
             if (!datum.isQualified(player)) {
                 datum.sendFailedMsg(player, (datum.getComparedValue() instanceof Double || datum.getComparedValue() instanceof Integer), params[0]);
                 return false;
             }
         }
 
-        for (ItemRequirementData datum : itemRequirementData) {
+        for (ItemRequirementData datum : this.itemRequirementData) {
             if (!datum.checkItemIsPossess(player, false, multiply)) {
                 return false;
             }
         }
 
-        for (ConfigRequirementData datum : configRequirementData) {
+        for (ConfigRequirementData datum : this.configRequirementData) {
             if (!datum.isQualified(player)) {
                 datum.sendFailedMsg(player);
                 return false;
             }
         }
 
+        for (RequirementData customRequirementDatum : this.customRequirementData) {
+            if (customRequirementDatum instanceof ReducibleRequirementData) {
+                ReducibleRequirementData reducibleRequirementData = (ReducibleRequirementData) customRequirementDatum;
+                if (reducibleRequirementData.isQualified(player, multiply)) {
+                    reducibleRequirementData.sendFailedMessage(player);
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
     public void reduceAllCosts(Player player, int multiply) {
-        for (EconomyRequirementData datum : economyRequirementData) {
-            if (this.isChargeable() || datum.isChargeable()) {
+        for (EconomyRequirementData datum : this.economyRequirementData) {
+            if (datum.isChargeable()) {
                 datum.reduceCost(player, multiply);
             }
         }
 
-        for (ItemRequirementData datum : itemRequirementData) {
-            if (this.isChargeable() || datum.isReduce()) {
+        for (ItemRequirementData datum : this.itemRequirementData) {
+            if (datum.isReduce()) {
                 datum.checkItemIsPossess(player, true, multiply);
+            }
+        }
+
+        for (RequirementData customRequirementDatum : this.customRequirementData) {
+            if (customRequirementDatum instanceof ReducibleRequirementData) {
+                ReducibleRequirementData reducibleRequirementData = (ReducibleRequirementData) customRequirementDatum;
+                if (reducibleRequirementData.isReduce()) {
+                    reducibleRequirementData.reduceCost(player, multiply);
+                }
             }
         }
     }
@@ -154,6 +174,10 @@ public class Requirements {
 
     public void addConfigRequirementData(ConfigRequirementData data) {
         this.configRequirementData.add(data);
+    }
+
+    public void addCustomRequirementData(RequirementData data) {
+        this.customRequirementData.add(data);
     }
 
     public void executeSuccessCommand(Player player) {

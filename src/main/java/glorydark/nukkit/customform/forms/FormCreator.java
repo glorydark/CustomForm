@@ -20,15 +20,17 @@ import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.*;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.config.ConfigModification;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.config.ConfigModificationType;
+import glorydark.nukkit.customform.scriptForms.data.requirement.RequirementTypeRegistry;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import glorydark.nukkit.customform.scriptForms.data.requirement.config.ConfigRequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.config.ConfigRequirementType;
+import glorydark.nukkit.customform.scriptForms.data.requirement.custom.RequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.economy.EconomyRequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.economy.EconomyRequirementType;
 import glorydark.nukkit.customform.scriptForms.data.requirement.item.ItemRequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.item.NeedItem;
 import glorydark.nukkit.customform.scriptForms.data.requirement.tips.TipsRequirementData;
-import glorydark.nukkit.customform.scriptForms.data.requirement.tips.TipsRequirementType;
+import glorydark.nukkit.customform.utils.MathCompareSign;
 import glorydark.nukkit.customform.scriptForms.form.*;
 import glorydark.nukkit.customform.utils.CameraUtils;
 import glorydark.nukkit.customform.utils.Tools;
@@ -192,7 +194,7 @@ public class FormCreator {
         please make some tiny modifications inside the Requirement.class.
     */
     public static Requirements buildRequirements(List<Map<String, Object>> requirementConfig, boolean globalChargable) {
-        Requirements requirements = new Requirements(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), globalChargable);
+        Requirements requirements = new Requirements(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), globalChargable);
         for (Map<String, Object> map : requirementConfig) {
             String type = (String) map.get("type");
             EconomyRequirementData data = null;
@@ -218,7 +220,7 @@ public class FormCreator {
                     itemRequirementData = new ItemRequirementData((boolean) map.getOrDefault("reduce", true));
                     List<NeedItem> needItems = new ArrayList<>();
                     List<Map<String, Object>> needItemMapList = (List<Map<String, Object>>) map.getOrDefault("costs", new ArrayList<>());
-                    if (needItemMapList.size() > 0) {
+                    if (!needItemMapList.isEmpty()) {
                         for (Map<String, Object> subMap : needItemMapList) {
                             NeedItem item = new NeedItem((String) subMap.get("item"), (List<Map<String, Object>>) subMap.getOrDefault("alternatives", new ArrayList<>()), (Map<String, Object>) subMap.getOrDefault("must_have_tag", new LinkedHashMap<>()));
                             item.setCheckDamage((Boolean) subMap.getOrDefault("check_damage", true));
@@ -236,29 +238,7 @@ public class FormCreator {
                     Object comparedValue = map.get("compared_value");
                     String displayName = (String) map.get("display_name");
                     List<String> failed_messages = (List<String>) map.getOrDefault("failed_messages", new ArrayList<>());
-                    switch (comparedSign) {
-                        case ">":
-                            tips_data = new TipsRequirementData(TipsRequirementType.Bigger, identifier, comparedValue, displayName, failed_messages);
-                            break;
-                        case ">=":
-                            tips_data = new TipsRequirementData(TipsRequirementType.BiggerOrEqual, identifier, comparedValue, displayName, failed_messages);
-                            break;
-                        case "=":
-                            tips_data = new TipsRequirementData(TipsRequirementType.Equal, identifier, comparedValue, displayName, failed_messages);
-                            break;
-                        case "<":
-                            tips_data = new TipsRequirementData(TipsRequirementType.Smaller, identifier, comparedValue, displayName, failed_messages);
-                            break;
-                        case "<=":
-                            tips_data = new TipsRequirementData(TipsRequirementType.SmallerOrEqual, identifier, comparedValue, displayName, failed_messages);
-                            break;
-                    }
-                    break;
-                case "extraData":
-                    requirements.setCommands((List<String>) map.getOrDefault("commands", new ArrayList<>()));
-                    requirements.setMessages((List<String>) map.getOrDefault("messages", new ArrayList<>()));
-                    requirements.setFailedCommands((List<String>) map.getOrDefault("failed_commands", new ArrayList<>()));
-                    requirements.setFailedMessages((List<String>) map.getOrDefault("failed_messages", new ArrayList<>()));
+                    tips_data = new TipsRequirementData(MathCompareSign.getComparedSignType(comparedSign), identifier, comparedValue, displayName, failed_messages);
                     break;
                 case "Config":
                     // This is the way we deal with Tips-type requirements
@@ -313,6 +293,19 @@ public class FormCreator {
                         }
                     }
                     break;
+                case "Custom":
+                    String customTypeIdentifier = (String) map.getOrDefault("custom_type", "");
+                    RequirementData requirementData = RequirementTypeRegistry.parseCustomRequirementType(customTypeIdentifier, map);
+                    if (requirementData != null) {
+                        requirements.addCustomRequirementData(requirementData);
+                    }
+                    continue;
+                case "extraData":
+                    requirements.setCommands((List<String>) map.getOrDefault("commands", new ArrayList<>()));
+                    requirements.setMessages((List<String>) map.getOrDefault("messages", new ArrayList<>()));
+                    requirements.setFailedCommands((List<String>) map.getOrDefault("failed_commands", new ArrayList<>()));
+                    requirements.setFailedMessages((List<String>) map.getOrDefault("failed_messages", new ArrayList<>()));
+                    break;
             }
             if (data != null) {
                 requirements.addEconomyRequirements(data);
@@ -354,12 +347,14 @@ public class FormCreator {
                     for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
                         SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()), (List<List<String>>) component.getOrDefault("random_commands", new ArrayList<>()), new ArrayList<>(), new ArrayList<>());
                         if (component.containsKey("requirements")) {
-                            List<Requirements> requirementsList = new ArrayList<>();
+                            data.setRequirements(new ArrayList<>());
                             Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                             for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                                CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
+                                CustomFormMain.completableFutureList.add(
+                                        CompletableFuture.runAsync(() -> data.getRequirements().add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor)
+                                                .whenCompleteAsync((unused, throwable) -> CustomFormMain.plugin.getLogger().warning(throwable.toString()))
+                                );
                             }
-                            data.setRequirements(requirementsList);
                         }
                         List<ConfigModification> configModifications = new ArrayList<>();
                         if (component.containsKey("configs")) {
@@ -471,12 +466,11 @@ public class FormCreator {
                             dropdownPlayerListResponse.setStartDate(stringToDate((String) component.getOrDefault("start_time", "")));
                             dropdownPlayerListResponse.setExpiredDate(stringToDate((String) component.getOrDefault("expire_time", "")));
                             if (component.containsKey("requirements")) {
-                                List<Requirements> requirementsList = new ArrayList<>();
+                                dropdownPlayerListResponse.setRequirements(new ArrayList<>());
                                 Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                                 for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                                    CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> requirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
+                                    CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> dropdownPlayerListResponse.getRequirements().add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
                                 }
-                                dropdownPlayerListResponse.setRequirements(requirementsList);
                             }
                             List<ConfigModification> configModificationsForPlayerListDropDown = new ArrayList<>();
                             if (component.containsKey("configs")) {

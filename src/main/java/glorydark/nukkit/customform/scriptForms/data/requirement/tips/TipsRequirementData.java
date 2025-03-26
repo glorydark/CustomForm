@@ -1,6 +1,7 @@
 package glorydark.nukkit.customform.scriptForms.data.requirement.tips;
 
 import cn.nukkit.Player;
+import glorydark.nukkit.customform.utils.MathCompareSign;
 import lombok.ToString;
 import tip.utils.Api;
 
@@ -9,7 +10,7 @@ import java.util.List;
 @ToString
 public class TipsRequirementData {
 
-    TipsRequirementType requirementType;
+    MathCompareSign requirementType;
 
     String identifier;
 
@@ -19,7 +20,7 @@ public class TipsRequirementData {
 
     List<String> failed_messages;
 
-    public TipsRequirementData(TipsRequirementType requirementType, String identifier, Object comparedValue, String displayName, List<String> failed_messages) {
+    public TipsRequirementData(MathCompareSign requirementType, String identifier, Object comparedValue, String displayName, List<String> failed_messages) {
         this.requirementType = requirementType;
         this.identifier = identifier;
         this.comparedValue = comparedValue;
@@ -27,7 +28,7 @@ public class TipsRequirementData {
         this.failed_messages = failed_messages;
     }
 
-    public TipsRequirementType getRequirementType() {
+    public MathCompareSign getRequirementType() {
         return requirementType;
     }
 
@@ -49,19 +50,19 @@ public class TipsRequirementData {
             double convertedCompared = Double.parseDouble(comparedValue.toString());
             double tipsValue = Double.parseDouble(Api.strReplace(identifier, player));
             switch (requirementType) {
-                case Equal:
+                case EQUAL:
                     return tipsValue == convertedCompared;
-                case Bigger:
+                case BIGGER:
                     return tipsValue > convertedCompared;
-                case BiggerOrEqual:
+                case BIGGER_OR_EQUAL:
                     return tipsValue >= convertedCompared;
-                case Smaller:
+                case SMALLER:
                     return tipsValue < convertedCompared;
-                case SmallerOrEqual:
+                case SMALLER_OR_EQUAL:
                     return tipsValue <= convertedCompared;
             }
         } else if (comparedValue instanceof String) {
-            if (requirementType.equals(TipsRequirementType.Equal)) {
+            if (requirementType.equals(MathCompareSign.EQUAL)) {
                 String compared = comparedValue.toString();
                 String tipsValue = Api.strReplace(identifier, player);
                 return compared.equals(tipsValue);
@@ -70,15 +71,15 @@ public class TipsRequirementData {
             int convertedCompared = Integer.parseInt(comparedValue.toString());
             int tipsValue = Integer.parseInt(Api.strReplace(identifier, player).split("\\.")[0]);
             switch (requirementType) {
-                case Equal:
+                case EQUAL:
                     return tipsValue == convertedCompared;
-                case Bigger:
+                case BIGGER:
                     return tipsValue > convertedCompared;
-                case BiggerOrEqual:
+                case BIGGER_OR_EQUAL:
                     return tipsValue >= convertedCompared;
-                case Smaller:
+                case SMALLER:
                     return tipsValue < convertedCompared;
-                case SmallerOrEqual:
+                case SMALLER_OR_EQUAL:
                     return tipsValue <= convertedCompared;
             }
         }
@@ -100,7 +101,7 @@ public class TipsRequirementData {
         ---------------------------------------------------------------------------------------------------------------------
     */
     public void sendFailedMsg(Player player, boolean isDoubleOrInteger, Object... params) {
-        if (failed_messages.size() == 0) {
+        if (failed_messages.isEmpty()) {
             return;
         }
         for (String msg : failed_messages) {

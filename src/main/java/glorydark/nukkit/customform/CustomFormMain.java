@@ -132,7 +132,7 @@ public class CustomFormMain extends PluginBase {
             }, 20);
         }
         if (enableTips) {
-            if (config.getBoolean("enable_expansion_variable", true)) {
+            if (config.getBoolean("enable_expansion_variable", false)) {
                 Api.registerVariables("CustomFormVariableExpansion", ExpansionVariable.class); // Register ExpansionVariable.class
             }
         }
