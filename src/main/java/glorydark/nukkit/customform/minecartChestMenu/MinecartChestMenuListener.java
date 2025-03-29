@@ -51,6 +51,9 @@ public class MinecartChestMenuListener implements Listener {
             if (event.getInventory() instanceof MinecartChestInventory) {
                 EntityMinecartChest entity = ((MinecartChestInventory) event.getInventory()).getHolder();
                 MinecartChestMenuMain.PlayerMinecartChestTempData data = MinecartChestMenuMain.mineCartChests.get(player);
+                if (data == null) {
+                    return;
+                }
                 int page = getPage(entity);
                 boolean pc = MinecartChestMenu.isPC(player);
                 if (pc) {
