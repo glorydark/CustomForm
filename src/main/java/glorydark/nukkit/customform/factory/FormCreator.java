@@ -1,4 +1,4 @@
-package glorydark.nukkit.customform.forms;
+package glorydark.nukkit.customform.factory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;

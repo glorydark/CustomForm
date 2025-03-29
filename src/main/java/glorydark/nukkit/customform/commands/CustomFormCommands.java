@@ -14,7 +14,7 @@ import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.chestForm.ChestFormMain;
 import glorydark.nukkit.customform.hopperform.HopperFormMain;
 import glorydark.nukkit.customform.minecartChestMenu.MinecartChestMenuMain;
-import glorydark.nukkit.customform.forms.FormCreator;
+import glorydark.nukkit.customform.factory.FormCreator;
 import glorydark.nukkit.customform.scriptForms.form.ScriptForm;
 import glorydark.nukkit.customform.utils.InventoryUtils;
 

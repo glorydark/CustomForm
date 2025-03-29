@@ -5,7 +5,7 @@ import cn.nukkit.utils.TextFormat;
 import gameapi.form.AdvancedHopperForm;
 import gameapi.form.element.ResponsiveElementSlotItem;
 import glorydark.nukkit.customform.CustomFormMain;
-import glorydark.nukkit.customform.forms.FormCreator;
+import glorydark.nukkit.customform.factory.FormCreator;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import glorydark.nukkit.customform.utils.CommandUtils;
 import glorydark.nukkit.customform.utils.ReplaceStringUtils;

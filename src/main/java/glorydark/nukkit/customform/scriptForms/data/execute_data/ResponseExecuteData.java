@@ -2,7 +2,7 @@ package glorydark.nukkit.customform.scriptForms.data.execute_data;
 
 import cn.nukkit.Player;
 import glorydark.nukkit.customform.CustomFormMain;
-import glorydark.nukkit.customform.forms.FormCreator;
+import glorydark.nukkit.customform.factory.FormCreator;
 
 import java.util.Date;
 

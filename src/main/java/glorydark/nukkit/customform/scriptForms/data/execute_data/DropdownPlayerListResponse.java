@@ -20,6 +20,9 @@ public class DropdownPlayerListResponse extends SimpleResponseExecuteData {
 
     @Override
     public void execute(Player player, int responseId, Object... params) {
+        if (!this.isInStartDate(player)) {
+            return;
+        }
         for (String command : commands) {
             CommandUtils.executeCommand(player, replace(command, player, true, responseId, params[0]));
         }

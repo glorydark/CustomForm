@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.window.FormWindow;
 import glorydark.nukkit.customform.CustomFormMain;
-import glorydark.nukkit.customform.forms.FormCreator;
+import glorydark.nukkit.customform.factory.FormCreator;
 import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 

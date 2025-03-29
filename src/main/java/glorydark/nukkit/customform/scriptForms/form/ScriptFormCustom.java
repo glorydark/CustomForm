@@ -75,7 +75,7 @@ public class ScriptFormCustom implements ScriptForm {
                         break;
                 }
             }
-            if (this.openPermissions.size() == 0) {
+            if (this.openPermissions.isEmpty()) {
                 this.openPermissions.add(PermissionEnum.DEFAULT);
             }
             this.openPermissionWhitelist.addAll((List<String>) openPermissionMap.getOrDefault("whitelist", new ArrayList<>()));

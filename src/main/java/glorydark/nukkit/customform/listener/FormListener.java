@@ -1,4 +1,4 @@
-package glorydark.nukkit.customform.forms;
+package glorydark.nukkit.customform.listener;
 
 import cn.nukkit.Player;
 import cn.nukkit.event.EventHandler;
@@ -12,6 +12,8 @@ import cn.nukkit.form.window.FormWindowModal;
 import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.network.protocol.ModalFormResponsePacket;
 import glorydark.nukkit.customform.CustomFormMain;
+import glorydark.nukkit.customform.factory.FormCreator;
+import glorydark.nukkit.customform.factory.FormType;
 import glorydark.nukkit.customform.scriptForms.form.ScriptForm;
 import glorydark.nukkit.customform.utils.CameraUtils;
 

@@ -2,7 +2,7 @@ package glorydark.nukkit.customform.chestForm;
 
 import cn.nukkit.item.Item;
 import glorydark.nukkit.customform.CustomFormMain;
-import glorydark.nukkit.customform.forms.FormCreator;
+import glorydark.nukkit.customform.factory.FormCreator;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import glorydark.nukkit.customform.utils.InventoryUtils;
 import lombok.Data;

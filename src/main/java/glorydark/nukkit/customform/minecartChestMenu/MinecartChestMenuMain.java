@@ -3,7 +3,7 @@ package glorydark.nukkit.customform.minecartChestMenu;
 import cn.nukkit.Player;
 import cn.nukkit.entity.item.EntityMinecartChest;
 import glorydark.nukkit.customform.entity.FormEntityMinecartChest;
-import glorydark.nukkit.customform.forms.FormCreator;
+import glorydark.nukkit.customform.factory.FormCreator;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import lombok.Data;
 

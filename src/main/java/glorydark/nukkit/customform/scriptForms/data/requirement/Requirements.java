@@ -124,7 +124,7 @@ public class Requirements {
         for (RequirementData customRequirementDatum : this.customRequirementData) {
             if (customRequirementDatum instanceof ReducibleRequirementData) {
                 ReducibleRequirementData reducibleRequirementData = (ReducibleRequirementData) customRequirementDatum;
-                if (reducibleRequirementData.isQualified(player, multiply)) {
+                if (!reducibleRequirementData.isQualified(player, multiply)) {
                     reducibleRequirementData.sendFailedMessage(player);
                     return false;
                 }
