@@ -16,12 +16,12 @@
 
     <repositories>
         <repository>
-            <id>opencollab-repo-snapshot</id>
-            <url>https://repo.opencollab.dev/maven-snapshots</url>
-        </repository>
-        <repository>
             <id>repo-lanink-cn</id>
             <url>https://repo.lanink.cn/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>opencollab-repo-snapshot</id>
+            <url>https://repo.opencollab.dev/maven-snapshots</url>
         </repository>
     </repositories>
 
