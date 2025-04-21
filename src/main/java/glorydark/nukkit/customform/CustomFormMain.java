@@ -93,11 +93,6 @@ public class CustomFormMain extends PluginBase {
         enableGameAPI = checkSoftDepend("GameAPI");
         enablePlaceHolderAPI = checkSoftDepend("PlaceholderAPI");
         enableLanguageAPI = checkSoftDepend("LanguageAPI");
-        if (enableLanguageAPI) {
-            File customLangDic = new File(path + "/custom_languages/");
-            customLangDic.mkdirs();
-            LanguageReader.loadLanguageFromDictionary(this, customLangDic);
-        }
         Config config1 = new Config(path + "/rsnpc_cache.yml", Config.YAML);
         config1.set("坐标", new ConfigSection() {
             {
@@ -159,6 +154,11 @@ public class CustomFormMain extends PluginBase {
     }
 
     public void loadAll() {
+        if (enableLanguageAPI) {
+            File customLangDic = new File(path + "/custom_languages/");
+            customLangDic.mkdirs();
+            LanguageReader.loadLanguageFromDictionary(this, customLangDic);
+        }
         ready = false;
         executor = Executors.newFixedThreadPool(5);
         ChestFormMain.loadAll();
