@@ -18,21 +18,24 @@ import java.util.Map;
 @Data
 public class HopperFormData {
 
+    private final String fileName;
+
     private final String title;
 
     private final Map<Integer, HopperFormItemInfo> itemInfos;
 
-    public HopperFormData(String title, Map<Integer, HopperFormItemInfo> itemInfos) {
+    public HopperFormData(String fileName, String title, Map<Integer, HopperFormItemInfo> itemInfos) {
+        this.fileName = fileName;
         this.title = title;
         this.itemInfos = itemInfos;
     }
 
-    public static HopperFormData parse(Map<String, Object> map) {
+    public static HopperFormData parse(String fileName, Map<String, Object> map) {
         Map<Integer, HopperFormItemInfo> itemInfos = new LinkedHashMap<>();
         for (Map<String, Object> components : (List<Map<String, Object>>) map.getOrDefault("components", new ArrayList<Map<String, Object>>())) {
             int slot = (int) components.getOrDefault("slot", -1);
             if (slot == -1) {
-                CustomFormMain.plugin.getLogger().warning("Found an suspicious slot in file, details: " + map);
+                CustomFormMain.plugin.getLogger().warning("Found an suspicious slot in file " + fileName + ", details: " + map);
                 continue;
             }
             Item item = InventoryUtils.toItem((String) components.getOrDefault("item", ""));
@@ -52,7 +55,7 @@ public class HopperFormData {
             if (components.containsKey("requirements")) {
                 Map<String, Object> requirementData = (Map<String, Object>) components.get("requirements");
                 for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                    requirements.add(FormCreator.buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                    requirements.add(FormCreator.buildRequirements("hopper:" + fileName, object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                 }
 
             }
@@ -68,6 +71,6 @@ public class HopperFormData {
                     (Boolean) components.getOrDefault("close_form", false)
             ));
         }
-        return new HopperFormData((String) map.getOrDefault("title", ""), itemInfos);
+        return new HopperFormData(fileName, (String) map.getOrDefault("title", ""), itemInfos);
     }
 }

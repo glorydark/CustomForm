@@ -48,7 +48,7 @@ public class MinecartChestMenuMain {
                     List<Requirements> requirements = new ArrayList<>();
                     Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                     for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                        requirements.add(FormCreator.buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                        requirements.add(FormCreator.buildRequirements("minecart:" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                     }
                     minecartChestMenuComponent.setRequirements(requirements);
                 }
@@ -65,7 +65,7 @@ public class MinecartChestMenuMain {
                     List<Requirements> requirements = new ArrayList<>();
                     Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                     for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                        requirements.add(FormCreator.buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                        requirements.add(FormCreator.buildRequirements("minecart:" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                     }
                     minecartChestMenuComponent.setRequirements(requirements);
                 }

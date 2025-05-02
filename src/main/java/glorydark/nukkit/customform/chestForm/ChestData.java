@@ -18,21 +18,24 @@ import java.util.Map;
 @Data
 public class ChestData {
 
+    private final String fileName;
+
     private final String title;
 
     private final Map<Integer, ChestItemInfo> itemInfos;
 
-    public ChestData(String title, Map<Integer, ChestItemInfo> itemInfos) {
+    public ChestData(String fileName, String title, Map<Integer, ChestItemInfo> itemInfos) {
+        this.fileName = fileName;
         this.title = title;
         this.itemInfos = itemInfos;
     }
 
-    public static ChestData parse(Map<String, Object> map) {
+    public static ChestData parse(String fileName, Map<String, Object> map) {
         Map<Integer, ChestItemInfo> itemInfos = new LinkedHashMap<>();
         for (Map<String, Object> components : (List<Map<String, Object>>) map.getOrDefault("components", new ArrayList<Map<String, Object>>())) {
             int slot = (int) components.getOrDefault("slot", -1);
             if (slot == -1) {
-                CustomFormMain.plugin.getLogger().warning("Found an suspicious slot in file, details: " + map);
+                CustomFormMain.plugin.getLogger().warning("Found an suspicious slot in file " + fileName + ", details: " + map);
                 continue;
             }
             Item item = InventoryUtils.toItem((String) components.getOrDefault("item", ""));
@@ -52,7 +55,7 @@ public class ChestData {
             if (components.containsKey("requirements")) {
                 Map<String, Object> requirementData = (Map<String, Object>) components.get("requirements");
                 for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                    requirements.add(FormCreator.buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                    requirements.add(FormCreator.buildRequirements("chest:" + fileName, object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                 }
 
             }
@@ -68,6 +71,6 @@ public class ChestData {
                     (Boolean) components.getOrDefault("close_form", false)
             ));
         }
-        return new ChestData((String) map.getOrDefault("title", ""), itemInfos);
+        return new ChestData(fileName, (String) map.getOrDefault("title", ""), itemInfos);
     }
 }

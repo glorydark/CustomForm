@@ -34,7 +34,7 @@ public class HopperFormMain {
         for (File listFile : Objects.requireNonNull(file.listFiles())) {
             Map<String, Object> map = FormCreator.convertConfigToMap(listFile);
             String name = listFile.getName().substring(0, listFile.getName().lastIndexOf("."));
-            forms.put(name, HopperFormData.parse(map));
+            forms.put(name, HopperFormData.parse(name, map));
             CustomFormMain.plugin.getLogger().info(TextFormat.GREEN + "成功加载箱子菜单: " + name);
         }
     }

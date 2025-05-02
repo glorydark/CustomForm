@@ -27,6 +27,7 @@ import glorydark.nukkit.customform.scriptForms.data.requirement.config.ConfigReq
 import glorydark.nukkit.customform.scriptForms.data.requirement.custom.RequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.economy.EconomyRequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.economy.EconomyRequirementType;
+import glorydark.nukkit.customform.scriptForms.data.requirement.item.AlternativeItem;
 import glorydark.nukkit.customform.scriptForms.data.requirement.item.ItemRequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.item.NeedItem;
 import glorydark.nukkit.customform.scriptForms.data.requirement.tips.TipsRequirementData;
@@ -65,7 +66,7 @@ public class FormCreator {
     }
 
     public static Date stringToDate(String string, String dateFormat) {
-        if (string.equals("")) {
+        if (string.isEmpty()) {
             return new Date(-1);
         }
         SimpleDateFormat format = new SimpleDateFormat(dateFormat);
@@ -146,7 +147,8 @@ public class FormCreator {
     @Api
     // This function can use as a way to customize your form.
     public static void showScriptForm(Player player, ScriptForm script, String identifier) {
-        if (player.namedTag.contains("lastFormRequestMillis") && System.currentTimeMillis() - player.namedTag.getLong("lastFormRequestMillis") < CustomFormMain.coolDownMillis) {
+        if (player.namedTag.contains("lastFormRequestMillis")
+                && System.currentTimeMillis() - player.namedTag.getLong("lastFormRequestMillis") < CustomFormMain.coolDownMillis) {
             String tip = CustomFormMain.language.translateString(player, "operation_so_fast");
             if (!tip.isEmpty()) {
                 player.sendMessage(tip);
@@ -193,7 +195,7 @@ public class FormCreator {
         * If you want to add a new type of requirement,
         please make some tiny modifications inside the Requirement.class.
     */
-    public static Requirements buildRequirements(List<Map<String, Object>> requirementConfig, boolean globalChargable) {
+    public static Requirements buildRequirements(String fileName, List<Map<String, Object>> requirementConfig, boolean globalChargable) {
         Requirements requirements = new Requirements(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), globalChargable);
         for (Map<String, Object> map : requirementConfig) {
             String type = (String) map.get("type");
@@ -226,6 +228,14 @@ public class FormCreator {
                             item.setCheckDamage((Boolean) subMap.getOrDefault("check_damage", true));
                             item.setCheckTag((Boolean) subMap.getOrDefault("check_tag", false));
                             item.setCheckCustomName((Boolean) subMap.getOrDefault("check_custom_name", true));
+                            if (item.getItem().getId() == 0) {
+                                CustomFormMain.plugin.getLogger().warning("Found an empty cost item, file name: " + fileName + ", data: " + subMap.get("item"));
+                            }
+                            for (AlternativeItem alternative : item.getAlternatives()) {
+                                if (alternative.getItem().getId() == 0) {
+                                    CustomFormMain.plugin.getLogger().warning("Found an empty alternative item, file name: " + fileName + ", data: " + subMap.getOrDefault("alternatives", new ArrayList<>()));
+                                }
+                            }
                             needItems.add(item);
                         }
                     }
@@ -351,7 +361,7 @@ public class FormCreator {
                             Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                             for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
                                 CustomFormMain.completableFutureList.add(
-                                        CompletableFuture.runAsync(() -> data.getRequirements().add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor)
+                                        CompletableFuture.runAsync(() -> data.getRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor)
                                                 .whenCompleteAsync((unused, throwable) -> CustomFormMain.plugin.getLogger().warning(throwable.toString()))
                                 );
                             }
@@ -398,7 +408,7 @@ public class FormCreator {
                 if (config.containsKey("open_requirements")) {
                     Map<String, Object> requirementData = (Map<String, Object>) config.get("open_requirements");
                     for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                        openRequirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                        openRequirementsList.add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                     }
                 }
                 ScriptFormSimple simple = new ScriptFormSimple(config, simpleResponseExecuteDataList, new SoundData("", 1f, 0f, true), openRequirementsList);
@@ -469,7 +479,7 @@ public class FormCreator {
                                 dropdownPlayerListResponse.setRequirements(new ArrayList<>());
                                 Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                                 for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                                    CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> dropdownPlayerListResponse.getRequirements().add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
+                                    CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> dropdownPlayerListResponse.getRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
                                 }
                             }
                             List<ConfigModification> configModificationsForPlayerListDropDown = new ArrayList<>();
@@ -546,7 +556,7 @@ public class FormCreator {
                             if (component.containsKey("requirements")) {
                                 Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                                 for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                                    CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> simpleResponseExecuteData.getRequirements().add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
+                                    CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> simpleResponseExecuteData.getRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
                                 }
                             }
                             out.add(simpleResponseExecuteData);
@@ -560,7 +570,7 @@ public class FormCreator {
                 if (config.containsKey("open_requirements")) {
                     Map<String, Object> requirementData = (Map<String, Object>) config.get("open_requirements");
                     for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                        openRequirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                        openRequirementsList.add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                     }
                 }
                 ScriptFormCustom custom = new ScriptFormCustom(config, out, new SoundData("", 1f, 0f, true), openRequirementsList);
@@ -585,7 +595,7 @@ public class FormCreator {
                     if (component.containsKey("requirements")) {
                         Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                         for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                            CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> data.getRequirements().add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
+                            CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> data.getRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
                         }
                     }
                     data.setStartDate(stringToDate((String) component.getOrDefault("start_time", "")));
@@ -596,7 +606,7 @@ public class FormCreator {
                 if (config.containsKey("open_requirements")) {
                     Map<String, Object> requirementData = (Map<String, Object>) config.get("open_requirements");
                     for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                        openRequirementsList.add(buildRequirements(object, (Boolean) requirementData.getOrDefault("chargeable", true)));
+                        openRequirementsList.add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true)));
                     }
                 }
                 ScriptFormModal modal = new ScriptFormModal(config, simpleResponseExecuteDataList, new SoundData("", 1f, 0f, true), openRequirementsList);

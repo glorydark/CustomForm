@@ -32,7 +32,7 @@ public class ChestFormMain {
         for (File listFile : Objects.requireNonNull(file.listFiles())) {
             Map<String, Object> map = FormCreator.convertConfigToMap(listFile);
             String name = listFile.getName().substring(0, listFile.getName().lastIndexOf("."));
-            chestForms.put(name, ChestData.parse(map));
+            chestForms.put(name, ChestData.parse(name, map));
             CustomFormMain.plugin.getLogger().info(TextFormat.GREEN + "成功加载箱子菜单: " + name);
         }
     }
