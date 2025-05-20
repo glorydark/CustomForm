@@ -1,6 +1,7 @@
 package glorydark.nukkit.customform.minecartChestMenu;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockGlassStained;
 import cn.nukkit.block.BlockWool;
@@ -8,6 +9,7 @@ import cn.nukkit.entity.item.EntityMinecartChest;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBookEnchanted;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.DyeColor;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.entity.FormEntityMinecartChest;
@@ -130,8 +132,13 @@ public class MinecartChestMenu {
         chest.setNameTagVisible(false);
         chest.setNameTagAlwaysVisible(false);
         chest.spawnTo(player);
-        player.addWindow(chest.getInventory());
         MinecartChestMenuMain.mineCartChests.put(player, new MinecartChestMenuMain.PlayerMinecartChestTempData(chest, this));
+        Server.getInstance().getScheduler().scheduleDelayedTask(CustomFormMain.plugin, new Task() {
+            @Override
+            public void onRun(int i) {
+                player.addWindow(chest.getInventory());
+            }
+        }, 10);
     }
 
     public Map<Integer, Item> getDoubleCheckItem(Player player, int checkComponentIndex) {
