@@ -4,12 +4,14 @@ import cn.nukkit.Player;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
+import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.element.*;
 import cn.nukkit.form.response.*;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.form.window.FormWindowModal;
 import cn.nukkit.form.window.FormWindowSimple;
+import cn.nukkit.network.protocol.ModalFormRequestPacket;
 import cn.nukkit.network.protocol.ModalFormResponsePacket;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.factory.FormCreator;
@@ -21,6 +23,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class FormListener implements Listener {
+
+    @EventHandler
+    public void DataPacketSendEvent(DataPacketSendEvent event) {
+        if (event.getPacket() instanceof ModalFormRequestPacket pk) {
+            System.out.println(pk);
+        }
+    }
 
     @EventHandler
     public void DataPacketReceiveEvent(DataPacketReceiveEvent event) {

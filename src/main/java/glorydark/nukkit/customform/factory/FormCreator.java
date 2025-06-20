@@ -31,9 +31,9 @@ import glorydark.nukkit.customform.scriptForms.data.requirement.item.Alternative
 import glorydark.nukkit.customform.scriptForms.data.requirement.item.ItemRequirementData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.item.NeedItem;
 import glorydark.nukkit.customform.scriptForms.data.requirement.tips.TipsRequirementData;
-import glorydark.nukkit.customform.utils.MathCompareSign;
 import glorydark.nukkit.customform.scriptForms.form.*;
 import glorydark.nukkit.customform.utils.CameraUtils;
+import glorydark.nukkit.customform.utils.MathCompareSign;
 import glorydark.nukkit.customform.utils.Tools;
 import lombok.Data;
 

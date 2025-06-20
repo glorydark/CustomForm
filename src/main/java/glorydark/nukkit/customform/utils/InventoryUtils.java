@@ -4,8 +4,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.utils.ConfigSection;
 import glorydark.nukkit.customform.CustomFormMain;
 
-import java.util.Arrays;
-
 public class InventoryUtils {
 
     public static ConfigSection itemStringCaches = new ConfigSection();

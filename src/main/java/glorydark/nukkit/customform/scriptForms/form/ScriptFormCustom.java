@@ -200,7 +200,9 @@ public class ScriptFormCustom implements ScriptForm {
     }
 
     public FormWindowCustom getModifiableWindow() {
-        return new FormWindowCustom(window.getTitle(), cloneElements(window.getElements()));
+        FormWindowCustom custom = new FormWindowCustom(window.getTitle(), cloneElements(window.getElements()), window.getIcon());
+        custom.setSubmitButtonText(window.getSubmitButtonText());
+        return custom;
     }
 
     public List<Element> cloneElements(List<Element> elements) {
@@ -228,6 +230,10 @@ public class ScriptFormCustom implements ScriptForm {
             } else if (element instanceof ElementStepSlider) {
                 ElementStepSlider stepSlider = (ElementStepSlider) element;
                 out.add(new ElementStepSlider(stepSlider.getText(), new ArrayList<>(stepSlider.getSteps()), stepSlider.getDefaultStepIndex()));
+            } else if (element instanceof ElementDivider) {
+                out.add(new ElementDivider());
+            } else if (element instanceof ElementHeader header) {
+                out.add(new ElementHeader(header.getText()));
             }
         }
         return out;
@@ -244,29 +250,40 @@ public class ScriptFormCustom implements ScriptForm {
         for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
             enableTipsVariableReplacement.add((Boolean) component.getOrDefault("enable_tips_variable", true));
             enableRsNPCXVariableReplacement.add((Boolean) component.getOrDefault("enable_rsNPCX_variable", true));
-            switch ((String) component.getOrDefault("type", "")) {
-                case "Input":
+            switch (((String) component.getOrDefault("type", "")).toLowerCase(Locale.ROOT)) {
+                case "input":
                     custom.addElement(new ElementInput((String) component.getOrDefault("text", ""), (String) component.getOrDefault("placeholder", ""), (String) component.getOrDefault("default", "")));
                     break;
-                case "Label":
+                case "label":
                     custom.addElement(new ElementLabel((String) component.getOrDefault("text", "")));
                     break;
-                case "Toggle":
+                case "toggle":
                     custom.addElement(new ElementToggle((String) component.getOrDefault("text", ""), (boolean) component.getOrDefault("default", "")));
                     break;
-                case "Slider":
+                case "slider":
                     custom.addElement(new ElementSlider((String) component.getOrDefault("text", ""), (int) component.getOrDefault("min", 0), (int) component.getOrDefault("max", 0), (int) component.getOrDefault("step", 0), Float.parseFloat(component.getOrDefault("default", 0f).toString())));
                     break;
-                case "StepSlider":
+                case "stepslider":
+                case "step_slider":
                     custom.addElement(new ElementStepSlider((String) component.getOrDefault("text", ""), (List<String>) component.getOrDefault("steps", new ArrayList<>()), (int) component.getOrDefault("default", 0)));
                     break;
-                case "Dropdown":
+                case "dropdown":
                     custom.addElement(new ElementDropdown((String) component.getOrDefault("text", ""), (List<String>) component.getOrDefault("options", new ArrayList<>()), (int) component.getOrDefault("default", 0)));
                     break;
-                case "PlayerListDropdown":
+                case "playerlistdropdown":
+                case "player_list_dropdown":
                     custom.addElement(new ElementPlayerListDropdown((String) component.getOrDefault("text", "")));
                     break;
+                case "header":
+                    custom.addElement(new ElementHeader((String) component.getOrDefault("text", "")));
+                    break;
+                case "divider":
+                    custom.addElement(new ElementDivider());
+                    break;
             }
+        }
+        if (this.config.containsKey("submit_button_text")) {
+            custom.setSubmitButtonText((String) this.config.getOrDefault("submit_button_text", ""));
         }
         return custom;
     }

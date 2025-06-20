@@ -4,6 +4,10 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.form.element.ElementButton;
+import cn.nukkit.form.element.ElementDivider;
+import cn.nukkit.form.element.ElementHeader;
+import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.scheduler.Task;
@@ -12,9 +16,9 @@ import cn.nukkit.utils.ConfigSection;
 import cn.nukkit.utils.TextFormat;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.chestForm.ChestFormMain;
+import glorydark.nukkit.customform.factory.FormCreator;
 import glorydark.nukkit.customform.hopperform.HopperFormMain;
 import glorydark.nukkit.customform.minecartChestMenu.MinecartChestMenuMain;
-import glorydark.nukkit.customform.factory.FormCreator;
 import glorydark.nukkit.customform.scriptForms.form.ScriptForm;
 import glorydark.nukkit.customform.utils.InventoryUtils;
 
@@ -34,6 +38,13 @@ public class CustomFormCommands extends Command {
             return false;
         }
         switch (strings[0].toLowerCase()) {
+            case "test":
+                FormWindowSimple simple = new FormWindowSimple("测试", "测试");
+                simple.addElement(new ElementHeader("测试"));
+                simple.addElement(new ElementDivider());
+                simple.addElement(new ElementButton("测试"));
+                commandSender.asPlayer().showFormWindow(simple);
+                break;
             case "reload":
                 if (commandSender.isOp() || !commandSender.isPlayer()) {
                     CustomFormMain.plugin.loadAll();
