@@ -25,13 +25,6 @@ import java.util.LinkedHashMap;
 public class FormListener implements Listener {
 
     @EventHandler
-    public void DataPacketSendEvent(DataPacketSendEvent event) {
-        if (event.getPacket() instanceof ModalFormRequestPacket pk) {
-            System.out.println(pk);
-        }
-    }
-
-    @EventHandler
     public void DataPacketReceiveEvent(DataPacketReceiveEvent event) {
         Player player = event.getPlayer();
         if (event.getPacket() instanceof ModalFormResponsePacket) {

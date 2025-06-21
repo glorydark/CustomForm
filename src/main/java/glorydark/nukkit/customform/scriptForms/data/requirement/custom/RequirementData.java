@@ -3,7 +3,6 @@ package glorydark.nukkit.customform.scriptForms.data.requirement.custom;
 import cn.nukkit.Player;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author glorydark

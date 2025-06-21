@@ -79,9 +79,6 @@ public class ScriptFormSimple implements ScriptForm {
 
     public FormWindowSimple getWindow(Player player) {
         FormWindowSimple simple_temp = this.getModifiableWindow();
-        for (SimpleElement element : simple_temp.getElements()) {
-            CustomFormMain.plugin.getLogger().info(element.getClass().getName());
-        }
         int elementId = 0;
         for (ElementButton button : simple_temp.getButtons()) {
             button.setText(ReplaceStringUtils.replace(button.getText(), player));
