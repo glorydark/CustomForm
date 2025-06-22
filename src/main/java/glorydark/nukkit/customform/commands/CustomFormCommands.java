@@ -15,6 +15,7 @@ import cn.nukkit.utils.Config;
 import cn.nukkit.utils.ConfigSection;
 import cn.nukkit.utils.TextFormat;
 import glorydark.nukkit.customform.CustomFormMain;
+import glorydark.nukkit.customform.Language;
 import glorydark.nukkit.customform.chestForm.ChestFormMain;
 import glorydark.nukkit.customform.factory.FormCreator;
 import glorydark.nukkit.customform.hopperform.HopperFormMain;
@@ -23,6 +24,7 @@ import glorydark.nukkit.customform.scriptForms.form.ScriptForm;
 import glorydark.nukkit.customform.utils.InventoryUtils;
 
 import java.io.File;
+import java.util.LinkedHashMap;
 
 /**
  * @author glorydark
@@ -38,15 +40,16 @@ public class CustomFormCommands extends Command {
             return false;
         }
         switch (strings[0].toLowerCase()) {
-            case "test":
-                FormWindowSimple simple = new FormWindowSimple("测试", "测试");
-                simple.addElement(new ElementHeader("测试"));
-                simple.addElement(new ElementDivider());
-                simple.addElement(new ElementButton("测试"));
-                commandSender.asPlayer().showFormWindow(simple);
-                break;
             case "reload":
                 if (commandSender.isOp() || !commandSender.isPlayer()) {
+                    Config config = new Config(CustomFormMain.path + "/config.yml", Config.YAML);
+                    CustomFormMain.debug = config.getBoolean("debug", false); // todo
+                    CustomFormMain.enableDoubleCheckMenu = config.getBoolean("enable_doubleCheckMenu", true);
+                    CustomFormMain.enableCameraAnimation = config.getBoolean("enable_cameraAnimation", false);
+                    CustomFormMain.coolDownMillis = config.getLong("coolDown", 200L);
+                    CustomFormMain.language = new Language(config.getString("default_lang", "zh_cn"), CustomFormMain.path + "/languages/");
+                    CustomFormMain.playerCacheVariableList = config.get("player_cache_variables", new LinkedHashMap<>());
+                    CustomFormMain.specificCacheVariableList = config.get("specific_cache_variables", new LinkedHashMap<>());
                     CustomFormMain.plugin.loadAll();
                     commandSender.sendMessage(CustomFormMain.language.translateString(commandSender.isPlayer() ? (Player) commandSender : null, "plugin_reloaded"));
                 } else {

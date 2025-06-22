@@ -73,6 +73,9 @@ public class CustomFormMain extends PluginBase {
     public static Map<String, Map<String, Object>> specificConfCaches = new LinkedHashMap<>();
     public static Map<String, Map<String, Object>> playerConfCaches = new LinkedHashMap<>();
 
+    public static Map<String, Object> specificCacheVariableList = new LinkedHashMap<>();
+    public static Map<String, Object> playerCacheVariableList = new LinkedHashMap<>();
+
     @Override
     public void onEnable() {
         TimeZone timeZone = TimeZone.getTimeZone("GMT+8");
@@ -88,6 +91,8 @@ public class CustomFormMain extends PluginBase {
         enableCameraAnimation = config.getBoolean("enable_cameraAnimation", false);
         coolDownMillis = config.getLong("coolDown", 200L);
         language = new Language(config.getString("default_lang", "zh_cn"), path + "/languages/");
+        playerCacheVariableList = config.get("player_cache_variables", new LinkedHashMap<>());
+        specificCacheVariableList = config.get("specific_cache_variables", new LinkedHashMap<>());
         enableTips = checkSoftDepend("Tips") && config.getBoolean("enable_tips", true);
         enableDCurrency = checkSoftDepend("DCurrency");
         enableEconomyAPI = checkSoftDepend("EconomyAPI");

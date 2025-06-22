@@ -14,16 +14,14 @@ public class CustomFormBaseVariable extends BaseVariable {
 
     @Override
     public void strReplace() {
-        for (Map.Entry<String, Map<String, Object>> entry : CustomFormMain.specificConfCaches.entrySet()) {
-            String fileName = entry.getKey();
-            this.addStrReplaceString("{form_specific_cache_" + fileName + "}", entry.getValue().getOrDefault(this.player.getName(), 0).toString());
+        Map<String, Object> playerConfMap = CustomFormMain.playerConfCaches.getOrDefault(this.player.getName(), new LinkedHashMap<>());
+        for (String keyName : CustomFormMain.playerCacheVariableList.keySet()) {
+            this.addStrReplaceString("{form_player_cache_" + keyName + "}", playerConfMap.getOrDefault(keyName, String.valueOf(CustomFormMain.playerCacheVariableList.getOrDefault(keyName, "null"))).toString());
         }
 
-        Map<String, Object> playerConfMap = CustomFormMain.playerConfCaches.getOrDefault(player.getName(), new LinkedHashMap<>());
-        for (Map.Entry<String, Object> entry1 : playerConfMap.entrySet()) {
-            String keyName = entry1.getKey();
-            Object value = entry1.getValue();
-            this.addStrReplaceString("{form_player_cache_" + keyName + "}", value.toString());
+        for (String keyName : CustomFormMain.specificCacheVariableList.keySet()) {
+            Map<String, Object> specificConfMap = CustomFormMain.specificConfCaches.getOrDefault(keyName, new LinkedHashMap<>());
+            this.addStrReplaceString("{form_specific_cache_" + keyName + "}", specificConfMap.getOrDefault(player.getName(), String.valueOf(CustomFormMain.specificCacheVariableList.getOrDefault(keyName, "null"))).toString());
         }
     }
 }
