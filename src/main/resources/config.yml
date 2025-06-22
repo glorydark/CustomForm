@@ -6,7 +6,9 @@ enable_rsNPCX: true
 enable_doubleCheckMenu: true
 enable_cameraAnimation: false
 debug: true
-specific_cache_variables:
-  - "test"
+# type = 0时，变量格式为{form_player_cache_键名}
 player_cache_variables:
-  - "test"
+  "test": 0 # 0为默认值，可为double，int和string
+# type = 1时，变量格式为{form_specific_cache_文件名}
+specific_cache_variables:
+  "test": 0 # 0为默认值，可为double，int和string
