@@ -70,6 +70,9 @@ public class CustomFormMain extends PluginBase {
     public ExecutorService executor; // 创建一个拥有5个线程的线程池
     public static RsNpcConfig rsNpcConfig = null;
 
+    public static Map<String, Map<String, Object>> specificConfCaches = new LinkedHashMap<>();
+    public static Map<String, Map<String, Object>> playerConfCaches = new LinkedHashMap<>();
+
     @Override
     public void onEnable() {
         TimeZone timeZone = TimeZone.getTimeZone("GMT+8");
@@ -127,6 +130,7 @@ public class CustomFormMain extends PluginBase {
             }, 20);
         }
         if (enableTips) {
+            Api.registerVariables("CustomFormBaseVariable", CustomFormBaseVariable.class);
             if (config.getBoolean("enable_expansion_variable", false)) {
                 Api.registerVariables("CustomFormVariableExpansion", ExpansionVariable.class); // Register ExpansionVariable.class
             }
@@ -138,7 +142,6 @@ public class CustomFormMain extends PluginBase {
                 this.setEnabled(false);
             }
         }
-
         File minecartChestWindowDic = new File(path + "/minecart_chest_windows/");
         if (!minecartChestWindowDic.exists()) {
             if (!minecartChestWindowDic.mkdirs()) {
@@ -146,6 +149,21 @@ public class CustomFormMain extends PluginBase {
                 this.setEnabled(false);
             }
         }
+        File playerCacheDir = new File(path + "/caches/players/");
+        playerCacheDir.mkdirs();
+        for (File file : Objects.requireNonNull(playerCacheDir.listFiles())) {
+            Config cacheConf = new Config(file, Config.YAML);
+            playerConfCaches.put(file.getName().substring(0, file.getName().lastIndexOf(".")), cacheConf.getAll());
+        }
+        this.getLogger().info("成功加载菜单玩家数据 " + playerConfCaches.size() + " 个！");
+
+        File specificCacheDir = new File(path + "/caches/specific/");
+        specificCacheDir.mkdirs();
+        for (File file : Objects.requireNonNull(specificCacheDir.listFiles())) {
+            Config cacheConf = new Config(file, Config.YAML);
+            specificConfCaches.put(file.getName().substring(0, file.getName().lastIndexOf(".")), cacheConf.getAll());
+        }
+        this.getLogger().info("成功加载菜单项目数据 " + specificConfCaches.size() + " 个！");
         this.loadAll();
         this.getLogger().info("CustomForm onLoad");
         this.getServer().getCommandMap().register("", new CustomFormCommands());

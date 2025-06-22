@@ -2,9 +2,11 @@ package glorydark.nukkit.customform.scriptForms.data.requirement.config;
 
 import cn.nukkit.Player;
 import cn.nukkit.utils.Config;
+import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.utils.ConfigUtils;
 import lombok.ToString;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @ToString
@@ -23,7 +25,6 @@ public class ConfigRequirementData {
     List<String> failed_messages;
 
     Object defaultComparedValue;
-
 
     public ConfigRequirementData(int configType, ConfigRequirementType requirementType, String inputExtra, Object comparedValue, Object defaultComparedValue, List<String> failed_messages) {
         if (configType == 0) {
@@ -66,9 +67,9 @@ public class ConfigRequirementData {
     public boolean isQualified(Player player) {
         if (requirementType == ConfigRequirementType.EXIST) {
             if (configType == 0) {
-                return new Config(ConfigUtils.getConfig(player), Config.YAML).exists(keyString);
+                return new Config(ConfigUtils.getPlayerConfigCacheFile(player), Config.YAML).exists(keyString);
             } else if (configType == 1) {
-                return new Config(ConfigUtils.getConfig(configName), Config.YAML).exists(player.getName());
+                return new Config(ConfigUtils.getSpecificConfigCacheFile(configName), Config.YAML).exists(player.getName());
             }
             return false;
         }
@@ -77,9 +78,9 @@ public class ConfigRequirementData {
             double convertedCompared = Double.parseDouble(comparedValue.toString());
             double configValue = defaultValue;
             if (configType == 0) {
-                configValue = new Config(ConfigUtils.getConfig(player), Config.YAML).getDouble(keyString, defaultValue);
+                configValue = Double.parseDouble(String.valueOf(CustomFormMain.playerConfCaches.getOrDefault(player.getName(), new LinkedHashMap<>()).getOrDefault(keyString, 0)));
             } else if (configType == 1) {
-                configValue = new Config(ConfigUtils.getConfig(configName), Config.YAML).getDouble(player.getName(), defaultValue);
+                configValue = Double.parseDouble(String.valueOf(CustomFormMain.specificConfCaches.getOrDefault(configName, new LinkedHashMap<>()).getOrDefault(player.getName(), 0)));
             }
             switch (requirementType) {
                 case EQUAL:
@@ -100,9 +101,9 @@ public class ConfigRequirementData {
                 String compared = comparedValue.toString();
                 String configValue = defaultValue;
                 if (configType == 0) {
-                    configValue = new Config(ConfigUtils.getConfig(player), Config.YAML).getString(keyString, defaultValue);
+                    configValue = (String) CustomFormMain.playerConfCaches.getOrDefault(player.getName(), new LinkedHashMap<>()).getOrDefault(keyString, 0);
                 } else if (configType == 1) {
-                    configValue = new Config(ConfigUtils.getConfig(configName), Config.YAML).getString(player.getName(), defaultValue);
+                    configValue = (String) CustomFormMain.specificConfCaches.getOrDefault(configName, new LinkedHashMap<>()).getOrDefault(player.getName(), 0);
                 }
                 if (!configValue.equalsIgnoreCase(defaultValue)) {
                     return compared.equals(configValue);
@@ -114,9 +115,9 @@ public class ConfigRequirementData {
             int configValue = defaultValue;
             int convertedCompared = Integer.parseInt(comparedValue.toString());
             if (configType == 0) {
-                configValue = new Config(ConfigUtils.getConfig(player), Config.YAML).getInt(keyString, defaultValue);
+                configValue = (int) CustomFormMain.playerConfCaches.getOrDefault(player.getName(), new LinkedHashMap<>()).getOrDefault(keyString, 0);
             } else if (configType == 1) {
-                configValue = new Config(ConfigUtils.getConfig(configName), Config.YAML).getInt(player.getName(), defaultValue);
+                configValue = (int) CustomFormMain.specificConfCaches.getOrDefault(configName, new LinkedHashMap<>()).getOrDefault(player.getName(), 0);
             }
             switch (requirementType) {
                 case EQUAL:
@@ -136,7 +137,7 @@ public class ConfigRequirementData {
     }
 
     public void sendFailedMsg(Player player) {
-        if (failed_messages.size() == 0) {
+        if (failed_messages.isEmpty()) {
             return;
         }
         for (String msg : failed_messages) {

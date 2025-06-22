@@ -2,6 +2,7 @@ package glorydark.nukkit.customform.scriptForms.data.execute_data;
 
 import cn.nukkit.Player;
 import cn.nukkit.utils.Config;
+import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.config.ConfigModification;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import glorydark.nukkit.customform.utils.CommandUtils;
@@ -114,7 +115,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
             Object modificationValue = configModification.getValue();
             switch (configModification.getConfigType()) {
                 case 0:
-                    config = new Config(ConfigUtils.getConfig(player), Config.YAML);
+                    config = new Config(ConfigUtils.getPlayerConfigCacheFile(player), Config.YAML);
                     String keyName = configModification.getKeyName();
                     switch (configModification.getType()) {
                         case ADD:
@@ -150,10 +151,11 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
                             config.remove(keyName);
                             break;
                     }
+                    CustomFormMain.playerConfCaches.put(player.getName(), config.getAll());
                     config.save();
                     break;
                 case 1:
-                    config = new Config(ConfigUtils.getConfig(configModification.getConfigName()), Config.YAML);
+                    config = new Config(ConfigUtils.getSpecificConfigCacheFile(configModification.getConfigName()), Config.YAML);
                     keyName = player.getName();
                     switch (configModification.getType()) {
                         case ADD:
@@ -189,6 +191,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
                             config.remove(keyName);
                             break;
                     }
+                    CustomFormMain.specificConfCaches.put(configModification.getConfigName(), config.getAll());
                     config.save();
                     break;
             }

@@ -11,20 +11,20 @@ import java.io.File;
  */
 public class ConfigUtils {
 
-    private static String getFilePath(Player player) {
+    private static String getPlayerConfigCachePath(Player player) {
         return CustomFormMain.path + "/caches/players/" + player.getName() + ".yml";
     }
 
-    private static String getFilePathByName(String specificName) {
+    private static String getSpecificConfigCachePath(String specificName) {
         return CustomFormMain.path + "/caches/specific/" + specificName + ".yml";
     }
 
-    public static File getConfig(Player player) {
-        return new File(getFilePath(player));
+    public static File getPlayerConfigCacheFile(Player player) {
+        return new File(getPlayerConfigCachePath(player));
     }
 
-    public static File getConfig(String specificName) {
-        return new File(getFilePathByName(specificName));
+    public static File getSpecificConfigCacheFile(String specificName) {
+        return new File(getSpecificConfigCachePath(specificName));
     }
 
 }

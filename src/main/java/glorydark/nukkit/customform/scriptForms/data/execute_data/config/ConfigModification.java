@@ -48,7 +48,7 @@ public class ConfigModification {
     public void execute(Player player) {
         Config config;
         if (configType == 0) {
-            config = new Config(ConfigUtils.getConfig(player), Config.YAML);
+            config = new Config(ConfigUtils.getPlayerConfigCacheFile(player), Config.YAML);
             final String keyString = keyName;
             switch (type) {
                 case SET:
@@ -68,7 +68,6 @@ public class ConfigModification {
                                 "\nConfigType: " + configType + "\nConfigName: caches/players/" + player.getName() + ".yml\nKeyName: " + keyString);
                         return;
                     }
-                    config.save();
                     break;
                 case DEDUCT:
                     current = config.get(keyString, defaultValue);
@@ -89,9 +88,10 @@ public class ConfigModification {
                     config.remove(keyString);
                     break;
             }
+            CustomFormMain.playerConfCaches.put(player.getName(), config.getAll());
             config.save();
         } else {
-            config = new Config(ConfigUtils.getConfig(configName), Config.YAML);
+            config = new Config(ConfigUtils.getSpecificConfigCacheFile(configName), Config.YAML);
             final String keyString = player.getName();
             switch (type) {
                 case SET:
@@ -111,7 +111,6 @@ public class ConfigModification {
                                 "\nConfigType: " + configType + "\nConfigName: caches/specific/" + configName + ".yml\nKeyName: " + keyString);
                         return;
                     }
-                    config.save();
                     break;
                 case DEDUCT:
                     current = config.get(keyString, defaultValue);
@@ -132,6 +131,7 @@ public class ConfigModification {
                     config.remove(keyString);
                     break;
             }
+            CustomFormMain.specificConfCaches.put(configName, config.getAll());
             config.save();
         }
     }
