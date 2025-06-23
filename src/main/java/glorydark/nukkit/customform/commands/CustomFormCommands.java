@@ -4,16 +4,14 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.form.element.ElementButton;
-import cn.nukkit.form.element.ElementDivider;
-import cn.nukkit.form.element.ElementHeader;
-import cn.nukkit.form.window.FormWindowSimple;
+import cn.nukkit.form.element.*;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.ConfigSection;
 import cn.nukkit.utils.TextFormat;
+import gameapi.form.AdvancedFormWindowCustom;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.Language;
 import glorydark.nukkit.customform.chestForm.ChestFormMain;
@@ -40,6 +38,17 @@ public class CustomFormCommands extends Command {
             return false;
         }
         switch (strings[0].toLowerCase()) {
+            case "test":
+                if (commandSender.isOp()) {
+                    AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom("Test Form");
+                    custom.addElement(new ElementInput("Input"));
+                    custom.addElement(new ElementToggle("Toggle"));
+                    custom.addElement(new ElementDropdown("DropDown"));
+                    custom.addElement(new ElementSlider("Slider", 1, 2));
+                    custom.addElement(new ElementStepSlider("Step Slider"));
+                    custom.showToPlayer(commandSender.asPlayer());
+                }
+                break;
             case "reload":
                 if (commandSender.isOp() || !commandSender.isPlayer()) {
                     Config config = new Config(CustomFormMain.path + "/config.yml", Config.YAML);

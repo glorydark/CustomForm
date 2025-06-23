@@ -252,27 +252,52 @@ public class ScriptFormCustom implements ScriptForm {
             enableRsNPCXVariableReplacement.add((Boolean) component.getOrDefault("enable_rsNPCX_variable", true));
             switch (((String) component.getOrDefault("type", "")).toLowerCase(Locale.ROOT)) {
                 case "input":
-                    custom.addElement(new ElementInput((String) component.getOrDefault("text", ""), (String) component.getOrDefault("placeholder", ""), (String) component.getOrDefault("default", "")));
+                    ElementInput input = new ElementInput(
+                            (String) component.getOrDefault("text", ""),
+                            (String) component.getOrDefault("placeholder", ""),
+                            (String) component.getOrDefault("default", ""));
+                    input.setTooltip((String) component.getOrDefault("tool_tip", null));
+                    custom.addElement(input);
                     break;
                 case "label":
                     custom.addElement(new ElementLabel((String) component.getOrDefault("text", "")));
                     break;
                 case "toggle":
-                    custom.addElement(new ElementToggle((String) component.getOrDefault("text", ""), (boolean) component.getOrDefault("default", "")));
+                    ElementToggle toggle = new ElementToggle((String) component.getOrDefault("text", ""), (boolean) component.getOrDefault("default", ""));
+                    toggle.setTooltip((String) component.getOrDefault("tool_tip", null));
+                    custom.addElement(toggle);
                     break;
                 case "slider":
-                    custom.addElement(new ElementSlider((String) component.getOrDefault("text", ""), (int) component.getOrDefault("min", 0), (int) component.getOrDefault("max", 0), (int) component.getOrDefault("step", 0), Float.parseFloat(component.getOrDefault("default", 0f).toString())));
+                    ElementSlider slider = new ElementSlider(
+                            (String) component.getOrDefault("text", ""),
+                            (int) component.getOrDefault("min", 0),
+                            (int) component.getOrDefault("max", 0),
+                            (int) component.getOrDefault("step", 0),
+                            Float.parseFloat(component.getOrDefault("default", 0f).toString())
+                    );
+                    slider.setTooltip((String) component.getOrDefault("tool_tip", null));
+                    custom.addElement(slider);
                     break;
                 case "stepslider":
                 case "step_slider":
-                    custom.addElement(new ElementStepSlider((String) component.getOrDefault("text", ""), (List<String>) component.getOrDefault("steps", new ArrayList<>()), (int) component.getOrDefault("default", 0)));
+                    ElementStepSlider elementStepSlider = new ElementStepSlider(
+                            (String) component.getOrDefault("text", ""),
+                            (List<String>) component.getOrDefault("steps", new ArrayList<>()),
+                            (int) component.getOrDefault("default", 0)
+                    );
+                    elementStepSlider.setTooltip((String) component.getOrDefault("tool_tip", null));
+                    custom.addElement(elementStepSlider);
                     break;
                 case "dropdown":
-                    custom.addElement(new ElementDropdown((String) component.getOrDefault("text", ""), (List<String>) component.getOrDefault("options", new ArrayList<>()), (int) component.getOrDefault("default", 0)));
+                    ElementDropdown dropdown = new ElementDropdown((String) component.getOrDefault("text", ""), (List<String>) component.getOrDefault("options", new ArrayList<>()), (int) component.getOrDefault("default", 0));
+                    dropdown.setTooltip((String) component.getOrDefault("tool_tip", null));
+                    custom.addElement(dropdown);
                     break;
                 case "playerlistdropdown":
                 case "player_list_dropdown":
-                    custom.addElement(new ElementPlayerListDropdown((String) component.getOrDefault("text", "")));
+                    ElementPlayerListDropdown playerListDropdown = new ElementPlayerListDropdown((String) component.getOrDefault("text", ""));
+                    playerListDropdown.setTooltip((String) component.getOrDefault("tool_tip", null));
+                    custom.addElement(playerListDropdown);
                     break;
                 case "header":
                     custom.addElement(new ElementHeader((String) component.getOrDefault("text", "")));
