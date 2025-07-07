@@ -6,6 +6,7 @@ import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseSimple;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowSimple;
+import gameapi.GameAPI;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.SimpleResponseExecuteData;
@@ -79,18 +80,10 @@ public class ScriptFormSimple implements ScriptForm {
 
     public FormWindowSimple getWindow(Player player) {
         FormWindowSimple simple_temp = this.getModifiableWindow();
-        int elementId = 0;
-        for (ElementButton button : simple_temp.getButtons()) {
-            button.setText(ReplaceStringUtils.replace(button.getText(), player));
-            simple_temp.getButtons().set(elementId, button);
-            elementId++;
-        }
-        elementId = 0;
-        for (SimpleElement element : simple_temp.getElements()) {
+        for (int i = 0; i < simple_temp.getElements().size(); i++) {
+            SimpleElement element = simple_temp.getElements().get(i);
             if (element instanceof ElementButton button) {
                 button.setText(ReplaceStringUtils.replace(button.getText(), player));
-                simple_temp.getElements().set(elementId, button);
-                elementId++;
             }
         }
         simple_temp.setContent(ReplaceStringUtils.replace(simple_temp.getContent(), player));
@@ -99,7 +92,13 @@ public class ScriptFormSimple implements ScriptForm {
     }
 
     public FormWindowSimple getModifiableWindow() {
-        return new FormWindowSimple(window.getTitle(), window.getContent(), cloneButtons(window.getButtons()), cloneElements(window.getElements()));
+        FormWindowSimple formWindowSimple = new FormWindowSimple(
+                this.window.getTitle(),
+                this.window.getContent());
+        for (SimpleElement element : cloneElements(this.window.getElements())) {
+            formWindowSimple.addElement(element);
+        }
+        return formWindowSimple;
     }
 
     @Override
@@ -142,6 +141,7 @@ public class ScriptFormSimple implements ScriptForm {
                 case "divider":
                     simple.addElement(new ElementDivider());
                     break;
+                case "button":
                 default:
                     String picPath = (String) component.getOrDefault("pic", "");
                     if (picPath.isEmpty()) {
@@ -176,18 +176,6 @@ public class ScriptFormSimple implements ScriptForm {
                 } else {
                     out.add(new ElementButton(elementButton.getText(), new ElementButtonImageData(elementButton.getImage().getType(), elementButton.getImage().getData())));
                 }
-            }
-        }
-        return out;
-    }
-
-    public List<ElementButton> cloneButtons(List<ElementButton> elementButtons) {
-        List<ElementButton> out = new ArrayList<>();
-        for (ElementButton elementButton : elementButtons) {
-            if (elementButton.getImage() == null) {
-                out.add(new ElementButton(elementButton.getText()));
-            } else {
-                out.add(new ElementButton(elementButton.getText(), new ElementButtonImageData(elementButton.getImage().getType(), elementButton.getImage().getData())));
             }
         }
         return out;
