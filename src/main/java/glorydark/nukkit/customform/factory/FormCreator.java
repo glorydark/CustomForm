@@ -96,7 +96,7 @@ public class FormCreator {
         FormWindow window = scriptForm.getWindow(player);
         ModalFormRequestPacket packet = new ModalFormRequestPacket();
         packet.formId = formId;
-        packet.data = window.getJSONData();
+        packet.data = window.getJSONData(player.protocol);
         player.dataPacket(packet);
         player.namedTag.putLong("lastFormRequestMillis", System.currentTimeMillis());
         UI_CACHE.put(player.getName(), new WindowInfo(formType, identifier, scriptForm, window));
