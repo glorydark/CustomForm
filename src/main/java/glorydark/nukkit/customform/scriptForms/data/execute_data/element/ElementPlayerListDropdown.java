@@ -24,6 +24,7 @@ public class ElementPlayerListDropdown extends ElementDropdown {
         for (Player player : Server.getInstance().getOnlinePlayers().values()) {
             dropdown.addOption(player.getName());
         }
+        dropdown.setTooltip(this.getTooltip());
         return dropdown;
     }
 }

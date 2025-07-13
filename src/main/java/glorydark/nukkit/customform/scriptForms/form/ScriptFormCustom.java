@@ -6,6 +6,7 @@ import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseCustom;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
+import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.ResponseExecuteData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.element.ElementPlayerListDropdown;
@@ -208,28 +209,34 @@ public class ScriptFormCustom implements ScriptForm {
     public List<Element> cloneElements(List<Element> elements) {
         List<Element> out = new ArrayList<>();
         for (Element element : elements) {
-            if (element instanceof ElementDropdown) {
-                if (element instanceof ElementPlayerListDropdown) {
-                    out.add(element); // 丢到getWindow处理，和tips等变量替换一起
+            if (element instanceof ElementDropdown e) {
+                if (element instanceof ElementPlayerListDropdown elementPlayerListDropdown) {
+                    ElementPlayerListDropdown dropdown = elementPlayerListDropdown.copyNew();
+                    out.add(dropdown); // 丢到getWindow处理，和tips等变量替换一起
                 } else {
-                    ElementDropdown elementDropdown = (ElementDropdown) element;
-                    out.add(new ElementDropdown(elementDropdown.getText(), new ArrayList<>(elementDropdown.getOptions()), elementDropdown.getDefaultOptionIndex()));
+                    ElementDropdown elementDropdown = new ElementDropdown(e.getText(), new ArrayList<>(e.getOptions()), e.getDefaultOptionIndex());
+                    elementDropdown.setTooltip(e.getTooltip());
+                    out.add(elementDropdown);
                 }
-            } else if (element instanceof ElementInput) {
-                ElementInput input = (ElementInput) element;
-                out.add(new ElementInput(input.getText(), input.getPlaceHolder(), input.getDefaultText()));
+            } else if (element instanceof ElementInput e) {
+                ElementInput input = new ElementInput(e.getText(), e.getPlaceHolder(), e.getDefaultText());
+                input.setTooltip(e.getTooltip());
+                out.add(input);
             } else if (element instanceof ElementLabel) {
                 ElementLabel label = (ElementLabel) element;
                 out.add(new ElementLabel(label.getText()));
-            } else if (element instanceof ElementToggle) {
-                ElementToggle elementToggle = (ElementToggle) element;
-                out.add(new ElementToggle(elementToggle.getText(), elementToggle.isDefaultValue()));
-            } else if (element instanceof ElementSlider) {
-                ElementSlider slider = (ElementSlider) element;
-                out.add(new ElementSlider(slider.getText(), slider.getMin(), slider.getMax(), slider.getStep(), slider.getDefaultValue()));
-            } else if (element instanceof ElementStepSlider) {
-                ElementStepSlider stepSlider = (ElementStepSlider) element;
-                out.add(new ElementStepSlider(stepSlider.getText(), new ArrayList<>(stepSlider.getSteps()), stepSlider.getDefaultStepIndex()));
+            } else if (element instanceof ElementToggle e) {
+                ElementToggle elementToggle = new ElementToggle(e.getText(), e.isDefaultValue());
+                elementToggle.setTooltip(e.getTooltip());
+                out.add(elementToggle);
+            } else if (element instanceof ElementSlider e) {
+                ElementSlider slider = new ElementSlider(e.getText(), e.getMin(), e.getMax(), e.getStep(), e.getDefaultValue());
+                slider.setTooltip(e.getTooltip());
+                out.add(slider);
+            } else if (element instanceof ElementStepSlider e) {
+                ElementStepSlider stepSlider = new ElementStepSlider(e.getText(), new ArrayList<>(e.getSteps()), e.getDefaultStepIndex());
+                stepSlider.setTooltip(e.getTooltip());
+                out.add(stepSlider);
             } else if (element instanceof ElementDivider) {
                 out.add(new ElementDivider());
             } else if (element instanceof ElementHeader header) {
