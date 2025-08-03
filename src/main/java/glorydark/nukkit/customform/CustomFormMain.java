@@ -11,6 +11,8 @@ import com.smallaswater.npc.utils.exception.RsNpcConfigLoadException;
 import com.smallaswater.npc.utils.exception.RsNpcLoadException;
 import glorydark.nukkit.customform.chestForm.ChestFormMain;
 import glorydark.nukkit.customform.commands.CustomFormCommands;
+import glorydark.nukkit.customform.event.FormLoadEvent;
+import glorydark.nukkit.customform.event.FormOpenEvent;
 import glorydark.nukkit.customform.factory.FormCreator;
 import glorydark.nukkit.customform.hopperform.HopperFormMain;
 import glorydark.nukkit.customform.listener.FormListener;
@@ -169,6 +171,8 @@ public class CustomFormMain extends PluginBase {
             specificConfCaches.put(file.getName().substring(0, file.getName().lastIndexOf(".")), cacheConf.getAll());
         }
         this.getLogger().info("成功加载菜单项目数据 " + specificConfCaches.size() + " 个！");
+        FormLoadEvent event = new FormLoadEvent();
+        this.getServer().getPluginManager().callEvent(event);
         this.loadAll();
         this.getLogger().info("CustomForm onLoad");
         this.getServer().getCommandMap().register("", new CustomFormCommands());

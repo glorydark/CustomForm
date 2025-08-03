@@ -207,15 +207,15 @@ public class FormCreator {
             switch (type) {
                 case "EconomyAPI":
                     // This is the way we deal with EconomyAPI-type requirements
-                    data = new EconomyRequirementData(EconomyRequirementType.EconomyAPI, Double.parseDouble(map.get("cost").toString()), chargeable, new Object());
+                    data = new EconomyRequirementData(fileName, EconomyRequirementType.EconomyAPI, Double.parseDouble(map.get("cost").toString()), chargeable, "", new Object());
                     break;
                 case "Points":
                     // This is the way we deal with Points-type requirements
-                    data = new EconomyRequirementData(EconomyRequirementType.Points, Double.parseDouble(map.get("cost").toString()), chargeable, new Object());
+                    data = new EconomyRequirementData(fileName, EconomyRequirementType.Points, Double.parseDouble(map.get("cost").toString()), chargeable, "", new Object());
                     break;
                 case "DCurrency":
                     // This is the way we deal with DCurrency-type requirements
-                    data = new EconomyRequirementData(EconomyRequirementType.DCurrency, Double.parseDouble(map.get("cost").toString()), chargeable, new Object());
+                    data = new EconomyRequirementData(fileName, EconomyRequirementType.DCurrency, Double.parseDouble(map.get("cost").toString()), chargeable, (String) map.getOrDefault("reason", ""), new Object());
                     data.setExtraData(new String[]{(String) map.get("currencyType")});
                     break;
                 case "Item":

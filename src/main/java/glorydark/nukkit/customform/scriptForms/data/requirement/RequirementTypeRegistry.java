@@ -21,6 +21,9 @@ public class RequirementTypeRegistry {
 
     public static void registerCustomRequirementType(String identifier, Function<Map<String, Object>, RequirementData> function) {
         customRequirementTypes.put(identifier, function);
+        if (CustomFormMain.ready) {
+            CustomFormMain.plugin.loadAll();
+        }
     }
 
     /**
@@ -35,6 +38,8 @@ public class RequirementTypeRegistry {
             try {
                 if (find != null) {
                     return find.apply(map);
+                } else {
+                    CustomFormMain.plugin.getLogger().info("识别自定义条件类型失败。数据类型: " + type + "，数据内容: " + map.toString());
                 }
             } catch (Throwable t) {
                 CustomFormMain.plugin.getLogger().info("识别自定义条件类型失败。数据类型: " + type + "，数据内容: " + map.toString());

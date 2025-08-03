@@ -13,17 +13,22 @@ import java.math.BigDecimal;
 @Data
 @ToString
 public class EconomyRequirementData {
+
+    String formId;
     // Tips / EconomyAPI / DCurrency
     EconomyRequirementType type;
     double amount;
     Object[] extraData;
 
     boolean chargeable;
+    String reason;
 
-    public EconomyRequirementData(EconomyRequirementType type, double amount, boolean chargeable, Object... extraData) {
+    public EconomyRequirementData(String formId, EconomyRequirementType type, double amount, boolean chargeable, String reason, Object... extraData) {
+        this.formId = formId;
         this.type = type;
         this.amount = amount;
         this.chargeable = chargeable;
+        this.reason = reason;
         this.extraData = extraData;
     }
 
@@ -69,9 +74,17 @@ public class EconomyRequirementData {
                 player.sendMessage(CustomFormMain.language.translateString(player, "requirements_economyAPI_consume", consumeValue));
                 break;
             case DCurrency:
-                CurrencyAPI.reduceCurrencyBalance(player.getName(), (String) extraData[0], consumeValue.doubleValue());
+                CurrencyAPI.reduceCurrencyBalance(player.getName(), (String) extraData[0], consumeValue.doubleValue(), this.getReason().isEmpty()? "Customform菜单 - " + this.formId: this.getReason());
                 player.sendMessage(CustomFormMain.language.translateString(player, "requirements_currencyAPI_consume", extraData[0], consumeValue));
                 break;
         }
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }
