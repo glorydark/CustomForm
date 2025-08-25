@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.form.element.*;
+import cn.nukkit.item.Item;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.scheduler.Task;
@@ -37,6 +38,7 @@ public class CustomFormCommands extends Command {
         if (strings.length == 0) {
             return false;
         }
+        Player player = commandSender.asPlayer();
         switch (strings[0].toLowerCase()) {
             case "test":
                 if (commandSender.isOp()) {
@@ -48,6 +50,30 @@ public class CustomFormCommands extends Command {
                     custom.addElement(new ElementStepSlider("Step Slider"));
                     custom.showToPlayer(commandSender.asPlayer());
                 }
+                break;
+            case "giveitem":
+                if (!commandSender.isOp()) {
+                    return false;
+                }
+                if (strings.length != 4) {
+                    return false;
+                }
+                String giveToPlayerName = strings[1];
+                String itemId = strings[2];
+                int count = Integer.parseInt(strings[3]);
+                Item item = InventoryUtils.toItem(itemId);
+                if (item.getId() == 0) {
+                    commandSender.sendMessage("Cannot build item from nbt string/save id: " + itemId);
+                    return false;
+                }
+                item.setCount(count);
+                Player player1 = Server.getInstance().getPlayer(giveToPlayerName);
+                if (player1 == null) {
+                    commandSender.sendMessage(TextFormat.RED + "Fail to find player: " + giveToPlayerName);
+                    return false;
+                }
+                player1.getInventory().addItem(item);
+                commandSender.sendMessage(TextFormat.GREEN + "Give {" + item.getName() + "} to {" + player + "}, item nbt/save id {" + itemId + "}");
                 break;
             case "reload":
                 if (commandSender.isOp() || !commandSender.isPlayer()) {
@@ -66,65 +92,50 @@ public class CustomFormCommands extends Command {
                 }
                 break;
             case "whitelist": // whitelist add 菜单名 玩家名
+                if (!commandSender.isOp()) {
+                    return false;
+                }
                 if (strings.length == 4) {
                     String formId = strings[2];
                     String playerName = strings[3];
+                    ScriptForm scriptForm = FormCreator.formScripts.get(formId);
+                    if (scriptForm == null) {
+                        commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.form.not_found", formId));
+                        return false;
+                    }
+                    Config config = null;
+                    File file = new File(CustomFormMain.path + "/forms/" + formId + ".json");
+                    if (file.exists()) {
+                        config = new Config(file, Config.JSON);
+                    } else {
+                        file = new File(CustomFormMain.path + "/forms/" + formId + ".yml");
+                        if (file.exists()) {
+                            config = new Config(file, Config.YAML);
+                        }
+                    }
+                    if (config == null) {
+                        commandSender.sendMessage(TextFormat.RED + "Unable to find form: " + formId);
+                        return false;
+                    }
                     switch (strings[1]) {
-                        case "add":
-                            ScriptForm scriptForm = FormCreator.formScripts.get(formId);
-                            if (scriptForm == null) {
-                                commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.form.not_found", formId));
-                            } else {
-                                if (!scriptForm.getOpenPermissionWhitelist().contains(playerName)) {
-                                    scriptForm.getOpenPermissionWhitelist().add(playerName);
-                                }
-                                Config config = null;
-                                File file = new File(CustomFormMain.path + "/forms/" + formId + ".json");
-                                if (file.exists()) {
-                                    config = new Config(file, Config.JSON);
-                                } else {
-                                    file = new File(CustomFormMain.path + "/forms/" + formId + ".yml");
-                                    if (file.exists()) {
-                                        config = new Config(file, Config.YAML);
-                                    }
-                                }
-                                if (config != null) {
-                                    ConfigSection section = config.getSection("open_permissions");
-                                    section.set("whitelist", scriptForm.getOpenPermissionWhitelist());
-                                    config.set("open_permissions", section);
-                                    config.save();
-                                    commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.whitelist.add.success", playerName, formId));
-                                } else {
-                                    commandSender.sendMessage(TextFormat.RED + "Found an exception in finding file: " + formId);
-                                }
+                        case "add": {
+                            if (!scriptForm.getOpenPermissionWhitelist().contains(playerName)) {
+                                scriptForm.getOpenPermissionWhitelist().add(playerName);
                             }
+                            ConfigSection section = config.getSection("open_permissions");
+                            section.set("whitelist", scriptForm.getOpenPermissionWhitelist());
+                            config.set("open_permissions", section);
+                            config.save();
+                            commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.whitelist.add.success", playerName, formId));
+                        }
                             break;
                         case "remove":
-                            scriptForm = FormCreator.formScripts.get(formId);
-                            if (scriptForm == null) {
-                                commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.form.not_found", formId));
-                            } else {
-                                scriptForm.getOpenPermissionWhitelist().remove(playerName);
-                                Config config = null;
-                                File file = new File(CustomFormMain.path + "/forms/" + formId + ".json");
-                                if (file.exists()) {
-                                    config = new Config(file, Config.JSON);
-                                } else {
-                                    file = new File(CustomFormMain.path + "/forms/" + formId + ".yml");
-                                    if (file.exists()) {
-                                        config = new Config(file, Config.YAML);
-                                    }
-                                }
-                                if (config != null) {
-                                    ConfigSection section = config.getSection("open_permissions");
-                                    section.set("whitelist", scriptForm.getOpenPermissionWhitelist());
-                                    config.set("open_permissions", section);
-                                    config.save();
-                                    commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.whitelist.remove.success", playerName, formId));
-                                } else {
-                                    commandSender.sendMessage(TextFormat.RED + "Found an exception in finding file: " + formId);
-                                }
-                            }
+                            scriptForm.getOpenPermissionWhitelist().remove(playerName);
+                            ConfigSection section = config.getSection("open_permissions");
+                            section.set("whitelist", scriptForm.getOpenPermissionWhitelist());
+                            config.set("open_permissions", section);
+                            config.save();
+                            commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.whitelist.remove.success", playerName, formId));
                             break;
                     }
                 }
@@ -139,7 +150,7 @@ public class CustomFormCommands extends Command {
                     }
                 } else {
                     if (strings.length == 3) {
-                        Player player = Server.getInstance().getPlayer(strings[1]);
+                        player = Server.getInstance().getPlayer(strings[1]);
                         if (player != null) {
                             FormCreator.showScriptForm(player, strings[2], true);
                         } else {
@@ -156,20 +167,20 @@ public class CustomFormCommands extends Command {
                 }
                 if (commandSender.isPlayer()) {
                     if (strings.length >= 2) {
-                        Player player = (Player) commandSender;
                         int delay = strings.length == 3? Integer.parseInt(strings[2]): 0;
                         if (delay == 0) {
                             HopperFormMain.showToPlayer(player, strings[1]);
                         } else {
+                            final Player playerCopy = player;
                             Server.getInstance().getScheduler().scheduleDelayedTask(CustomFormMain.plugin, new Task() {
                                 @Override
                                 public void onRun(int i) {
-                                    HopperFormMain.showToPlayer(player, strings[1]);
+                                    HopperFormMain.showToPlayer(playerCopy, strings[1]);
                                 }
                             }, delay);
                         }
                     } else {
-                        commandSender.sendMessage(TextFormat.RED + "Unable to open form: " + strings[1]);
+                        commandSender.sendMessage(TextFormat.RED + "Usage: /form showhopperform <formId>");
                     }
                 } else {
                     commandSender.sendMessage(CustomFormMain.language.translateString(null, "command_use_in_game", strings[1]));
@@ -181,20 +192,20 @@ public class CustomFormCommands extends Command {
                 }
                 if (commandSender.isPlayer()) {
                     if (strings.length >= 2) {
-                        Player player = (Player) commandSender;
                         int delay = strings.length == 3? Integer.parseInt(strings[2]): 0;
                         if (delay == 0) {
                             ChestFormMain.showToPlayer(player, strings[1]);
                         } else {
+                            final Player playerCopy = player;
                             Server.getInstance().getScheduler().scheduleDelayedTask(CustomFormMain.plugin, new Task() {
                                 @Override
                                 public void onRun(int i) {
-                                    ChestFormMain.showToPlayer(player, strings[1]);
+                                    ChestFormMain.showToPlayer(playerCopy, strings[1]);
                                 }
                             }, delay);
                         }
                     } else {
-                        commandSender.sendMessage(TextFormat.RED + "Unable to open form: " + strings[1]);
+                        commandSender.sendMessage(TextFormat.RED + "Usage: /form showchestform <formId>");
                     }
                 } else {
                     commandSender.sendMessage(CustomFormMain.language.translateString(null, "command_use_in_game", strings[1]));
@@ -219,7 +230,7 @@ public class CustomFormCommands extends Command {
                 }
                 break;
             case "executewithdelay":
-                if (commandSender.isPlayer() && !commandSender.isOp()) {
+                if (!commandSender.isOp()) {
                     return false;
                 }
                 if (strings.length == 4) { // form executewithdelay console xxx
@@ -233,31 +244,32 @@ public class CustomFormCommands extends Command {
                 }
                 break;
             case "broadcastmsg":
-                if (commandSender.isPlayer() && !commandSender.isOp()) {
+                if (!commandSender.isOp()) {
                     return false;
                 }
                 if (strings.length == 2) {
-                    for (Player player : Server.getInstance().getOnlinePlayers().values()) {
-                        player.sendMessage(strings[1].replace("{空格}", " "));
+                    for (Player onlinePlayer : Server.getInstance().getOnlinePlayers().values()) {
+                        onlinePlayer.sendMessage(strings[1].replace("{空格}", " "));
                     }
                     CustomFormMain.plugin.getLogger().info(strings[1].replace("{空格}", " "));
                 }
                 break;
             case "savenbt":
+                if (!commandSender.isOp()) {
+                    return false;
+                }
                 if (strings.length == 2) {
-                    if (commandSender.isPlayer() && commandSender.isOp()) {
-                        Config config = new Config(CustomFormMain.path + "/save_nbt_cache.yml", Config.YAML);
-                        config.set(strings[1], InventoryUtils.saveItemToString(((Player) commandSender).getInventory().getItemInHand()));
-                        config.save();
-                        commandSender.sendMessage("Save item string successfully!");
-                    }
+                    Config config = new Config(CustomFormMain.path + "/save_nbt_cache.yml", Config.YAML);
+                    config.set(strings[1], InventoryUtils.saveItemToString(((Player) commandSender).getInventory().getItemInHand()));
+                    config.save();
+                    commandSender.sendMessage("Save item string successfully!");
                 }
                 break;
             case "tp": // tp test 0 1 0 world 2 2 2
-                if (commandSender.isPlayer() && !commandSender.isOp()) {
+                if (!commandSender.isOp()) {
                     return false;
                 }
-                Player player = Server.getInstance().getPlayer(strings[1]);
+                player = Server.getInstance().getPlayer(strings[1]);
                 if (player == null) {
                     commandSender.sendMessage("Can not find player!");
                     return false;
