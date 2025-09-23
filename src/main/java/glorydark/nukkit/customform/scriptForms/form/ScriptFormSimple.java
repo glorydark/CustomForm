@@ -9,6 +9,7 @@ import cn.nukkit.form.window.FormWindowSimple;
 import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.SimpleResponseExecuteData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
+import glorydark.nukkit.customform.utils.ReplaceContainer;
 import glorydark.nukkit.customform.utils.ReplaceStringUtils;
 import lombok.Data;
 
@@ -68,12 +69,13 @@ public class ScriptFormSimple implements ScriptForm {
         }
     }
 
+    @Override
     public void execute(Player player, FormWindow respondWindow, FormResponse response, Object... params) {
         FormResponseSimple responseSimple = (FormResponseSimple) response;
         if (data.size() <= responseSimple.getClickedButtonId()) {
             return;
         }
-        data.get(responseSimple.getClickedButtonId()).execute(player, 0, params);
+        data.get(responseSimple.getClickedButtonId()).execute(player, 0, ReplaceContainer.EMPTY_CONTAINER, params);
     }
 
     public FormWindowSimple getWindow(Player player) {

@@ -6,12 +6,13 @@ import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.response.FormResponseCustom;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
-import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.ResponseExecuteData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.element.ElementPlayerListDropdown;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import glorydark.nukkit.customform.utils.CommandUtils;
+import glorydark.nukkit.customform.utils.ReplaceContainer;
+import glorydark.nukkit.customform.utils.ReplacePair;
 import glorydark.nukkit.customform.utils.ReplaceStringUtils;
 import lombok.Data;
 
@@ -85,6 +86,7 @@ public class ScriptFormCustom implements ScriptForm {
         }
     }
 
+    @Override
     public void execute(Player player, FormWindow respondWindow, FormResponse response, Object... params) {
         FormWindowCustom respondCustomWindow = (FormWindowCustom) respondWindow;
         FormResponseCustom responseCustom = (FormResponseCustom) response;
@@ -142,15 +144,16 @@ public class ScriptFormCustom implements ScriptForm {
                 if (element instanceof ElementDropdown) {
                     int elementDropdownResponseId = Integer.parseInt(((FormResponseCustom) response).getResponse(key).toString());
                     ElementDropdown dropdown = ((ElementDropdown) respondCustomWindow.getElements().get(key));
-                    responseExecuteData.execute(player, elementDropdownResponseId, dropdown.getOptions().get(elementDropdownResponseId));
+                    responseExecuteData.execute(player, elementDropdownResponseId, ReplaceContainer.of(new ReplacePair<>("%get%", dropdown.getOptions().get(elementDropdownResponseId))));
                 } else {
                     if (respondCustomWindow.getElements().get(key) instanceof ElementStepSlider) {
                         int stepSliderResponseId = Integer.parseInt(((FormResponseCustom) response).getResponse(key).toString());
                         ElementStepSlider stepSlider = ((ElementStepSlider) respondCustomWindow.getElements().get(key));
-                        responseExecuteData.execute(player, stepSliderResponseId, stepSlider.getSteps().get(stepSliderResponseId));
+                        responseExecuteData.execute(player, stepSliderResponseId, ReplaceContainer.of(new ReplacePair<>("%get%", stepSlider.getSteps().get(stepSliderResponseId))));
                     } else {
                         if (responseCustom.getResponse(key) != null) {
-                            responseExecuteData.execute(player, 0, responseCustom.getResponse(key));
+                            Object o = responseCustom.getResponse(key);
+                            responseExecuteData.execute(player, 0, ReplaceContainer.of(new ReplacePair<>("%get%", o == null? "null": String.valueOf(o))));
                         }
                     }
                 }

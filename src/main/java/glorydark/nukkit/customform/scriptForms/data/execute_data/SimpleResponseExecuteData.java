@@ -7,6 +7,7 @@ import glorydark.nukkit.customform.scriptForms.data.execute_data.config.ConfigMo
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import glorydark.nukkit.customform.utils.CommandUtils;
 import glorydark.nukkit.customform.utils.ConfigUtils;
+import glorydark.nukkit.customform.utils.ReplaceContainer;
 import lombok.Data;
 
 import java.util.Date;
@@ -45,7 +46,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
         this.configModifications = configModifications;
     }
 
-    public void execute(Player player, int responseId, Object... params) {
+    public void execute(Player player, int responseId, ReplaceContainer replaceContainer, Object... params) {
         if (!this.isInStartDate(player)) {
             return;
         }
@@ -97,7 +98,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
             }
         } else {
             for (String command : commands) {
-                CommandUtils.executeCommand(player, replace(command, player, true));
+                CommandUtils.executeCommand(player, replaceContainer.replaceString(replace(command, player, true)));
             }
             for (String message : messages) {
                 player.sendMessage(replace(message, player, false, params));

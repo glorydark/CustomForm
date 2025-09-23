@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.config.ConfigModification;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import glorydark.nukkit.customform.utils.CommandUtils;
+import glorydark.nukkit.customform.utils.ReplaceContainer;
 import tip.utils.Api;
 
 import java.util.ArrayList;
@@ -19,12 +20,12 @@ public class DropdownPlayerListResponse extends SimpleResponseExecuteData {
     }
 
     @Override
-    public void execute(Player player, int responseId, Object... params) {
+    public void execute(Player player, int responseId, ReplaceContainer replaceContainer, Object... params) {
         if (!this.isInStartDate(player)) {
             return;
         }
         for (String command : commands) {
-            CommandUtils.executeCommand(player, replace(command, player, true, responseId, params[0]));
+            CommandUtils.executeCommand(player, replaceContainer.replaceString(replace(command, player, true, responseId, params[0])));
         }
         for (String message : messages) {
             player.sendMessage(replace(message, player, false, responseId, params[0]));

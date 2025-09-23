@@ -9,6 +9,7 @@ import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.SimpleResponseExecuteData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
+import glorydark.nukkit.customform.utils.ReplaceContainer;
 import glorydark.nukkit.customform.utils.ReplaceStringUtils;
 import lombok.Data;
 
@@ -67,12 +68,13 @@ public class ScriptFormModal implements ScriptForm {
         }
     }
 
+    @Override
     public void execute(Player player, FormWindow respondWindow, FormResponse response, Object... params) {
         FormResponseModal responseModal = (FormResponseModal) response;
         if (data.size() <= (responseModal.getClickedButtonId())) {
             return;
         }
-        data.get(responseModal.getClickedButtonId()).execute(player, 0, params);
+        data.get(responseModal.getClickedButtonId()).execute(player, 0, ReplaceContainer.EMPTY_CONTAINER, params);
     }
 
     public FormWindowModal initWindow() {

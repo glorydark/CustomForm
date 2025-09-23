@@ -2,6 +2,7 @@ package glorydark.nukkit.customform.scriptForms.data.execute_data;
 
 import cn.nukkit.Player;
 import glorydark.nukkit.customform.utils.CommandUtils;
+import glorydark.nukkit.customform.utils.ReplaceContainer;
 import lombok.Data;
 import tip.utils.Api;
 
@@ -22,7 +23,7 @@ public class StepResponseExecuteData implements ResponseExecuteData {
         this.responses = responses;
     }
 
-    public void execute(Player player, int responseId, Object... params) {
+    public void execute(Player player, int responseId, ReplaceContainer replaceContainer, Object... params) {
         if (!this.isInStartDate(player)) {
             return;
         }
@@ -30,7 +31,7 @@ public class StepResponseExecuteData implements ResponseExecuteData {
             return;
         }
         for (String command : responses.get(responseId).getCommands()) {
-            CommandUtils.executeCommand(player, replace(command, player, true, responseId, params[0]));
+            CommandUtils.executeCommand(player, replaceContainer.replaceString(replace(command, player, true, responseId, params[0])));
         }
         for (String message : responses.get(responseId).getMessages()) {
             player.sendMessage(replace(message, player, false, responseId, params[0]));

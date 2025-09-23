@@ -3,6 +3,7 @@ package glorydark.nukkit.customform.scriptForms.data.execute_data;
 import cn.nukkit.Player;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.factory.FormCreator;
+import glorydark.nukkit.customform.utils.ReplaceContainer;
 
 import java.util.Date;
 
@@ -14,7 +15,7 @@ public interface ResponseExecuteData {
 
     String replace(String text, Player player, boolean addQuotationMark, Object... params);
 
-    void execute(Player player, int responseId, Object... params);
+    void execute(Player player, int responseId, ReplaceContainer replaceContainer, Object... params);
 
     default boolean isInStartDate(Player player) {
         long startMillis = this.getStartDate().getTime();
