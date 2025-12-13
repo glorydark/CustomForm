@@ -90,8 +90,10 @@ public class MinecartChestMenuListener implements Listener {
                                     }
                                     int clickId = event.getSlot() + (page - 1) * MinecartChestMenu.MAX_ITEM_SLOTS_PC;
                                     MinecartChestMenuComponent component = data.getMenu().getChestMenuPCComponents().get(clickId);
-                                    component.execute(player);
-                                    MinecartChestMenuMain.closeDoubleChestInventory(player);
+                                    if (component != null) {
+                                        component.execute(player);
+                                        MinecartChestMenuMain.closeDoubleChestInventory(player);
+                                    }
                                 }
                                 break;
                         }
@@ -104,8 +106,10 @@ public class MinecartChestMenuListener implements Listener {
                             case MinecartChestMenu.SLOT_ITEM_CONFIRM_PC:
                                 int clickId = data.getDoubleCheckComponentId();
                                 MinecartChestMenuComponent component = data.getMenu().getChestMenuPCComponents().get(clickId);
-                                component.execute(player);
-                                MinecartChestMenuMain.closeDoubleChestInventory(player);
+                                if (component != null) {
+                                    component.execute(player);
+                                    MinecartChestMenuMain.closeDoubleChestInventory(player);
+                                }
                                 break;
                         }
                     }
@@ -143,8 +147,10 @@ public class MinecartChestMenuListener implements Listener {
                                     }
                                     int clickId = event.getSlot() + (page - 1) * MinecartChestMenu.MAX_ITEM_SLOTS_PE;
                                     MinecartChestMenuComponent component = data.getMenu().getChestMenuPEComponents().get(clickId);
-                                    component.execute(player);
-                                    MinecartChestMenuMain.closeDoubleChestInventory(player);
+                                    if (component != null) {
+                                        component.execute(player);
+                                        MinecartChestMenuMain.closeDoubleChestInventory(player);
+                                    }
                                 }
                                 break;
                         }
@@ -157,8 +163,10 @@ public class MinecartChestMenuListener implements Listener {
                             case MinecartChestMenu.SLOT_ITEM_CONFIRM_PE:
                                 int clickId = data.getDoubleCheckComponentId();
                                 MinecartChestMenuComponent component = data.getMenu().getChestMenuPEComponents().get(clickId);
-                                component.execute(player);
-                                MinecartChestMenuMain.closeDoubleChestInventory(player);
+                                if (component != null) {
+                                    component.execute(player);
+                                    MinecartChestMenuMain.closeDoubleChestInventory(player);
+                                }
                                 break;
                         }
                     }
