@@ -43,6 +43,8 @@ public class MinecartChestMenu {
     public static final int SLOT_ITEM_CURRENT_PAGE_INFO_PE = 25;
     public static final int SLOT_ITEM_NEXT_PAGE_PE = 26;
 
+    private boolean invalid = false;
+
     private HashMap<Integer, MinecartChestMenuComponent> chestMenuPCComponents = new HashMap<>();
 
     private HashMap<Integer, MinecartChestMenuComponent> chestMenuPEComponents = new HashMap<>();

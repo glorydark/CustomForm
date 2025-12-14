@@ -9,6 +9,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class FormEntityMinecartChest extends EntityMinecartChest {
 
+    private boolean invalid = false;
+
     public FormEntityMinecartChest(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         this.setImmobile(true);
@@ -21,6 +23,17 @@ public class FormEntityMinecartChest extends EntityMinecartChest {
 
     @Override
     public void kill() {
-        // no-do
+        if (this.invalid) {
+            super.kill();
+            this.getInventory().clearAll();
+        }
+    }
+
+    public void setInvalid(boolean invalid) {
+        this.invalid = invalid;
+    }
+
+    public boolean isInvalid() {
+        return invalid;
     }
 }

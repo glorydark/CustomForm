@@ -2,6 +2,7 @@ package glorydark.nukkit.customform.minecartChestMenu;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.item.EntityMinecartChest;
+import cn.nukkit.network.protocol.RemoveEntityPacket;
 import glorydark.nukkit.customform.entity.FormEntityMinecartChest;
 import glorydark.nukkit.customform.factory.FormCreator;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
@@ -20,9 +21,17 @@ public class MinecartChestMenuMain {
 
     public static void closeDoubleChestInventory(Player player) {
         if (mineCartChests.containsKey(player)) {
-            EntityMinecartChest chest = mineCartChests.get(player).getEntityMinecartChest();
+            FormEntityMinecartChest chest = mineCartChests.get(player).getEntityMinecartChest();
+            final long id = chest.getId();
+            chest.setInvalid(true);
             chest.kill();
             chest.close();
+
+            // try-fix despawn failure
+            RemoveEntityPacket pk = new RemoveEntityPacket();
+            pk.eid = id;
+            player.dataPacket(pk);
+
             mineCartChests.remove(player);
         }
     }

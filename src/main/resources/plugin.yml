@@ -1,6 +1,6 @@
 main: glorydark.nukkit.customform.CustomFormMain
 name: CustomForm
-version: "1.4.7"
+version: "1.4.8"
 api: 1.0.0
 author: Glorydark
 description: CustomForm
