@@ -4,8 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.utils.Config;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.script.CustomFormScriptManager;
-import glorydark.nukkit.customform.script.RhinoScriptEngine;
-import glorydark.nukkit.customform.script.ScriptPlayerAPI;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.config.ConfigModification;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import glorydark.nukkit.customform.utils.CommandUtils;
@@ -13,8 +11,6 @@ import glorydark.nukkit.customform.utils.ConfigUtils;
 import glorydark.nukkit.customform.utils.ReplaceContainer;
 import lombok.Data;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

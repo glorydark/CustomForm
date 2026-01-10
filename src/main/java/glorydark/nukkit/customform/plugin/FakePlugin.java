@@ -1,6 +1,5 @@
 package glorydark.nukkit.customform.plugin;
 
-import cn.nukkit.plugin.InternalPlugin;
 import cn.nukkit.plugin.PluginBase;
 
 /**

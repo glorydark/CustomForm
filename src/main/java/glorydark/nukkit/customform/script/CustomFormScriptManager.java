@@ -1,12 +1,11 @@
 package glorydark.nukkit.customform.script;
 
-import cn.nukkit.Player;
+import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.utils.Utils;
 import glorydark.nukkit.customform.CustomFormMain;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -35,7 +34,7 @@ public class CustomFormScriptManager {
             for (String scriptId : CustomFormMain.SCRIPTS_RUN_ON_START) {
                 if (scripts.containsKey(scriptId)) {
                     String script = scripts.get(scriptId);
-                    CustomFormScriptManager.executeScript(null, script);
+                    CustomFormScriptManager.executeScript(new ConsoleCommandSender(), script);
                 }
             }
         }
@@ -63,24 +62,24 @@ public class CustomFormScriptManager {
         }
     }
 
-    public static void executeLoadedScript(Player player, String scriptId) {
+    public static void executeLoadedScript(CommandSender sender, String scriptId) {
         if (!scripts.containsKey(scriptId)) {
             CustomFormMain.plugin.getLogger().error("Script not found: " + scriptId);
             return;
         }
-        executeScript(player, scripts.getOrDefault(scriptId, ""));
+        executeScript(sender, scripts.getOrDefault(scriptId, ""));
     }
 
-    public static void executeScript(Player player, String script) {
+    public static void executeScript(CommandSender sender, String script) {
         try {
-            engine.put("player", player);
+            engine.put("sender", sender);
             engine.put("server", CustomFormMain.plugin.getServer());
             engine.put("api", new ScriptPlayerAPI());
             engine.put("plugin", CustomFormMain.fakeScriptPlugin);
 
             engine.eval(script);
-        } catch (ScriptException e) {
-            player.sendMessage("§cError in loading script: " + e.getMessage());
+        } catch (Throwable t) {
+            sender.sendMessage("§cError in loading script: " + t.getMessage());
         }
     }
 }

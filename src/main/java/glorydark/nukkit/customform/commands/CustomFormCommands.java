@@ -293,7 +293,7 @@ public class CustomFormCommands extends Command {
                 if (strings.length < 2) {
                     return false;
                 }
-                CustomFormScriptManager.executeLoadedScript(commandSender.asPlayer(), strings[1]);
+                CustomFormScriptManager.executeLoadedScript(commandSender, strings[1]);
                 break;
         }
         return true;

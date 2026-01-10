@@ -3,7 +3,6 @@ package glorydark.nukkit.customform.utils;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.scheduler.Task;
-import com.smallaswater.npc.RsNPC;
 import glorydark.nukkit.customform.CustomFormMain;
 
 import java.util.concurrent.ConcurrentHashMap;

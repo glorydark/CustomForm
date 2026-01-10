@@ -5,7 +5,6 @@ import cn.nukkit.plugin.*;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.ConfigSection;
-import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.utils.exception.RsNpcConfigLoadException;
 import com.smallaswater.npc.utils.exception.RsNpcLoadException;
@@ -31,7 +30,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 public class CustomFormMain extends PluginBase {
 
@@ -190,7 +188,11 @@ public class CustomFormMain extends PluginBase {
 
     public void loadAll() {
         if (fakeScriptPlugin != null) {
-            this.getServer().getScheduler().cancelTask(fakeScriptPlugin);
+            this.getServer().getPluginManager().disablePlugins();
+
+            this.getServer().getPluginManager().enablePlugin(fakeScriptPlugin);
+        } else {
+            this.loadInternalPlugin();
         }
         ScriptPlayerAPI.resetVariables();
         if (enableLanguageAPI) {
@@ -216,9 +218,6 @@ public class CustomFormMain extends PluginBase {
                     completableFutureList.clear();
                     ready = true;
                 });
-        if (this.getServer().getPluginManager().getPlugin("CustomFormScriptFakePlugin") == null) {
-            this.loadInternalPlugin();
-        }
     }
 
     public void loadInternalPlugin() {
