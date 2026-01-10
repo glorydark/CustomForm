@@ -3,7 +3,6 @@ package glorydark.nukkit.customform.script;
 import cn.nukkit.Player;
 import cn.nukkit.utils.Utils;
 import glorydark.nukkit.customform.CustomFormMain;
-import glorydark.nukkit.customform.factory.FormCreator;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
@@ -67,6 +66,7 @@ public class CustomFormScriptManager {
             engine.put("player", player);
             engine.put("server", CustomFormMain.plugin.getServer());
             engine.put("api", new ScriptPlayerAPI());
+            engine.put("plugin", CustomFormMain.plugin);
 
             engine.eval(script);
         } catch (ScriptException e) {
