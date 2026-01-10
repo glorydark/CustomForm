@@ -12,12 +12,12 @@ import com.smallaswater.npc.utils.exception.RsNpcLoadException;
 import glorydark.nukkit.customform.chestForm.ChestFormMain;
 import glorydark.nukkit.customform.commands.CustomFormCommands;
 import glorydark.nukkit.customform.event.FormLoadEvent;
-import glorydark.nukkit.customform.event.FormOpenEvent;
 import glorydark.nukkit.customform.factory.FormCreator;
 import glorydark.nukkit.customform.hopperform.HopperFormMain;
 import glorydark.nukkit.customform.listener.FormListener;
 import glorydark.nukkit.customform.minecartChestMenu.MinecartChestMenuListener;
 import glorydark.nukkit.customform.minecartChestMenu.MinecartChestMenuMain;
+import glorydark.nukkit.customform.script.CustomFormScriptManager;
 import glorydark.nukkit.customform.utils.InventoryUtils;
 import glorydark.nukkit.customform.utils.Tools;
 import glorydark.nukkit.utils.LanguageReader;
@@ -145,14 +145,14 @@ public class CustomFormMain extends PluginBase {
         File formDic = new File(path + "/forms/");
         if (!formDic.exists()) {
             if (!formDic.mkdirs()) {
-                this.getLogger().warning(language.translateString(null, "plugin_dictionary_created_failed"));
+                this.getLogger().warning(language.translateString(null, "plugin.directory.create.failed"));
                 this.setEnabled(false);
             }
         }
         File minecartChestWindowDic = new File(path + "/minecart_chest_windows/");
         if (!minecartChestWindowDic.exists()) {
             if (!minecartChestWindowDic.mkdirs()) {
-                this.getLogger().warning(language.translateString(null, "plugin_dictionary_created_failed"));
+                this.getLogger().warning(language.translateString(null, "plugin.directory.create.failed"));
                 this.setEnabled(false);
             }
         }
@@ -193,6 +193,7 @@ public class CustomFormMain extends PluginBase {
         this.loadItemStringCaches();
         this.loadScriptMineCartWindows(new File(path + "/minecart_chest_windows/"));
         this.loadScriptWindows(new File(path + "/forms/"));
+        CustomFormScriptManager.loadScripts();
         long startMillis = System.currentTimeMillis();
         CompletableFuture.allOf(completableFutureList.toArray(new CompletableFuture[0]))
                 .thenRun(() -> {
@@ -217,9 +218,9 @@ public class CustomFormMain extends PluginBase {
     public boolean checkSoftDepend(String pluginName) {
         Plugin pl = this.getServer().getPluginManager().getPlugin(pluginName);
         if (pl != null) {
-            this.getLogger().info(language.translateString(null, "soft_depend_found", pluginName));
+            this.getLogger().info(language.translateString(null, "soft.depend.found", pluginName));
         } else {
-            this.getLogger().info(language.translateString(null, "soft_depend_not_found", pluginName));
+            this.getLogger().info(language.translateString(null, "soft.depend.not_found", pluginName));
         }
         return (pl != null);
     }
@@ -248,7 +249,7 @@ public class CustomFormMain extends PluginBase {
                 loadScriptMinecartWindow(file, "");
             }
         }
-        this.getLogger().info(language.translateString(null, "chest_window_minecart_loaded_in_total", MinecartChestMenuMain.chestMenus.keySet().size()));
+        this.getLogger().info(language.translateString(null, "chest_window.minecart.load_in_total", MinecartChestMenuMain.chestMenus.keySet().size()));
     }
 
     protected void loadScriptMinecartWindow(File file, String prefix) {
@@ -260,9 +261,9 @@ public class CustomFormMain extends PluginBase {
             Map<String, Object> mainMap = FormCreator.convertConfigToMap(file);
             String identifier = prefix + file.getName().replace(".json", "").replace(".yml", "");
             if (MinecartChestMenuMain.registerMinecartChestMenu(identifier, mainMap)) {
-                this.getLogger().info(language.translateString(null, "chest_window_minecart_loaded", identifier));
+                this.getLogger().info(language.translateString(null, "chest_window.minecart.load", identifier));
             } else {
-                this.getLogger().error(language.translateString(null, "chest_window_minecart_loaded_failed", identifier));
+                this.getLogger().error(language.translateString(null, "chest_window.minecart.load.failed", identifier));
             }
         }
     }
@@ -284,7 +285,7 @@ public class CustomFormMain extends PluginBase {
                 loadScriptWindow(file, "");
             }
         }
-        this.getLogger().info(language.translateString(null, "form_loaded_in_total", FormCreator.formScripts.keySet().size()));
+        this.getLogger().info(language.translateString(null, "form.loaded.total", FormCreator.formScripts.keySet().size()));
     }
 
     protected void loadScriptWindow(File file, String prefix) {
@@ -296,9 +297,9 @@ public class CustomFormMain extends PluginBase {
             Map<String, Object> mainMap = FormCreator.convertConfigToMap(file);
             String identifier = prefix + file.getName().replace(".json", "").replace(".yml", "");
             if (FormCreator.loadForm(identifier, mainMap)) {
-                CustomFormMain.plugin.getLogger().info(language.translateString(null, "form_loaded", identifier));
+                CustomFormMain.plugin.getLogger().info(language.translateString(null, "form.loaded", identifier));
             } else {
-                CustomFormMain.plugin.getLogger().error(language.translateString(null, "form_loaded_failed", identifier));
+                CustomFormMain.plugin.getLogger().error(language.translateString(null, "form.loaded.failed", identifier));
             }
         }
     }

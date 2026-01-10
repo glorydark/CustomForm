@@ -22,7 +22,7 @@ import java.util.*;
 @Data
 public class ScriptFormCustom implements ScriptForm {
 
-    private List<ResponseExecuteData> data;
+    private Map<Integer, ResponseExecuteData> data;
 
     private Map<String, Object> config;
 
@@ -48,7 +48,7 @@ public class ScriptFormCustom implements ScriptForm {
 
     private List<String> openPermissionWhitelist;
 
-    public ScriptFormCustom(Map<String, Object> config, List<ResponseExecuteData> data, SoundData openSound, List<Requirements> openRequirements) {
+    public ScriptFormCustom(Map<String, Object> config, Map<Integer, ResponseExecuteData> data, SoundData openSound, List<Requirements> openRequirements) {
         this.config = config;
         this.data = data;
         this.window = initWindow();

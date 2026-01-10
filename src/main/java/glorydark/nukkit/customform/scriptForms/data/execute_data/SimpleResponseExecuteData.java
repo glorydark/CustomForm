@@ -3,6 +3,9 @@ package glorydark.nukkit.customform.scriptForms.data.execute_data;
 import cn.nukkit.Player;
 import cn.nukkit.utils.Config;
 import glorydark.nukkit.customform.CustomFormMain;
+import glorydark.nukkit.customform.script.CustomFormScriptManager;
+import glorydark.nukkit.customform.script.RhinoScriptEngine;
+import glorydark.nukkit.customform.script.ScriptPlayerAPI;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.config.ConfigModification;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
 import glorydark.nukkit.customform.utils.CommandUtils;
@@ -10,6 +13,9 @@ import glorydark.nukkit.customform.utils.ConfigUtils;
 import glorydark.nukkit.customform.utils.ReplaceContainer;
 import lombok.Data;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -18,25 +24,33 @@ import java.util.concurrent.ThreadLocalRandom;
 @Data
 public class SimpleResponseExecuteData implements ResponseExecuteData {
 
-    List<String> commands;
+    private List<String> commands;
 
-    List<String> messages;
+    private List<String> messages;
 
-    List<List<String>> randomCommands;
+    private List<List<String>> randomCommands;
 
-    List<String> failed_commands;
+    private List<String> failed_commands;
 
-    List<String> failed_messages;
+    private List<String> failed_messages;
 
-    List<Requirements> requirements;
+    private List<Requirements> requirements;
 
-    List<ConfigModification> configModifications;
+    private List<ConfigModification> configModifications;
 
-    Date startDate = new Date(-1);
+    private List<Requirements> showRequirements;
 
-    Date expiredDate = new Date(-1);
+    private Date startDate = new Date(-1);
+
+    private Date expiredDate = new Date(-1);
+
+    private String script;
 
     public SimpleResponseExecuteData(List<String> commands, List<String> messages, List<String> failed_commands, List<String> failed_messages, List<List<String>> randomCommands, List<Requirements> requirements, List<ConfigModification> configModifications) {
+        this(commands, messages, failed_commands, failed_messages, randomCommands, requirements, configModifications, new ArrayList<>(), "");
+    }
+
+    public SimpleResponseExecuteData(List<String> commands, List<String> messages, List<String> failed_commands, List<String> failed_messages, List<List<String>> randomCommands, List<Requirements> requirements, List<ConfigModification> configModifications, List<Requirements> showRequirements, String script) {
         this.commands = commands;
         this.messages = messages;
         this.failed_commands = failed_commands;
@@ -44,6 +58,8 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
         this.randomCommands = randomCommands;
         this.requirements = requirements;
         this.configModifications = configModifications;
+        this.showRequirements = showRequirements;
+        this.script = script;
     }
 
     public void execute(Player player, int responseId, ReplaceContainer replaceContainer, Object... params) {
@@ -69,16 +85,16 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
                 player.sendMessage("§c填入格式不符：请输入正确的数量！");
                 return;
             }
-            for (Requirements one : requirements) {
+            for (Requirements one : this.requirements) {
                 if (one.isAllQualified(player, multiply)) {
                     success = true;
                     one.reduceAllCosts(player, multiply);
                     for (int time = 0; time < multiply; time++) {
                         one.executeSuccessCommand(player);
-                        for (String command : commands) {
+                        for (String command : this.commands) {
                             CommandUtils.executeCommand(player, replace(command, player, true));
                         }
-                        for (String message : messages) {
+                        for (String message : this.messages) {
                             player.sendMessage(replace(message, player, false, params));
                         }
                     }
@@ -89,29 +105,32 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
                 }
             }
             if (!success) {
-                for (String command : failed_commands) {
+                for (String command : this.failed_commands) {
                     CommandUtils.executeCommand(player, replace(command, player, true));
                 }
-                for (String message : failed_messages) {
+                for (String message : this.failed_messages) {
                     player.sendMessage(replace(message, player, false, params));
                 }
             }
         } else {
-            for (String command : commands) {
+            for (String command : this.commands) {
                 CommandUtils.executeCommand(player, replaceContainer.replaceString(replace(command, player, true)));
             }
-            for (String message : messages) {
+            for (String message : this.messages) {
                 player.sendMessage(replace(message, player, false, params));
             }
             executeConfigModification(player);
         }
-        for (List<String> randomCommand : randomCommands) {
+        for (List<String> randomCommand : this.randomCommands) {
             CommandUtils.executeCommand(player, replace(randomCommand.get(ThreadLocalRandom.current().nextInt(randomCommand.size())), player, true));
+        }
+        if (!this.script.isEmpty()) {
+            CustomFormScriptManager.executeScript(player, this.getScript());
         }
     }
 
     public void executeConfigModification(Player player) {
-        for (ConfigModification configModification : configModifications) {
+        for (ConfigModification configModification : this.configModifications) {
             Config config;
             Object modificationValue = configModification.getValue();
             switch (configModification.getConfigType()) {
@@ -223,5 +242,10 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
                 return ready.replace("%get%", String.valueOf(params[0]));
             }
         }
+    }
+
+    public boolean isVisible(Player player) {
+        return this.getShowRequirements().isEmpty()
+                || Requirements.isAnyRequirementMet(this.getShowRequirements(), player, 1, false);
     }
 }

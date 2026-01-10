@@ -135,5 +135,4 @@ public class ConfigModification {
             config.save();
         }
     }
-
 }

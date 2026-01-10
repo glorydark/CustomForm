@@ -25,6 +25,10 @@ public class ItemRequirementData {
     }
 
     public boolean checkItemIsPossess(Player player, boolean reducing, int multiply) {
+        return this.checkItemIsPossess(player, reducing, multiply, true);
+    }
+
+    public boolean checkItemIsPossess(Player player, boolean reducing, int multiply, boolean output) {
         if (!needItems.isEmpty()) {
             List<NeedItem> costItems = new ArrayList<>();
             for (NeedItem s : needItems) {
@@ -68,7 +72,9 @@ public class ItemRequirementData {
                         for (AlternativeItem alternative : s.getAlternatives()) {
                             builder.append("/").append(alternative.getItem().getName()).append("*");
                         }
-                        player.sendMessage(CustomFormMain.language.translateString(player, "requirements_item_not_qualified", builder.toString()));
+                        if (output) {
+                            player.sendMessage(CustomFormMain.language.translateString(player, "requirements.item.not_qualified", builder.toString()));
+                        }
                         return false;
                     }
                 } else {

@@ -5,13 +5,13 @@ import cn.nukkit.Server;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.form.window.FormWindowModal;
-import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.network.protocol.ModalFormRequestPacket;
 import cn.nukkit.utils.Config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import gameapi.form.AdvancedFormWindowSimple;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.GsonAdapter;
 import glorydark.nukkit.customform.annotations.Api;
@@ -35,6 +35,7 @@ import glorydark.nukkit.customform.scriptForms.form.*;
 import glorydark.nukkit.customform.utils.CameraUtils;
 import glorydark.nukkit.customform.utils.MathCompareSign;
 import glorydark.nukkit.customform.utils.Tools;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Data;
 
 import java.io.*;
@@ -56,7 +57,7 @@ public class FormCreator {
         if (date.getTime() <= 0) {
             return "?";
         } else {
-            SimpleDateFormat format = new SimpleDateFormat(CustomFormMain.language.translateString(player, "form_date_string_format"));
+            SimpleDateFormat format = new SimpleDateFormat(CustomFormMain.language.translateString(player, "default.date_string_format"));
             return format.format(date);
         }
     }
@@ -139,7 +140,7 @@ public class FormCreator {
             if (allowOpen) {
                 showScriptForm(player, script, identifier);
             } else {
-                player.sendMessage(CustomFormMain.language.translateString(player, "command_no_permission"));
+                player.sendMessage(CustomFormMain.language.translateString(player, "command.no_permission"));
             }
         }
     }
@@ -149,7 +150,7 @@ public class FormCreator {
     public static void showScriptForm(Player player, ScriptForm script, String identifier) {
         if (player.namedTag.contains("lastFormRequestMillis")
                 && System.currentTimeMillis() - player.namedTag.getLong("lastFormRequestMillis") < CustomFormMain.coolDownMillis) {
-            String tip = CustomFormMain.language.translateString(player, "operation_so_fast");
+            String tip = CustomFormMain.language.translateString(player, "default.operation_so_fast");
             if (!tip.isEmpty()) {
                 player.sendMessage(tip);
             }
@@ -175,8 +176,8 @@ public class FormCreator {
         if (script.getOpenSound() != null) {
             script.getOpenSound().addSound(player);
         }
-        if (window instanceof FormWindowSimple) {
-            showFormToPlayer(player, FormType.ScriptSimple, script, identifier);
+        if (window instanceof AdvancedFormWindowSimple simple) {
+            simple.showToPlayer(player);
         }
         if (window instanceof FormWindowModal) {
             showFormToPlayer(player, FormType.ScriptModal, script, identifier);
@@ -349,10 +350,11 @@ public class FormCreator {
     @Api
     public static ScriptForm getScriptFormByMap(String identifier, Map<String, Object> config) {
         long startMillis = System.currentTimeMillis();
+        int i = 0;
         switch ((int) config.get("type")) {
             case 0:
                 //simple
-                List<SimpleResponseExecuteData> simpleResponseExecuteDataList = new ArrayList<>();
+                Map<Integer, SimpleResponseExecuteData> simpleResponseExecuteDataList = new Int2ObjectOpenHashMap<>();
                 if (config.containsKey("components")) {
                     for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
                         SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), (List<String>) component.getOrDefault("failed_commands", new ArrayList<>()), (List<String>) component.getOrDefault("failed_messages", new ArrayList<>()), (List<List<String>>) component.getOrDefault("random_commands", new ArrayList<>()), new ArrayList<>(), new ArrayList<>());
@@ -365,6 +367,19 @@ public class FormCreator {
                                                 .whenCompleteAsync((unused, throwable) -> CustomFormMain.plugin.getLogger().warning(throwable.toString()))
                                 );
                             }
+                        }
+                        if (component.containsKey("show_requirements")) {
+                            data.setShowRequirements(new ArrayList<>());
+                            Map<String, Object> requirementData = (Map<String, Object>) component.get("show_requirements");
+                            for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
+                                CustomFormMain.completableFutureList.add(
+                                        CompletableFuture.runAsync(() -> data.getShowRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor)
+                                                .whenCompleteAsync((unused, throwable) -> CustomFormMain.plugin.getLogger().warning(throwable.toString()))
+                                );
+                            }
+                        }
+                        if (component.containsKey("script")) {
+                            data.setScript(component.getOrDefault("script", "").toString());
                         }
                         List<ConfigModification> configModifications = new ArrayList<>();
                         if (component.containsKey("configs")) {
@@ -401,7 +416,8 @@ public class FormCreator {
                         data.setConfigModifications(configModifications);
                         data.setStartDate(stringToDate((String) component.getOrDefault("start_time", "")));
                         data.setExpiredDate(stringToDate((String) component.getOrDefault("expire_time", "")));
-                        simpleResponseExecuteDataList.add(data);
+                        simpleResponseExecuteDataList.put(i, data);
+                        i++;
                     }
                 }
                 List<Requirements> openRequirementsList = new ArrayList<>();
@@ -426,7 +442,7 @@ public class FormCreator {
                 }
                 break;
             case 1:
-                List<ResponseExecuteData> out = new ArrayList<>();
+                Map<Integer, ResponseExecuteData> out = new Int2ObjectOpenHashMap<>();
                 //custom
                 for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
                     String type = (String) component.getOrDefault("type", "");
@@ -469,7 +485,7 @@ public class FormCreator {
                                 simpleResponseExecuteData.setExpiredDate(stringToDate((String) map.getOrDefault("expire_time", "")));
                                 data.add(simpleResponseExecuteData);
                             }
-                            out.add(new StepResponseExecuteData(data));
+                            out.put(i, new StepResponseExecuteData(data));
                             break;
                         case "PlayerListDropdown":
                             DropdownPlayerListResponse dropdownPlayerListResponse = new DropdownPlayerListResponse((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
@@ -515,14 +531,14 @@ public class FormCreator {
                                 }
                             }
                             dropdownPlayerListResponse.setConfigModifications(configModificationsForPlayerListDropDown);
-                            out.add(dropdownPlayerListResponse);
+                            out.put(i, dropdownPlayerListResponse);
                             break;
                         case "Toggle":
                             Map<String, Object> toggleMap = (Map<String, Object>) component.getOrDefault("responses", new LinkedHashMap<>());
                             ToggleResponseExecuteData toggleResponseExecuteData = new ToggleResponseExecuteData((List<String>) toggleMap.getOrDefault("true_commands", new ArrayList<>()), (List<String>) toggleMap.getOrDefault("true_messages", new ArrayList<>()), (List<String>) toggleMap.getOrDefault("false_commands", new ArrayList<>()), (List<String>) toggleMap.getOrDefault("false_messages", new ArrayList<>()));
                             toggleResponseExecuteData.setStartDate(stringToDate((String) toggleMap.getOrDefault("start_time", "")));
                             toggleResponseExecuteData.setExpiredDate(stringToDate((String) toggleMap.getOrDefault("expire_time", "")));
-                            out.add(toggleResponseExecuteData);
+                            out.put(i, toggleResponseExecuteData);
                             break;
                         case "Input":
                             configModificationsForPlayerListDropDown = new ArrayList<>();
@@ -559,12 +575,13 @@ public class FormCreator {
                                     CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> simpleResponseExecuteData.getRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
                                 }
                             }
-                            out.add(simpleResponseExecuteData);
+                            out.put(i, simpleResponseExecuteData);
                             break;
                         default:
-                            out.add(null);
+                            out.put(i, null);
                             break;
                     }
+                    i++;
                 }
                 openRequirementsList = new ArrayList<>();
                 if (config.containsKey("open_requirements")) {
@@ -589,7 +606,7 @@ public class FormCreator {
                 break;
             case 2:
                 //modal
-                simpleResponseExecuteDataList = new ArrayList<>();
+                simpleResponseExecuteDataList = new Int2ObjectOpenHashMap<>();
                 for (Map<String, Object> component : (List<Map<String, Object>>) config.getOrDefault("components", new ArrayList<>())) {
                     SimpleResponseExecuteData data = new SimpleResponseExecuteData((List<String>) component.getOrDefault("commands", new ArrayList<>()), (List<String>) component.getOrDefault("messages", new ArrayList<>()), new ArrayList<>(), new ArrayList<>(), (List<List<String>>) component.getOrDefault("random_commands", new ArrayList<>()), new ArrayList<>(), new ArrayList<>());
                     if (component.containsKey("requirements")) {
@@ -600,7 +617,8 @@ public class FormCreator {
                     }
                     data.setStartDate(stringToDate((String) component.getOrDefault("start_time", "")));
                     data.setExpiredDate(stringToDate((String) component.getOrDefault("expire_time", "")));
-                    simpleResponseExecuteDataList.add(data);
+                    simpleResponseExecuteDataList.put(i, data);
+                    i++;
                 }
                 openRequirementsList = new ArrayList<>();
                 if (config.containsKey("open_requirements")) {

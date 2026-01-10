@@ -3,12 +3,15 @@ package glorydark.nukkit.customform.scriptForms.form;
 import cn.nukkit.Player;
 import cn.nukkit.form.element.*;
 import cn.nukkit.form.response.FormResponse;
-import cn.nukkit.form.response.FormResponseSimple;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowSimple;
+import gameapi.form.AdvancedFormWindowSimple;
+import gameapi.form.element.ResponsiveElementButton;
+import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.SimpleResponseExecuteData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
+import glorydark.nukkit.customform.utils.CameraUtils;
 import glorydark.nukkit.customform.utils.ReplaceContainer;
 import glorydark.nukkit.customform.utils.ReplaceStringUtils;
 import lombok.Data;
@@ -18,7 +21,7 @@ import java.util.*;
 @Data
 public class ScriptFormSimple implements ScriptForm {
 
-    private List<SimpleResponseExecuteData> data;
+    private Map<Integer, SimpleResponseExecuteData> data;
 
     private Map<String, Object> config;
 
@@ -36,7 +39,7 @@ public class ScriptFormSimple implements ScriptForm {
 
     private List<String> openPermissionWhitelist;
 
-    public ScriptFormSimple(Map<String, Object> config, List<SimpleResponseExecuteData> data, SoundData openSound, List<Requirements> openRequirements) {
+    public ScriptFormSimple(Map<String, Object> config, Map<Integer, SimpleResponseExecuteData> data, SoundData openSound, List<Requirements> openRequirements) {
         this.config = config;
         this.data = data;
         this.window = initWindow();
@@ -69,35 +72,36 @@ public class ScriptFormSimple implements ScriptForm {
         }
     }
 
+    @Deprecated
     @Override
     public void execute(Player player, FormWindow respondWindow, FormResponse response, Object... params) {
-        FormResponseSimple responseSimple = (FormResponseSimple) response;
-        if (data.size() <= responseSimple.getClickedButtonId()) {
-            return;
-        }
-        data.get(responseSimple.getClickedButtonId()).execute(player, 0, ReplaceContainer.EMPTY_CONTAINER, params);
+
     }
 
     public FormWindowSimple getWindow(Player player) {
-        FormWindowSimple simple_temp = this.getModifiableWindow();
-        for (int i = 0; i < simple_temp.getElements().size(); i++) {
-            SimpleElement element = simple_temp.getElements().get(i);
+        // copy elements
+        AdvancedFormWindowSimple formWindowSimple = new AdvancedFormWindowSimple(
+                this.window.getTitle(),
+                this.window.getContent());
+        for (SimpleElement element : cloneElements(player, this.window.getElements())) {
+            formWindowSimple.addElement(element);
+        }
+
+        // replace text with variables
+        for (int i = 0; i < formWindowSimple.getElements().size(); i++) {
+            SimpleElement element = formWindowSimple.getElements().get(i);
             if (element instanceof ElementButton button) {
                 button.setText(ReplaceStringUtils.replace(button.getText(), player));
             }
         }
-        simple_temp.setContent(ReplaceStringUtils.replace(simple_temp.getContent(), player));
-        simple_temp.setTitle(ReplaceStringUtils.replace(simple_temp.getTitle(), player));
-        return simple_temp;
-    }
+        formWindowSimple.setContent(ReplaceStringUtils.replace(formWindowSimple.getContent(), player));
+        formWindowSimple.setTitle(ReplaceStringUtils.replace(formWindowSimple.getTitle(), player));
 
-    public FormWindowSimple getModifiableWindow() {
-        FormWindowSimple formWindowSimple = new FormWindowSimple(
-                this.window.getTitle(),
-                this.window.getContent());
-        for (SimpleElement element : cloneElements(this.window.getElements())) {
-            formWindowSimple.addElement(element);
-        }
+        formWindowSimple.onClose(player1 -> {
+            if (CustomFormMain.enableCameraAnimation) {
+                CameraUtils.sendFormClose(player1);
+            }
+        });
         return formWindowSimple;
     }
 
@@ -163,20 +167,41 @@ public class ScriptFormSimple implements ScriptForm {
         return simple;
     }
 
-    public List<SimpleElement> cloneElements(List<SimpleElement> elements) {
+    public List<SimpleElement> cloneElements(Player player, List<SimpleElement> elements) {
         List<SimpleElement> out = new ArrayList<>();
+
+        int i = 0;
         for (SimpleElement element : elements) {
             if (element instanceof ElementHeader header) {
                 out.add(new ElementHeader(header.getText()));
             } else if (element instanceof ElementDivider) {
                 out.add(new ElementDivider());
             } else if (element instanceof ElementButton elementButton) {
+                SimpleResponseExecuteData executeData = data.get(i);
+                if (!executeData.isVisible(player)) {
+                    i++;
+                    continue;
+                }
                 if (elementButton.getImage() == null) {
-                    out.add(new ElementButton(elementButton.getText()));
+                    out.add(
+                            new ResponsiveElementButton(elementButton.getText())
+                                    .onRespond(player1 -> {
+                                        executeData.execute(player1, 0, ReplaceContainer.EMPTY_CONTAINER);
+                                        CameraUtils.sendFormClose(player1);
+                                    })
+                    );
                 } else {
-                    out.add(new ElementButton(elementButton.getText(), new ElementButtonImageData(elementButton.getImage().getType(), elementButton.getImage().getData())));
+                    out.add(
+                            new ResponsiveElementButton(elementButton.getText(),
+                                    new ElementButtonImageData(elementButton.getImage().getType(), elementButton.getImage().getData())
+                            ).onRespond(player1 -> {
+                                executeData.execute(player1, 0, ReplaceContainer.EMPTY_CONTAINER);
+                                CameraUtils.sendFormClose(player1);
+                            })
+                    );
                 }
             }
+            i++;
         }
         return out;
     }

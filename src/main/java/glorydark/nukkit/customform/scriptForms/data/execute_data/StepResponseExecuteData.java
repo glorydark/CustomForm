@@ -13,11 +13,11 @@ import java.util.List;
 @Data
 public class StepResponseExecuteData implements ResponseExecuteData {
 
-    public List<SimpleResponseExecuteData> responses;
+    private List<SimpleResponseExecuteData> responses;
 
-    Date startDate = new Date(-1);
+    private Date startDate = new Date(-1);
 
-    Date expiredDate = new Date(-1);
+    private Date expiredDate = new Date(-1);
 
     public StepResponseExecuteData(List<SimpleResponseExecuteData> responses) {
         this.responses = responses;

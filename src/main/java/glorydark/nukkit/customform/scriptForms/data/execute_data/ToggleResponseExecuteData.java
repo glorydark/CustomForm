@@ -11,14 +11,14 @@ import java.util.List;
 // Concerning: Toggle
 @Data
 public class ToggleResponseExecuteData implements ResponseExecuteData {
-    List<String> true_commands;
-    List<String> true_messages;
-    List<String> false_commands;
-    List<String> false_messages;
+    private List<String> true_commands;
+    private List<String> true_messages;
+    private List<String> false_commands;
+    private List<String> false_messages;
 
-    Date startDate = new Date(-1);
+    private Date startDate = new Date(-1);
 
-    Date expiredDate = new Date(-1);
+    private Date expiredDate = new Date(-1);
 
     public ToggleResponseExecuteData(List<String> true_commands, List<String> true_messages, List<String> false_commands, List<String> false_messages) {
         this.true_commands = true_commands;

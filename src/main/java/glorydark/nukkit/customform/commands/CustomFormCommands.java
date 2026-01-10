@@ -19,6 +19,7 @@ import glorydark.nukkit.customform.chestForm.ChestFormMain;
 import glorydark.nukkit.customform.factory.FormCreator;
 import glorydark.nukkit.customform.hopperform.HopperFormMain;
 import glorydark.nukkit.customform.minecartChestMenu.MinecartChestMenuMain;
+import glorydark.nukkit.customform.script.CustomFormScriptManager;
 import glorydark.nukkit.customform.scriptForms.form.ScriptForm;
 import glorydark.nukkit.customform.utils.InventoryUtils;
 
@@ -86,7 +87,7 @@ public class CustomFormCommands extends Command {
                     CustomFormMain.playerCacheVariableList = config.get("player_cache_variables", new LinkedHashMap<>());
                     CustomFormMain.specificCacheVariableList = config.get("specific_cache_variables", new LinkedHashMap<>());
                     CustomFormMain.plugin.loadAll();
-                    commandSender.sendMessage(CustomFormMain.language.translateString(commandSender.isPlayer() ? (Player) commandSender : null, "plugin_reloaded"));
+                    commandSender.sendMessage(CustomFormMain.language.translateString(commandSender.isPlayer() ? (Player) commandSender : null, "plugin.configuration.reload"));
                 } else {
                     commandSender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", s));
                 }
@@ -154,10 +155,10 @@ public class CustomFormCommands extends Command {
                         if (player != null) {
                             FormCreator.showScriptForm(player, strings[2], true);
                         } else {
-                            commandSender.sendMessage(CustomFormMain.language.translateString(null, "command_player_not_found", strings[1]));
+                            commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.player_not_found", strings[1]));
                         }
                     } else {
-                        commandSender.sendMessage(CustomFormMain.language.translateString(null, "command_use_in_game"));
+                        commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.can_not_use_in_game"));
                     }
                 }
                 break;
@@ -183,7 +184,7 @@ public class CustomFormCommands extends Command {
                         commandSender.sendMessage(TextFormat.RED + "Usage: /form showhopperform <formId>");
                     }
                 } else {
-                    commandSender.sendMessage(CustomFormMain.language.translateString(null, "command_use_in_game", strings[1]));
+                    commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.can_not_use_in_game", strings[1]));
                 }
                 break;
             case "showchestform":
@@ -208,7 +209,7 @@ public class CustomFormCommands extends Command {
                         commandSender.sendMessage(TextFormat.RED + "Usage: /form showchestform <formId>");
                     }
                 } else {
-                    commandSender.sendMessage(CustomFormMain.language.translateString(null, "command_use_in_game", strings[1]));
+                    commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.can_not_use_in_game", strings[1]));
                 }
                 break;
             case "showminecartmenu":
@@ -220,7 +221,7 @@ public class CustomFormCommands extends Command {
                         MinecartChestMenuMain.showMinecartChestMenu((Player) commandSender, strings[1]);
                     }
                 } else {
-                    commandSender.sendMessage(CustomFormMain.language.translateString(null, "command_use_in_game", strings[1]));
+                    commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.can_not_use_in_game", strings[1]));
                 }
                 break;
             case "list":
@@ -287,6 +288,12 @@ public class CustomFormCommands extends Command {
                             break;
                     }
                 }
+                break;
+            case "script":
+                if (strings.length < 2) {
+                    return false;
+                }
+                CustomFormScriptManager.executeLoadedScript(commandSender.asPlayer(), strings[1]);
                 break;
         }
         return true;

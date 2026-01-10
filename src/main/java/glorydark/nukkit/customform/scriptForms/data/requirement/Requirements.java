@@ -75,6 +75,10 @@ public class Requirements {
         Check if player can meet the all requirements here.
     */
     public boolean isAllQualified(Player player, Object... params) {
+        return this.isAllQualifiedWithOutputMessage(player, true, params);
+    }
+
+    public boolean isAllQualifiedWithOutputMessage(Player player, boolean output, Object... params) {
         int multiply = params.length == 1 ? (int) params[0] : 1;
 
         // Deal with different kinds of requirementData
@@ -86,15 +90,21 @@ public class Requirements {
                 switch (datum.getType()) {
                     case Points:
                         difference = BigDecimal.valueOf(datum.getAmount()).subtract(BigDecimal.valueOf(Point.getPoint(player.getUniqueId())).multiply(new BigDecimal(multiply)));
-                        player.sendMessage(CustomFormMain.language.translateString(player, "requirements_points_not_qualified", i, difference));
+                        if (output) {
+                            player.sendMessage(CustomFormMain.language.translateString(player, "requirements.points.not_qualified", i, difference));
+                        }
                         break;
                     case DCurrency:
                         difference = BigDecimal.valueOf(datum.getAmount()).subtract(BigDecimal.valueOf(CurrencyAPI.getCurrencyBalance(player.getName(), (String) datum.getExtraData()[0], 0d))).multiply(new BigDecimal(multiply));
-                        player.sendMessage(CustomFormMain.language.translateString(player, "requirements_currencyAPI_not_qualified", i, datum.getExtraData()[0], difference));
+                        if (output) {
+                            player.sendMessage(CustomFormMain.language.translateString(player, "requirements.currencyapi.not_qualified", i, datum.getExtraData()[0], difference));
+                        }
                         break;
                     case EconomyAPI:
                         difference = BigDecimal.valueOf(datum.getAmount()).subtract(BigDecimal.valueOf(EconomyAPI.getInstance().myMoney(player))).multiply(new BigDecimal(multiply));
-                        player.sendMessage(CustomFormMain.language.translateString(player, "requirements_economyAPI_not_qualified", i, difference));
+                        if (output) {
+                            player.sendMessage(CustomFormMain.language.translateString(player, "requirements.economyapi.not_qualified", i, difference));
+                        }
                         break;
                 }
                 return false;
@@ -103,29 +113,34 @@ public class Requirements {
 
         for (TipsRequirementData datum : this.tipsRequirementData) {
             if (!datum.isQualified(player)) {
-                datum.sendFailedMsg(player, (datum.getComparedValue() instanceof Double || datum.getComparedValue() instanceof Integer), params[0]);
+                if (output) {
+                    datum.sendFailedMsg(player, (datum.getComparedValue() instanceof Double || datum.getComparedValue() instanceof Integer), params[0]);
+                }
                 return false;
             }
         }
 
         for (ItemRequirementData datum : this.itemRequirementData) {
-            if (!datum.checkItemIsPossess(player, false, multiply)) {
+            if (!datum.checkItemIsPossess(player, false, multiply, output)) {
                 return false;
             }
         }
 
         for (ConfigRequirementData datum : this.configRequirementData) {
             if (!datum.isQualified(player)) {
-                datum.sendFailedMsg(player);
+                if (output) {
+                    datum.sendFailedMsg(player);
+                }
                 return false;
             }
         }
 
         for (RequirementData customRequirementDatum : this.customRequirementData) {
-            if (customRequirementDatum instanceof ReducibleRequirementData) {
-                ReducibleRequirementData reducibleRequirementData = (ReducibleRequirementData) customRequirementDatum;
+            if (customRequirementDatum instanceof ReducibleRequirementData reducibleRequirementData) {
                 if (!reducibleRequirementData.isQualified(player, multiply)) {
-                    reducibleRequirementData.sendFailedMessage(player);
+                    if (output) {
+                        reducibleRequirementData.sendFailedMessage(player);
+                    }
                     return false;
                 }
             }
@@ -207,5 +222,14 @@ public class Requirements {
             out = out.replace("%player%", player.getName());
         }
         return Api.strReplace(out, player);
+    }
+
+    public static boolean isAnyRequirementMet(List<Requirements> requirements, Player player, int multiply, boolean output) {
+        for (Requirements one : requirements) {
+            if (one.isAllQualifiedWithOutputMessage(player, output, multiply)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

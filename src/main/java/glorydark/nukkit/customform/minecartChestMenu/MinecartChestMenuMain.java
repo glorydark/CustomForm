@@ -1,7 +1,6 @@
 package glorydark.nukkit.customform.minecartChestMenu;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.item.EntityMinecartChest;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
 import glorydark.nukkit.customform.entity.FormEntityMinecartChest;
 import glorydark.nukkit.customform.factory.FormCreator;

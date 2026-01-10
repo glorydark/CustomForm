@@ -19,7 +19,7 @@ import java.util.*;
 public class ScriptFormModal implements ScriptForm {
 
     private SoundData openSound;
-    private List<SimpleResponseExecuteData> data;
+    private Map<Integer, SimpleResponseExecuteData> data;
 
     private Map<String, Object> config;
 
@@ -35,7 +35,7 @@ public class ScriptFormModal implements ScriptForm {
 
     private List<String> openPermissionWhitelist;
 
-    public ScriptFormModal(Map<String, Object> config, List<SimpleResponseExecuteData> data, SoundData openSound, List<Requirements> openRequirements) {
+    public ScriptFormModal(Map<String, Object> config, Map<Integer, SimpleResponseExecuteData> data, SoundData openSound, List<Requirements> openRequirements) {
         this.config = config;
         this.data = data;
         this.window = initWindow();
@@ -59,7 +59,7 @@ public class ScriptFormModal implements ScriptForm {
                         break;
                 }
             }
-            if (this.openPermissions.size() == 0) {
+            if (this.openPermissions.isEmpty()) {
                 this.openPermissions.add(PermissionEnum.DEFAULT);
             }
             this.openPermissionWhitelist.addAll((List<String>) openPermissionMap.getOrDefault("whitelist", new ArrayList<>()));

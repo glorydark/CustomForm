@@ -1,6 +1,6 @@
 package glorydark.nukkit.customform.utils;
 
-import java.util.*;
+import java.util.HashMap;
 
 /**
  * @author glorydark

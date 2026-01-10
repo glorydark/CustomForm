@@ -24,13 +24,13 @@ public class DropdownPlayerListResponse extends SimpleResponseExecuteData {
         if (!this.isInStartDate(player)) {
             return;
         }
-        for (String command : commands) {
+        for (String command : this.getCommands()) {
             CommandUtils.executeCommand(player, replaceContainer.replaceString(replace(command, player, true, responseId, params[0])));
         }
-        for (String message : messages) {
+        for (String message : this.getCommands()) {
             player.sendMessage(replace(message, player, false, responseId, params[0]));
         }
-        executeConfigModification(player);
+        this.executeConfigModification(player);
     }
 
     @Override

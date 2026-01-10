@@ -67,15 +67,15 @@ public class EconomyRequirementData {
         switch (type) {
             case Points:
                 Point.reducePoint(player.getUniqueId(), consumeValue.doubleValue());
-                player.sendMessage(CustomFormMain.language.translateString(player, "requirements_points_consume", consumeValue));
+                player.sendMessage(CustomFormMain.language.translateString(player, "requirements.points.consume", consumeValue));
                 break;
             case EconomyAPI:
                 EconomyAPI.getInstance().reduceMoney(player, consumeValue.doubleValue());
-                player.sendMessage(CustomFormMain.language.translateString(player, "requirements_economyAPI_consume", consumeValue));
+                player.sendMessage(CustomFormMain.language.translateString(player, "requirements.economyAPI.consume", consumeValue));
                 break;
             case DCurrency:
                 CurrencyAPI.reduceCurrencyBalance(player.getName(), (String) extraData[0], consumeValue.doubleValue(), this.getReason().isEmpty()? "Customform菜单 - " + this.formId: this.getReason());
-                player.sendMessage(CustomFormMain.language.translateString(player, "requirements_currencyAPI_consume", extraData[0], consumeValue));
+                player.sendMessage(CustomFormMain.language.translateString(player, "requirements.currencyAPI.consume", extraData[0], consumeValue));
                 break;
         }
     }

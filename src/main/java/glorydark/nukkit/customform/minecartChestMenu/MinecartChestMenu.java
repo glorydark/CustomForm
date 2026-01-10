@@ -82,15 +82,15 @@ public class MinecartChestMenu {
             }
             if (page > 1) {
                 Item previousPageButton = new BlockGlassStained(4).toItem();
-                previousPageButton.setCustomName(CustomFormMain.language.translateString(player, "item_previous_page_name"));
+                previousPageButton.setCustomName(CustomFormMain.language.translateString(player, "item.chest_menu.previous_page.name"));
                 items.put(SLOT_ITEM_PREV_PAGE_PC, previousPageButton);
             }
             Item info = new BlockGlassStained(4).toItem();
-            info.setCustomName(CustomFormMain.language.translateString(player, "item_info_name", page, getMaxPage(true)));
+            info.setCustomName(CustomFormMain.language.translateString(player, "item.chest_menu.info.name", page, getMaxPage(true)));
             items.put(SLOT_ITEM_CURRENT_PAGE_INFO_PC, info);
             if (page < this.getMaxPage(true)) {
                 Item nextPageButton = new BlockGlassStained(4).toItem();
-                nextPageButton.setCustomName(CustomFormMain.language.translateString(player, "item_next_page_name"));
+                nextPageButton.setCustomName(CustomFormMain.language.translateString(player, "item.chest_menu.next_page.name"));
                 items.put(SLOT_ITEM_NEXT_PAGE_PC, nextPageButton);
             }
         } else {
@@ -106,15 +106,15 @@ public class MinecartChestMenu {
             }
             if (page > 1) {
                 Item previousPageButton = new BlockGlassStained(4).toItem();
-                previousPageButton.setCustomName(CustomFormMain.language.translateString(player, "item_previous_page_name"));
+                previousPageButton.setCustomName(CustomFormMain.language.translateString(player, "item.chest_menu.previous_page.name"));
                 items.put(SLOT_ITEM_PREV_PAGE_PE, previousPageButton);
             }
             Item info = new BlockGlassStained(4).toItem();
-            info.setCustomName(CustomFormMain.language.translateString(player, "item_info_name", page, getMaxPage(false)));
+            info.setCustomName(CustomFormMain.language.translateString(player, "item.chest_menu.info.name", page, getMaxPage(false)));
             items.put(SLOT_ITEM_CURRENT_PAGE_INFO_PE, info);
             if (page < this.getMaxPage(false)) {
                 Item nextPageButton = new BlockGlassStained(4).toItem();
-                nextPageButton.setCustomName(CustomFormMain.language.translateString(player, "item_next_page_name"));
+                nextPageButton.setCustomName(CustomFormMain.language.translateString(player, "item.chest_menu.next_page.name"));
                 items.put(SLOT_ITEM_NEXT_PAGE_PE, nextPageButton);
             }
         }
@@ -147,29 +147,29 @@ public class MinecartChestMenu {
         if (isPC(player)) {
             Map<Integer, Item> items = new HashMap<>();
             Item cancelButton = new BlockWool(DyeColor.RED).toItem();
-            cancelButton.setCustomName(CustomFormMain.language.translateString(player, "item_selected_cancel"));
+            cancelButton.setCustomName(CustomFormMain.language.translateString(player, "item.chest_menu.cancel.name"));
             items.put(SLOT_ITEM_CANCEL_PC, cancelButton);
 
             Item ConfirmButton = new BlockWool(DyeColor.GREEN).toItem();
-            ConfirmButton.setCustomName(CustomFormMain.language.translateString(player, "item_selected_confirm"));
+            ConfirmButton.setCustomName(CustomFormMain.language.translateString(player, "item.chest_menu.confirm.name"));
             items.put(SLOT_ITEM_CONFIRM_PC, ConfirmButton);
 
             Item selectedInfo = new ItemBookEnchanted();
-            selectedInfo.setCustomName(CustomFormMain.language.translateString(player, "item_selected_info", chestMenuPCComponents.get(checkComponentIndex).getName()));
+            selectedInfo.setCustomName(CustomFormMain.language.translateString(player, "item.chest_menu.message.selected_info", chestMenuPCComponents.get(checkComponentIndex).getName()));
             items.put(SLOT_ITEM_INFO_PC, selectedInfo);
             return items;
         } else {
             Map<Integer, Item> items = new HashMap<>();
             Item cancelButton = new BlockWool(DyeColor.RED).toItem();
-            cancelButton.setCustomName(CustomFormMain.language.translateString(player, "item_selected_cancel"));
+            cancelButton.setCustomName(CustomFormMain.language.translateString(player, "item.chest_menu.cancel.name"));
             items.put(SLOT_ITEM_CANCEL_PE, cancelButton);
 
             Item ConfirmButton = new BlockWool(DyeColor.GREEN).toItem();
-            ConfirmButton.setCustomName(CustomFormMain.language.translateString(player, "item_selected_confirm"));
+            ConfirmButton.setCustomName(CustomFormMain.language.translateString(player, "item.chest_menu.confirm.name"));
             items.put(SLOT_ITEM_CONFIRM_PE, ConfirmButton);
 
             Item selectedInfo = new ItemBookEnchanted();
-            selectedInfo.setCustomName(CustomFormMain.language.translateString(player, "item_selected_info", chestMenuPEComponents.get(checkComponentIndex).getName()));
+            selectedInfo.setCustomName(CustomFormMain.language.translateString(player, "item.chest_menu.message.selected_info", chestMenuPEComponents.get(checkComponentIndex).getName()));
             items.put(SLOT_ITEM_INFO_PE, selectedInfo);
             return items;
         }
