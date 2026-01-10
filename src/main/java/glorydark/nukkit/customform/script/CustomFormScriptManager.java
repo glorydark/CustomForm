@@ -5,6 +5,7 @@ import cn.nukkit.utils.Utils;
 import glorydark.nukkit.customform.CustomFormMain;
 
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +29,15 @@ public class CustomFormScriptManager {
         dir.mkdirs();
         for (File child : Objects.requireNonNull(dir.listFiles())) {
             loadScripts(child, "");
+        }
+
+        if (!CustomFormMain.SCRIPTS_RUN_ON_START.isEmpty()) {
+            for (String scriptId : CustomFormMain.SCRIPTS_RUN_ON_START) {
+                if (scripts.containsKey(scriptId)) {
+                    String script = scripts.get(scriptId);
+                    CustomFormScriptManager.executeScript(null, script);
+                }
+            }
         }
         CustomFormMain.plugin.getLogger().info(CustomFormMain.language.translateString(
                 null, "script.load.total", scripts.keySet().size()));
@@ -66,7 +76,7 @@ public class CustomFormScriptManager {
             engine.put("player", player);
             engine.put("server", CustomFormMain.plugin.getServer());
             engine.put("api", new ScriptPlayerAPI());
-            engine.put("plugin", CustomFormMain.plugin);
+            engine.put("plugin", CustomFormMain.fakeScriptPlugin);
 
             engine.eval(script);
         } catch (ScriptException e) {

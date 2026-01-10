@@ -1,11 +1,11 @@
 package glorydark.nukkit.customform;
 
 import cn.nukkit.Server;
-import cn.nukkit.plugin.Plugin;
-import cn.nukkit.plugin.PluginBase;
+import cn.nukkit.plugin.*;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.ConfigSection;
+import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.utils.exception.RsNpcConfigLoadException;
 import com.smallaswater.npc.utils.exception.RsNpcLoadException;
@@ -17,17 +17,21 @@ import glorydark.nukkit.customform.hopperform.HopperFormMain;
 import glorydark.nukkit.customform.listener.FormListener;
 import glorydark.nukkit.customform.minecartChestMenu.MinecartChestMenuListener;
 import glorydark.nukkit.customform.minecartChestMenu.MinecartChestMenuMain;
+import glorydark.nukkit.customform.plugin.FakePlugin;
 import glorydark.nukkit.customform.script.CustomFormScriptManager;
+import glorydark.nukkit.customform.script.ScriptPlayerAPI;
 import glorydark.nukkit.customform.utils.InventoryUtils;
 import glorydark.nukkit.customform.utils.Tools;
 import glorydark.nukkit.utils.LanguageReader;
 import tip.utils.Api;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class CustomFormMain extends PluginBase {
 
@@ -69,7 +73,7 @@ public class CustomFormMain extends PluginBase {
     public static boolean debug;
     public static List<CompletableFuture<?>> completableFutureList = new ArrayList<>();
     public static boolean ready = false;
-    public ExecutorService executor; // 创建一个拥有5个线程的线程池
+    public ExecutorService loadRequirementExecutor; // 创建一个拥有5个线程的线程池
     public static RsNpcConfig rsNpcConfig = null;
 
     public static Map<String, Map<String, Object>> specificConfCaches = new LinkedHashMap<>();
@@ -77,6 +81,9 @@ public class CustomFormMain extends PluginBase {
 
     public static Map<String, Object> specificCacheVariableList = new LinkedHashMap<>();
     public static Map<String, Object> playerCacheVariableList = new LinkedHashMap<>();
+
+    public static Plugin fakeScriptPlugin = null;
+    public static List<String> SCRIPTS_RUN_ON_START = new ArrayList<>();
 
     @Override
     public void onEnable() {
@@ -103,6 +110,7 @@ public class CustomFormMain extends PluginBase {
         enableGameAPI = checkSoftDepend("GameAPI");
         enablePlaceHolderAPI = checkSoftDepend("PlaceholderAPI");
         enableLanguageAPI = checkSoftDepend("LanguageAPI");
+        SCRIPTS_RUN_ON_START = new ArrayList<>(config.getStringList("scripts_run_on_start"));
         Config config1 = new Config(path + "/rsnpc_cache.yml", Config.YAML);
         config1.set("坐标", new ConfigSection() {
             {
@@ -181,13 +189,17 @@ public class CustomFormMain extends PluginBase {
     }
 
     public void loadAll() {
+        if (fakeScriptPlugin != null) {
+            this.getServer().getScheduler().cancelTask(fakeScriptPlugin);
+        }
+        ScriptPlayerAPI.resetVariables();
         if (enableLanguageAPI) {
             File customLangDic = new File(path + "/custom_languages/");
             customLangDic.mkdirs();
             LanguageReader.loadLanguageFromDictionary(this, customLangDic);
         }
         ready = false;
-        executor = Executors.newFixedThreadPool(5);
+        loadRequirementExecutor = Executors.newFixedThreadPool(5);
         ChestFormMain.loadAll();
         HopperFormMain.loadAll();
         this.loadItemStringCaches();
@@ -200,8 +212,55 @@ public class CustomFormMain extends PluginBase {
                     if (debug) {
                         this.getLogger().alert("Loading all requirements, size: " + completableFutureList.size() + ", cost time: " + Tools.formatTimeDiff(System.currentTimeMillis(), startMillis));
                     }
+                }).whenComplete((unused, throwable) -> {
+                    completableFutureList.clear();
+                    ready = true;
                 });
-        ready = true;
+        if (this.getServer().getPluginManager().getPlugin("CustomFormScriptFakePlugin") == null) {
+            this.loadInternalPlugin();
+        }
+    }
+
+    public void loadInternalPlugin() {
+        FakePlugin plugin = FakePlugin.INSTANCE;
+        Map<String, Object> info = new HashMap<>();
+        info.put("name", "CustomFormScriptFakePlugin");
+        info.put("version", "1.0.0");
+        info.put("main", FakePlugin.class.getName());
+
+        File file;
+        try {
+            file = new File(FakePlugin.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        } catch (Exception var6) {
+            file = new File(".");
+        }
+
+        PluginDescription description = new PluginDescription(info);
+        plugin.init(new JavaPluginLoader(this.getServer()), this.getServer(), description, new File("CustomFormScriptFakePlugin"), file);
+        this.injectPlugin(this.getServer().getPluginManager(), plugin);
+        this.getPluginLoader().enablePlugin(plugin);
+
+        fakeScriptPlugin = plugin;
+    }
+
+    protected void injectPlugin(PluginManager pluginManager, Plugin plugin) {
+        try {
+            // 获取plugins字段
+            Field pluginsField = PluginManager.class.getDeclaredField("plugins");
+            pluginsField.setAccessible(true);
+
+            // 获取Map对象
+            Map<String, Plugin> plugins = (Map<String, Plugin>) pluginsField.get(pluginManager);
+
+            // 添加插件
+            String name = plugin.getName().toLowerCase();
+            plugins.put(name, plugin);
+
+            pluginsField.set(pluginManager, plugins);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

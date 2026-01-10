@@ -29,7 +29,7 @@ public class PlayerPermissionCheckTask extends Task {
         removeCheck(player);
         PlayerPermissionCheckTask task = new PlayerPermissionCheckTask(player);
         TASKS.put(player, task);
-        Server.getInstance().getScheduler().scheduleDelayedRepeatingTask(RsNPC.getInstance(), task, 1, 10);
+        Server.getInstance().getScheduler().scheduleDelayedRepeatingTask(CustomFormMain.plugin, task, 1, 10);
     }
 
     public static void removeCheck(Player player) {

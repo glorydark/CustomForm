@@ -363,7 +363,7 @@ public class FormCreator {
                             Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                             for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
                                 CustomFormMain.completableFutureList.add(
-                                        CompletableFuture.runAsync(() -> data.getRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor)
+                                        CompletableFuture.runAsync(() -> data.getRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.loadRequirementExecutor)
                                                 .whenCompleteAsync((unused, throwable) -> CustomFormMain.plugin.getLogger().warning(throwable.toString()))
                                 );
                             }
@@ -373,7 +373,7 @@ public class FormCreator {
                             Map<String, Object> requirementData = (Map<String, Object>) component.get("show_requirements");
                             for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
                                 CustomFormMain.completableFutureList.add(
-                                        CompletableFuture.runAsync(() -> data.getShowRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor)
+                                        CompletableFuture.runAsync(() -> data.getShowRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.loadRequirementExecutor)
                                                 .whenCompleteAsync((unused, throwable) -> CustomFormMain.plugin.getLogger().warning(throwable.toString()))
                                 );
                             }
@@ -495,7 +495,7 @@ public class FormCreator {
                                 dropdownPlayerListResponse.setRequirements(new ArrayList<>());
                                 Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                                 for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                                    CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> dropdownPlayerListResponse.getRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
+                                    CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> dropdownPlayerListResponse.getRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.loadRequirementExecutor));
                                 }
                             }
                             List<ConfigModification> configModificationsForPlayerListDropDown = new ArrayList<>();
@@ -572,7 +572,7 @@ public class FormCreator {
                             if (component.containsKey("requirements")) {
                                 Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                                 for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                                    CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> simpleResponseExecuteData.getRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
+                                    CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> simpleResponseExecuteData.getRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.loadRequirementExecutor));
                                 }
                             }
                             out.put(i, simpleResponseExecuteData);
@@ -612,7 +612,7 @@ public class FormCreator {
                     if (component.containsKey("requirements")) {
                         Map<String, Object> requirementData = (Map<String, Object>) component.get("requirements");
                         for (List<Map<String, Object>> object : (List<List<Map<String, Object>>>) requirementData.get("data")) {
-                            CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> data.getRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.executor));
+                            CustomFormMain.completableFutureList.add(CompletableFuture.runAsync(() -> data.getRequirements().add(buildRequirements("form：" + identifier, object, (Boolean) requirementData.getOrDefault("chargeable", true))), CustomFormMain.plugin.loadRequirementExecutor));
                         }
                     }
                     data.setStartDate(stringToDate((String) component.getOrDefault("start_time", "")));

@@ -23,6 +23,11 @@ public class ScriptPlayerAPI {
 
     }
 
+    public static void resetVariables() {
+        globalVariables.clear();
+        playerVariables.clear();
+    }
+
     public double getMoney(Player p) {
         return EconomyAPI.getInstance().myMoney(p);
     }
