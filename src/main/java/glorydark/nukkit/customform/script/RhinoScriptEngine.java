@@ -65,34 +65,92 @@ public class RhinoScriptEngine implements ScriptEngine {
             ScriptableObject.putProperty(scope, "onEvents", new BaseFunction() {
                 @Override
                 public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-                    if (args.length < 1) {
-                        throw new IllegalArgumentException("onEvents() requires an object with event mappings");
+                    if (args.length < 2) {
+                        throw new IllegalArgumentException("onEvents() requires at least 2 arguments: eventHandlers and eventClass(es)");
                     }
 
-                    Scriptable eventsObj = (Scriptable) args[0];
-                    String defaultPriority = args.length > 1 ? args[1].toString() : "NORMAL";
+                    if (!(args[0] instanceof Scriptable)) {
+                        throw new IllegalArgumentException("First argument must be an object with event handlers");
+                    }
 
-                    // 遍历事件对象的所有属性
-                    Object[] ids = eventsObj.getIds();
-                    for (Object id : ids) {
-                        String eventName = id.toString();
-                        Object handlerObj = eventsObj.get(eventName, eventsObj);
+                    Scriptable handlersObj = (Scriptable) args[0];
+                    String defaultPriority = "NORMAL";
 
-                        if (handlerObj instanceof Function) {
+                    // 确定优先级参数的位置
+                    int eventArgsStart = 1;
+                    int eventArgsEnd = args.length;
+
+                    // 检查最后一个参数是否是字符串优先级
+                    if (args.length > 1 && args[args.length - 1] instanceof String) {
+                        String lastArg = args[args.length - 1].toString().toUpperCase();
+                        try {
+                            EventPriority.valueOf(lastArg); // 验证是否是有效优先级
+                            defaultPriority = lastArg;
+                            eventArgsEnd = args.length - 1;
+                        } catch (IllegalArgumentException e) {
+                            // 不是优先级，保持原样
+                        }
+                    }
+
+                    // 遍历所有事件处理器
+                    Object[] handlerIds = handlersObj.getIds();
+                    for (Object handlerId : handlerIds) {
+                        if (!(handlerId instanceof String)) {
+                            continue;
+                        }
+
+                        String handlerName = (String) handlerId;
+                        Object handlerObj = handlersObj.get(handlerName, handlersObj);
+
+                        if (!(handlerObj instanceof Function)) {
+                            continue;
+                        }
+
+                        Function handler = (Function) handlerObj;
+
+                        // 为每个事件类注册这个处理器
+                        for (int i = eventArgsStart; i < eventArgsEnd; i++) {
                             try {
-                                // 通过反射获取事件类
-                                Class<?> eventClass = Class.forName("cn.nukkit.event.player." + eventName);
-                                Function handler = (Function) handlerObj;
+                                Class<? extends Event> eventClass = resolveEventClass(args[i]);
+
+                                if (eventClass == null) {
+                                    CustomFormMain.plugin.getLogger().warning("Could not resolve event class from argument " + i + ": " + args[i]);
+                                    continue;
+                                }
 
                                 registerSingleEvent(scope, eventClass, handler, defaultPriority);
-                            } catch (ClassNotFoundException e) {
-                                CustomFormMain.plugin.getLogger().warning("Event class not found: " + eventName);
+
+                                if (CustomFormMain.debug) {
+                                    CustomFormMain.plugin.getLogger().info("Registered event: " + eventClass.getName() +
+                                            " with handler '" + handlerName +
+                                            "' and priority: " + defaultPriority);
+                                }
+
                             } catch (Exception e) {
-                                CustomFormMain.plugin.getLogger().error("Error registering event " + eventName, e);
+                                CustomFormMain.plugin.getLogger().error("Error registering event for handler " + handlerName, e);
                             }
                         }
                     }
 
+                    return null;
+                }
+
+                private Class<? extends Event> resolveEventClass(Object eventArg) {
+                    if (eventArg instanceof NativeJavaClass) {
+                        Class<?> clazz = ((NativeJavaClass) eventArg).getClassObject();
+                        if (Event.class.isAssignableFrom(clazz)) {
+                            @SuppressWarnings("unchecked")
+                            Class<? extends Event> eventClass = (Class<? extends Event>) clazz;
+                            return eventClass;
+                        }
+                    } else if (eventArg instanceof Class) {
+                        Class<?> clazz = (Class<?>) eventArg;
+                        if (Event.class.isAssignableFrom(clazz)) {
+                            @SuppressWarnings("unchecked")
+                            Class<? extends Event> eventClass = (Class<? extends Event>) clazz;
+                            return eventClass;
+                        }
+                    }
                     return null;
                 }
             });
@@ -123,7 +181,9 @@ public class RhinoScriptEngine implements ScriptEngine {
                 false
         );
 
-        CustomFormMain.plugin.getLogger().info("Registered event: " + eventClass.getClass().getSimpleName());
+        if (CustomFormMain.debug) {
+            CustomFormMain.plugin.getLogger().info("Registered event: " + eventClass.getClass().getSimpleName());
+        }
         return null;
     }
 
