@@ -1,5 +1,11 @@
 package glorydark.nukkit.customform.script;
 
+import cn.nukkit.Server;
+import cn.nukkit.event.Event;
+import cn.nukkit.event.EventPriority;
+import cn.nukkit.event.Listener;
+import cn.nukkit.plugin.EventExecutor;
+import glorydark.nukkit.customform.CustomFormMain;
 import org.mozilla.javascript.*;
 
 import javax.script.*;
@@ -39,7 +45,86 @@ public class RhinoScriptEngine implements ScriptEngine {
                     return Context.getUndefinedValue();
                 }
             });
+
+            // 然后在scope中添加两个函数
+            ScriptableObject.putProperty(scope, "onEvent", new BaseFunction() {
+                @Override
+                public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
+                    if (args.length < 2) {
+                        throw new IllegalArgumentException("onEvent() requires at least 2 arguments: eventClass and handler");
+                    }
+
+                    Object eventClass = args[0];
+                    Function handler = (Function) args[1];
+                    String priority = args.length > 2 ? args[2].toString() : "NORMAL";
+
+                    return registerSingleEvent(scope, eventClass, handler, priority);
+                }
+            });
+
+            ScriptableObject.putProperty(scope, "onEvents", new BaseFunction() {
+                @Override
+                public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
+                    if (args.length < 1) {
+                        throw new IllegalArgumentException("onEvents() requires an object with event mappings");
+                    }
+
+                    Scriptable eventsObj = (Scriptable) args[0];
+                    String defaultPriority = args.length > 1 ? args[1].toString() : "NORMAL";
+
+                    // 遍历事件对象的所有属性
+                    Object[] ids = eventsObj.getIds();
+                    for (Object id : ids) {
+                        String eventName = id.toString();
+                        Object handlerObj = eventsObj.get(eventName, eventsObj);
+
+                        if (handlerObj instanceof Function) {
+                            try {
+                                // 通过反射获取事件类
+                                Class<?> eventClass = Class.forName("cn.nukkit.event.player." + eventName);
+                                Function handler = (Function) handlerObj;
+
+                                registerSingleEvent(scope, eventClass, handler, defaultPriority);
+                            } catch (ClassNotFoundException e) {
+                                CustomFormMain.plugin.getLogger().warning("Event class not found: " + eventName);
+                            } catch (Exception e) {
+                                CustomFormMain.plugin.getLogger().error("Error registering event " + eventName, e);
+                            }
+                        }
+                    }
+
+                    return null;
+                }
+            });
         }
+    }
+
+    private Object registerSingleEvent(Scriptable scope, Object eventClass, Function handler, String priority) {
+        // 创建EventExecutor
+        EventExecutor executor = (listener, event) -> {
+            Context cx1 = Context.enter();
+            try {
+                handler.call(cx1, scope, scope, new Object[]{event});
+            } catch (Exception e) {
+                CustomFormMain.fakeScriptPlugin.getLogger().error("Event handler error", e);
+            } finally {
+                Context.exit();
+            }
+        };
+
+        // 注册事件
+        EventPriority ep = EventPriority.valueOf(priority.toUpperCase());
+        Server.getInstance().getPluginManager().registerEvent(
+                (Class<? extends Event>) eventClass,
+                JsListener.LISTENER,
+                ep,
+                executor,
+                CustomFormMain.fakeScriptPlugin,
+                false
+        );
+
+        CustomFormMain.plugin.getLogger().info("Registered event: " + eventClass.getClass().getSimpleName());
+        return null;
     }
 
     @Override
