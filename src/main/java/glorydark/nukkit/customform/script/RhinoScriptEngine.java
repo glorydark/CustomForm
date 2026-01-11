@@ -54,11 +54,40 @@ public class RhinoScriptEngine implements ScriptEngine {
                         throw new IllegalArgumentException("onEvent() requires at least 2 arguments: eventClass and handler");
                     }
 
-                    Object eventClass = args[0];
-                    Function handler = (Function) args[1];
-                    String priority = args.length > 2 ? args[2].toString() : "NORMAL";
+                    // 解析事件类
+                    Object eventArg = args[0];
+                    Class<? extends Event> eventClass = resolveEventClass(eventArg);
 
-                    return registerSingleEvent(scope, eventClass, handler, priority);
+                    if (eventClass == null) {
+                        throw new IllegalArgumentException("Could not resolve event class from argument: " + eventArg);
+                    }
+
+                    // 验证处理器
+                    if (!(args[1] instanceof Function)) {
+                        throw new IllegalArgumentException("Second argument must be a function");
+                    }
+
+                    Function handler = (Function) args[1];
+
+                    // 解析优先级
+                    String priority = "NORMAL";
+                    if (args.length > 2 && args[2] instanceof String) {
+                        String priorityStr = args[2].toString().toUpperCase();
+                        try {
+                            EventPriority.valueOf(priorityStr);
+                            priority = priorityStr;
+                        } catch (IllegalArgumentException e) {
+                            CustomFormMain.plugin.getLogger().warning("Invalid priority: " + priorityStr + ", using NORMAL instead");
+                        }
+                    }
+
+                    // 注册事件
+                    registerSingleEvent(scope, eventClass, handler, priority);
+
+                    CustomFormMain.plugin.getLogger().debug("Registered single handler for event " +
+                            eventClass.getSimpleName() + " with priority " + priority);
+
+                    return true; // 返回成功标志
                 }
             });
 
@@ -134,27 +163,27 @@ public class RhinoScriptEngine implements ScriptEngine {
 
                     return null;
                 }
-
-                private Class<? extends Event> resolveEventClass(Object eventArg) {
-                    if (eventArg instanceof NativeJavaClass) {
-                        Class<?> clazz = ((NativeJavaClass) eventArg).getClassObject();
-                        if (Event.class.isAssignableFrom(clazz)) {
-                            @SuppressWarnings("unchecked")
-                            Class<? extends Event> eventClass = (Class<? extends Event>) clazz;
-                            return eventClass;
-                        }
-                    } else if (eventArg instanceof Class) {
-                        Class<?> clazz = (Class<?>) eventArg;
-                        if (Event.class.isAssignableFrom(clazz)) {
-                            @SuppressWarnings("unchecked")
-                            Class<? extends Event> eventClass = (Class<? extends Event>) clazz;
-                            return eventClass;
-                        }
-                    }
-                    return null;
-                }
             });
         }
+    }
+
+    private Class<? extends Event> resolveEventClass(Object eventArg) {
+        if (eventArg instanceof NativeJavaClass) {
+            Class<?> clazz = ((NativeJavaClass) eventArg).getClassObject();
+            if (Event.class.isAssignableFrom(clazz)) {
+                @SuppressWarnings("unchecked")
+                Class<? extends Event> eventClass = (Class<? extends Event>) clazz;
+                return eventClass;
+            }
+        } else if (eventArg instanceof Class) {
+            Class<?> clazz = (Class<?>) eventArg;
+            if (Event.class.isAssignableFrom(clazz)) {
+                @SuppressWarnings("unchecked")
+                Class<? extends Event> eventClass = (Class<? extends Event>) clazz;
+                return eventClass;
+            }
+        }
+        return null;
     }
 
     private Object registerSingleEvent(Scriptable scope, Object eventClass, Function handler, String priority) {
