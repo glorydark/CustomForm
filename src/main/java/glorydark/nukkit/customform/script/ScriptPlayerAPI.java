@@ -1,13 +1,7 @@
 package glorydark.nukkit.customform.script;
 
 import cn.nukkit.Player;
-import cn.nukkit.command.ConsoleCommandSender;
-import cn.nukkit.network.protocol.PlaySoundPacket;
-import glorydark.dcurrency.CurrencyAPI;
-import glorydark.nukkit.customform.CustomFormMain;
-import me.onebone.economyapi.EconomyAPI;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

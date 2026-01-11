@@ -19,7 +19,7 @@ public class CustomFormScriptManager {
 
     private static final Map<String, String> scripts = new LinkedHashMap<>();
 
-    private static final ScriptEngine engine = new RhinoScriptEngine();
+    public static final RhinoScriptEngine engine = new RhinoScriptEngine();
 
     public static void loadScripts() {
         scripts.clear();
@@ -78,8 +78,8 @@ public class CustomFormScriptManager {
             engine.put("plugin", CustomFormMain.fakeScriptPlugin);
 
             engine.eval(script);
-        } catch (Throwable t) {
-            sender.sendMessage("§cError in loading script: " + t.getMessage());
+        } catch (Exception e) {
+            sender.sendMessage("§cError in loading script: " + e.getMessage());
         }
     }
 }
