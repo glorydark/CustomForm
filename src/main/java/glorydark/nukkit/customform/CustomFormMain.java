@@ -108,7 +108,6 @@ public class CustomFormMain extends PluginBase {
         enableGameAPI = checkSoftDepend("GameAPI");
         enablePlaceHolderAPI = checkSoftDepend("PlaceholderAPI");
         enableLanguageAPI = checkSoftDepend("LanguageAPI");
-        SCRIPTS_RUN_ON_START = new ArrayList<>(config.getStringList("scripts_run_on_start"));
         Config config1 = new Config(path + "/rsnpc_cache.yml", Config.YAML);
         config1.set("坐标", new ConfigSection() {
             {
@@ -207,6 +206,9 @@ public class CustomFormMain extends PluginBase {
         this.loadItemStringCaches();
         this.loadScriptMineCartWindows(new File(path + "/minecart_chest_windows/"));
         this.loadScriptWindows(new File(path + "/forms/"));
+
+        Config config = new Config(path + "/config.yml", Config.YAML);
+        SCRIPTS_RUN_ON_START = new ArrayList<>(config.getStringList("scripts_run_on_start"));
         CustomFormScriptManager.loadScripts();
         long startMillis = System.currentTimeMillis();
         CompletableFuture.allOf(completableFutureList.toArray(new CompletableFuture[0]))
