@@ -3,10 +3,13 @@ package glorydark.nukkit.customform.scriptForms.form;
 import cn.nukkit.Player;
 import cn.nukkit.form.response.FormResponse;
 import cn.nukkit.form.window.FormWindow;
+import cn.nukkit.network.protocol.ModalFormRequestPacket;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.factory.FormCreator;
+import glorydark.nukkit.customform.factory.FormType;
 import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
+import glorydark.nukkit.customform.utils.NukkitTypeUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -42,5 +45,19 @@ public interface ScriptForm {
             return false;
         }
         return true;
+    }
+
+    default void showToPlayer(Player player, FormType formType, String identifier) {
+        FormWindow window = this.getWindow(player);
+        ModalFormRequestPacket packet = new ModalFormRequestPacket();
+        packet.formId = FormCreator.formId;
+        if (NukkitTypeUtils.getNukkitType() == NukkitTypeUtils.NukkitType.MOT) {
+            packet.data = window.getJSONData(player.getGameVersion());
+        } else {
+            packet.data = window.getJSONData(player.protocol);
+        }
+        player.dataPacket(packet);
+        player.namedTag.putLong("lastFormRequestMillis", System.currentTimeMillis());
+        FormCreator.UI_CACHE.put(player.getName(), new FormCreator.WindowInfo(formType, identifier, this, window));
     }
 }

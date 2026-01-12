@@ -94,13 +94,7 @@ public class FormCreator {
     @Api
     // You can show your own scriptForm without former registry by defining a certain scriptForm.
     public static void showFormToPlayer(Player player, FormType formType, ScriptForm scriptForm, String identifier) {
-        FormWindow window = scriptForm.getWindow(player);
-        ModalFormRequestPacket packet = new ModalFormRequestPacket();
-        packet.formId = formId;
-        packet.data = window.getJSONData(player.protocol);
-        player.dataPacket(packet);
-        player.namedTag.putLong("lastFormRequestMillis", System.currentTimeMillis());
-        UI_CACHE.put(player.getName(), new WindowInfo(formType, identifier, scriptForm, window));
+        scriptForm.showToPlayer(player, formType, identifier);
     }
 
     /*

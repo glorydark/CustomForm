@@ -8,6 +8,7 @@ import cn.nukkit.form.window.FormWindowSimple;
 import gameapi.form.AdvancedFormWindowSimple;
 import gameapi.form.element.ResponsiveElementButton;
 import glorydark.nukkit.customform.CustomFormMain;
+import glorydark.nukkit.customform.factory.FormType;
 import glorydark.nukkit.customform.scriptForms.data.SoundData;
 import glorydark.nukkit.customform.scriptForms.data.execute_data.SimpleResponseExecuteData;
 import glorydark.nukkit.customform.scriptForms.data.requirement.Requirements;
@@ -76,6 +77,11 @@ public class ScriptFormSimple implements ScriptForm {
     @Override
     public void execute(Player player, FormWindow respondWindow, FormResponse response, Object... params) {
 
+    }
+
+    @Override
+    public void showToPlayer(Player player, FormType formType, String identifier) {
+        ((AdvancedFormWindowSimple) this.getWindow()).showToPlayer(player);
     }
 
     public FormWindowSimple getWindow(Player player) {
@@ -187,7 +193,9 @@ public class ScriptFormSimple implements ScriptForm {
                             new ResponsiveElementButton(elementButton.getText())
                                     .onRespond(player1 -> {
                                         executeData.execute(player1, 0, ReplaceContainer.EMPTY_CONTAINER);
-                                        CameraUtils.sendFormClose(player1);
+                                        if (CustomFormMain.enableCameraAnimation) {
+                                            CameraUtils.sendFormClose(player1);
+                                        }
                                     })
                     );
                 } else {
@@ -196,7 +204,9 @@ public class ScriptFormSimple implements ScriptForm {
                                     new ElementButtonImageData(elementButton.getImage().getType(), elementButton.getImage().getData())
                             ).onRespond(player1 -> {
                                 executeData.execute(player1, 0, ReplaceContainer.EMPTY_CONTAINER);
-                                CameraUtils.sendFormClose(player1);
+                                if (CustomFormMain.enableCameraAnimation) {
+                                    CameraUtils.sendFormClose(player1);
+                                }
                             })
                     );
                 }
