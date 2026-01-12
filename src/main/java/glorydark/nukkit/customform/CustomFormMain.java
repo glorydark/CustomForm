@@ -191,7 +191,7 @@ public class CustomFormMain extends PluginBase {
 
     public void loadAll() {
         if (fakeScriptPlugin != null) {
-            this.getServer().getPluginManager().disablePlugins();
+            this.getServer().getPluginManager().disablePlugin(fakeScriptPlugin);
 
             this.getServer().getPluginManager().enablePlugin(fakeScriptPlugin);
         } else {
