@@ -83,6 +83,8 @@ public class CustomFormMain extends PluginBase {
     public static Plugin fakeScriptPlugin = null;
     public static List<String> SCRIPTS_RUN_ON_START = new ArrayList<>();
 
+    public static boolean firstLoad = true;
+
     @Override
     public void onEnable() {
         TimeZone timeZone = TimeZone.getTimeZone("GMT+8");
@@ -100,6 +102,8 @@ public class CustomFormMain extends PluginBase {
         language = new Language(config.getString("default_lang", "zh_cn"), path + "/languages/");
         playerCacheVariableList = config.get("player_cache_variables", new LinkedHashMap<>());
         specificCacheVariableList = config.get("specific_cache_variables", new LinkedHashMap<>());
+        firstLoad = false;
+
         enableTips = checkSoftDepend("Tips") && config.getBoolean("enable_tips", true);
         enableDCurrency = checkSoftDepend("DCurrency");
         enableEconomyAPI = checkSoftDepend("EconomyAPI");
@@ -209,6 +213,14 @@ public class CustomFormMain extends PluginBase {
 
         Config config = new Config(path + "/config.yml", Config.YAML);
         SCRIPTS_RUN_ON_START = new ArrayList<>(config.getStringList("scripts_run_on_start"));
+        if (!firstLoad) {
+            enableDoubleCheckMenu = config.getBoolean("enable_doubleCheckMenu", true);
+            enableCameraAnimation = config.getBoolean("enable_cameraAnimation", false);
+            coolDownMillis = config.getLong("coolDown", 200L);
+            language = new Language(config.getString("default_lang", "zh_cn"), path + "/languages/");
+            playerCacheVariableList = config.get("player_cache_variables", new LinkedHashMap<>());
+            specificCacheVariableList = config.get("specific_cache_variables", new LinkedHashMap<>());
+        }
         CustomFormScriptManager.loadScripts();
         long startMillis = System.currentTimeMillis();
         CompletableFuture.allOf(completableFutureList.toArray(new CompletableFuture[0]))
