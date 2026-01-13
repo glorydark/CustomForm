@@ -80,10 +80,12 @@ public class CustomFormMain extends PluginBase {
     public static Map<String, Object> specificCacheVariableList = new LinkedHashMap<>();
     public static Map<String, Object> playerCacheVariableList = new LinkedHashMap<>();
 
-    public static Plugin fakeScriptPlugin = null;
+    public static Map<String, Plugin> fakeScriptPlugins = new LinkedHashMap<>();
     public static List<String> SCRIPTS_RUN_ON_START = new ArrayList<>();
 
     public static boolean firstLoad = true;
+
+    public static final String DEFAULT_SCRIPT_PLUGIN_NAME = "CustomFormScriptFakePlugin";
 
     @Override
     public void onEnable() {
@@ -189,15 +191,24 @@ public class CustomFormMain extends PluginBase {
         this.getServer().getPluginManager().registerEvents(new MinecartChestMenuListener(), this);
     }
 
+    public static Plugin getFakeScriptPlugin(String name) {
+        return fakeScriptPlugins.getOrDefault(name, getFakeScriptPlugin());
+    }
+
+    public static Plugin getFakeScriptPlugin() {
+        return fakeScriptPlugins.get(DEFAULT_SCRIPT_PLUGIN_NAME);
+    }
+
     public void loadAll() {
         CustomFormScriptManager.engine.onDisablePlugins();
-        if (fakeScriptPlugin != null) {
-            this.getServer().getPluginManager().disablePlugin(fakeScriptPlugin);
-
-            this.getServer().getPluginManager().enablePlugin(fakeScriptPlugin);
-        } else {
-            this.loadInternalPlugin();
+        if (!fakeScriptPlugins.isEmpty()) {
+            for (Plugin plugin1 : fakeScriptPlugins.values()) {
+                this.getServer().getPluginManager().disablePlugin(plugin1);
+                this.getServer().getPluginManager().enablePlugin(plugin1);
+            }
+            fakeScriptPlugins.clear();
         }
+        this.loadInternalPlugin(DEFAULT_SCRIPT_PLUGIN_NAME, "1.0.0", "Undefined", "");
         ScriptPlayerAPI.resetVariables();
         if (enableLanguageAPI) {
             File customLangDic = new File(path + "/custom_languages/");
@@ -235,11 +246,13 @@ public class CustomFormMain extends PluginBase {
                 });
     }
 
-    public void loadInternalPlugin() {
-        FakePlugin plugin = FakePlugin.INSTANCE;
+    public void loadInternalPlugin(String name, String version, String author, String description) {
+        FakePlugin plugin = name.equals(CustomFormMain.DEFAULT_SCRIPT_PLUGIN_NAME)? FakePlugin.INSTANCE: new FakePlugin();
         Map<String, Object> info = new HashMap<>();
-        info.put("name", "CustomFormScriptFakePlugin");
-        info.put("version", "1.0.0");
+        info.put("name", name);
+        info.put("version", version);
+        info.put("author", author);
+        info.put("description", description);
         info.put("main", FakePlugin.class.getName());
 
         File file;
@@ -249,12 +262,12 @@ public class CustomFormMain extends PluginBase {
             file = new File(".");
         }
 
-        PluginDescription description = new PluginDescription(info);
-        plugin.init(new JavaPluginLoader(this.getServer()), this.getServer(), description, new File("CustomFormScriptFakePlugin"), file);
+        PluginDescription pluginDescription = new PluginDescription(info);
+        plugin.init(new JavaPluginLoader(this.getServer()), this.getServer(), pluginDescription, new File(name), file);
         this.injectPlugin(this.getServer().getPluginManager(), plugin);
         this.getPluginLoader().enablePlugin(plugin);
 
-        fakeScriptPlugin = plugin;
+        fakeScriptPlugins.put(plugin.getName(), plugin);
     }
 
     protected void injectPlugin(PluginManager pluginManager, Plugin plugin) {

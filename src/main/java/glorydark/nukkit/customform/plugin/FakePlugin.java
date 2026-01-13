@@ -10,7 +10,12 @@ public final class FakePlugin extends PluginBase {
     public static final FakePlugin INSTANCE = new FakePlugin();
 
     @Override
+    public void onEnable() {
+        this.getLogger().warning(this.getName() + " is enabled.");
+    }
+
+    @Override
     public void onDisable() {
-        this.getLogger().warning("InternalPlugin is disabled.");
+        this.getLogger().warning(this.getName() + " is disabled.");
     }
 }

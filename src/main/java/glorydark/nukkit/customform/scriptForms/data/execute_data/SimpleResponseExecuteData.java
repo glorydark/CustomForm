@@ -121,7 +121,7 @@ public class SimpleResponseExecuteData implements ResponseExecuteData {
             CommandUtils.executeCommand(player, replace(randomCommand.get(ThreadLocalRandom.current().nextInt(randomCommand.size())), player, true));
         }
         if (!this.script.isEmpty()) {
-            CustomFormScriptManager.executeScript(player, this.getScript());
+            CustomFormScriptManager.executeScript(player, "<script>", this.getScript());
         }
     }
 
