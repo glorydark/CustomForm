@@ -190,6 +190,7 @@ public class CustomFormMain extends PluginBase {
     }
 
     public void loadAll() {
+        CustomFormScriptManager.engine.onDisablePlugins();
         if (fakeScriptPlugin != null) {
             this.getServer().getPluginManager().disablePlugin(fakeScriptPlugin);
 

@@ -3,7 +3,6 @@ package glorydark.nukkit.customform.script;
 import cn.nukkit.Server;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.EventPriority;
-import cn.nukkit.event.Listener;
 import cn.nukkit.plugin.EventExecutor;
 import glorydark.nukkit.customform.CustomFormMain;
 import org.mozilla.javascript.*;
@@ -11,10 +10,14 @@ import org.mozilla.javascript.*;
 import javax.script.*;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RhinoScriptEngine implements ScriptEngine {
 
     private Scriptable scope;
+
+    private static final List<Function> onDisableHandlers = new ArrayList<>();
 
     public void initScope(Context context) {
         if (this.scope == null) {
@@ -164,7 +167,32 @@ public class RhinoScriptEngine implements ScriptEngine {
                     return null;
                 }
             });
+
+            ScriptableObject.putProperty(scope, "onDisable", new BaseFunction() {
+                @Override
+                public Object call(Context cx, Scriptable scr, Scriptable thisObj, Object[] args) {
+                    if (args.length == 1 && args[0] instanceof Function) {
+                        onDisableHandlers.add((Function) args[0]);
+                    }
+                    return Undefined.instance;
+                }
+            });
         }
+    }
+
+    public void onDisablePlugins() {
+        if (scope == null) {
+            return;
+        }
+        for (Function function : onDisableHandlers) {
+            Context cx = Context.enter();
+            try {
+                function.call(cx, scope, scope, new Object[]{});
+            } finally {
+                Context.exit();
+            }
+        }
+        onDisableHandlers.clear();
     }
 
     private Class<? extends Event> resolveEventClass(Object eventArg) {

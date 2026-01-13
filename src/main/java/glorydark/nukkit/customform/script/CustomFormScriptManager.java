@@ -5,7 +5,6 @@ import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.utils.Utils;
 import glorydark.nukkit.customform.CustomFormMain;
 
-import javax.script.ScriptEngine;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;

@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.form.window.FormWindowModal;
-import cn.nukkit.network.protocol.ModalFormRequestPacket;
 import cn.nukkit.utils.Config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
