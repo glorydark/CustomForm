@@ -83,11 +83,9 @@ public class CustomFormScriptManager {
     public static void executeScript(CommandSender sender, String scriptId, String script) {
         try {
             ScriptPluginData pluginData = derivePluginData(script);
-            if (CustomFormMain.plugin.getServer().getPluginManager().getPlugin(pluginData.name()) == null) {
+            if (pluginData.isPlugin() && CustomFormMain.plugin.getServer().getPluginManager().getPlugin(pluginData.name()) == null) {
                 CustomFormMain.plugin.loadInternalPlugin(pluginData.name(), pluginData.version(), pluginData.author(), pluginData.description());
                 CustomFormMain.getFakeScriptPlugin().getLogger().info("Loading script plugin info: " + pluginData);
-            } else {
-                CustomFormMain.getFakeScriptPlugin().getLogger().warning("Fail to load script plugin info, script id: " + scriptId);
             }
             Context ctx = Context.enter();
             try {
@@ -102,7 +100,7 @@ public class CustomFormScriptManager {
                 if (script.contains("return")) {
                     script = "(function(){\n" + script + "\n})();";
                 }
-                ctx.evaluateString(scope, script, pluginData.name().isEmpty()? scriptId: pluginData.name(), 1, null);
+                ctx.evaluateString(scope, script, pluginData.isPlugin()? pluginData.name(): scriptId, 1, null);
             } catch (Exception e) {
                 throw new ScriptException(e.getMessage());
             }
@@ -123,10 +121,11 @@ public class CustomFormScriptManager {
                         m.group(1) == null? CustomFormMain.DEFAULT_SCRIPT_PLUGIN_NAME : m.group(1), // name
                         m.group(2) == null ? "1.0.0" : m.group(2), // version
                         m.group(3) == null ? "" : m.group(3),      // author
-                        m.group(4) == null ? "" : m.group(4));     // description
+                        m.group(4) == null ? "" : m.group(4),
+                        true);     // description
             }
         }
         return new ScriptPluginData(
-                CustomFormMain.DEFAULT_SCRIPT_PLUGIN_NAME, "1.0.0", "", "");
+                CustomFormMain.DEFAULT_SCRIPT_PLUGIN_NAME, "1.0.0", "", "", false);
     }
 }
