@@ -1,10 +1,12 @@
-coolDown: 200
-default_language: zh_cn
-enable_expansion_variable: true
-enable_tips: true
-enable_rsNPCX: true
-enable_doubleCheckMenu: true
-enable_cameraAnimation: false
+coolDown: 200 # 菜单打开冷却时间
+default_language: zh_cn # 语言配置，默认为中文
+enable_expansion_variable: true # 启用变量拓展，包括{item_nbt_tag}, {item_durability}, {item_name}, {player_experience_amount}, {player_experience_level}
+enable_tips: true # 打开Tips适配
+enable_rsNPCX: true # 打开RsNPC适配
+enable_doubleCheckMenu: true # 箱子菜单的二次确认
+enable_cameraAnimation: true # 允许菜单打开时播放camera特效（name写的）
+scripts_run_on_start: [] # 需要自动加载的js脚本
+# 开启调试模式
 debug: true
 # type = 0时，变量格式为{form_player_cache_键名}
 player_cache_variables:

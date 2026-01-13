@@ -204,7 +204,6 @@ public class CustomFormMain extends PluginBase {
         if (!fakeScriptPlugins.isEmpty()) {
             for (Plugin plugin1 : fakeScriptPlugins.values()) {
                 this.getServer().getPluginManager().disablePlugin(plugin1);
-                this.getServer().getPluginManager().enablePlugin(plugin1);
             }
             fakeScriptPlugins.clear();
         }
@@ -292,6 +291,15 @@ public class CustomFormMain extends PluginBase {
 
     @Override
     public void onDisable() {
+        CustomFormScriptManager.engine.onDisablePlugins();
+        if (!fakeScriptPlugins.isEmpty()) {
+            for (Plugin plugin1 : fakeScriptPlugins.values()) {
+                if (plugin1.isEnabled()) {
+                    this.getServer().getPluginManager().disablePlugin(plugin1);
+                }
+            }
+            fakeScriptPlugins.clear();
+        }
         MinecartChestMenuMain.mineCartChests.forEach((player, playerMineCartChestTempData) -> {
             player.removeWindow(playerMineCartChestTempData.getEntityMinecartChest().getInventory());
             MinecartChestMenuMain.closeDoubleChestInventory(player);
