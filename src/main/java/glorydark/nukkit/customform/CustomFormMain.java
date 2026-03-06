@@ -21,7 +21,7 @@ import glorydark.nukkit.customform.script.CustomFormScriptManager;
 import glorydark.nukkit.customform.script.ScriptPlayerAPI;
 import glorydark.nukkit.customform.utils.InventoryUtils;
 import glorydark.nukkit.customform.utils.Tools;
-import glorydark.nukkit.utils.LanguageReader;
+import glorydark.nukkit.languageapi.utils.LanguageReader;
 import tip.utils.Api;
 
 import java.io.File;
@@ -212,7 +212,7 @@ public class CustomFormMain extends PluginBase {
         if (enableLanguageAPI) {
             File customLangDic = new File(path + "/custom_languages/");
             customLangDic.mkdirs();
-            LanguageReader.loadLanguageFromDictionary(this, customLangDic);
+            LanguageReader.loadFromDictionary(this, customLangDic);
         }
         ready = false;
         loadRequirementExecutor = Executors.newFixedThreadPool(5);

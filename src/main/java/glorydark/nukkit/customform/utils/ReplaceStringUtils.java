@@ -3,8 +3,8 @@ package glorydark.nukkit.customform.utils;
 import cn.nukkit.Player;
 import com.creeperface.nukkit.placeholderapi.api.PlaceholderAPI;
 import com.smallaswater.npc.variable.VariableManage;
-import glorydark.nukkit.LanguageMain;
 import glorydark.nukkit.customform.CustomFormMain;
+import glorydark.nukkit.languageapi.api.LanguageAPI;
 import tip.utils.Api;
 
 /**
@@ -18,7 +18,7 @@ public class ReplaceStringUtils {
 
     public static String replace(String string, Player player, boolean replaceBreak, boolean quotationMark) {
         if (CustomFormMain.enableLanguageAPI) {
-            string = LanguageMain.getInstance().getTranslation(CustomFormMain.plugin, player, string);
+            string = LanguageAPI.translate(CustomFormMain.plugin, player, string);
         }
         if (quotationMark) {
             string = string.replace("{player}", "\"" + player.getName() + "\"");
