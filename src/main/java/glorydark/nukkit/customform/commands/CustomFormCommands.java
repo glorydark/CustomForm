@@ -162,6 +162,27 @@ public class CustomFormCommands extends Command {
                     }
                 }
                 break;
+            case "showddui":
+                if (!CustomFormMain.ready) {
+                    return false;
+                }
+                if (commandSender.isPlayer()) {
+                    if (strings.length == 2) {
+                        FormCreator.showDDUIForm((Player) commandSender, strings[1]);
+                    }
+                } else {
+                    if (strings.length == 3) {
+                        player = Server.getInstance().getPlayer(strings[1]);
+                        if (player != null) {
+                            FormCreator.showDDUIForm(player, strings[2]);
+                        } else {
+                            commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.player_not_found", strings[1]));
+                        }
+                    } else {
+                        commandSender.sendMessage(CustomFormMain.language.translateString(null, "command.can_not_use_in_game"));
+                    }
+                }
+                break;
             case "showhopperform":
                 if (!CustomFormMain.ready) {
                     return false;
@@ -227,6 +248,12 @@ public class CustomFormCommands extends Command {
             case "list":
                 commandSender.sendMessage(FormCreator.formScripts.keySet().size() + " form scripts loaded: ");
                 for (String string : FormCreator.formScripts.keySet()) {
+                    commandSender.sendMessage("- " + string);
+                }
+                break;
+            case "listddui":
+                commandSender.sendMessage(FormCreator.DDUI_FORMS.keySet().size() + " DDUI forms loaded: ");
+                for (String string : FormCreator.DDUI_FORMS.keySet()) {
                     commandSender.sendMessage("- " + string);
                 }
                 break;

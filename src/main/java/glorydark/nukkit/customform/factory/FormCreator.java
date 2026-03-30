@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.form.window.FormWindowModal;
+import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.Config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -31,8 +32,10 @@ import glorydark.nukkit.customform.scriptForms.data.requirement.item.ItemRequire
 import glorydark.nukkit.customform.scriptForms.data.requirement.item.NeedItem;
 import glorydark.nukkit.customform.scriptForms.data.requirement.tips.TipsRequirementData;
 import glorydark.nukkit.customform.scriptForms.form.*;
+import glorydark.nukkit.customform.scriptForms.form.ddui.ScriptFormDDUIBase;
 import glorydark.nukkit.customform.utils.CameraUtils;
 import glorydark.nukkit.customform.utils.MathCompareSign;
+import glorydark.nukkit.customform.utils.ReplaceStringUtils;
 import glorydark.nukkit.customform.utils.Tools;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Data;
@@ -48,6 +51,9 @@ public class FormCreator {
 
     // Stored information and configuration about loaded forms.
     public static LinkedHashMap<String, ScriptForm> formScripts = new LinkedHashMap<>();
+
+    // Stored information and configuration about loaded DDUI forms.
+    public static LinkedHashMap<String, ScriptForm> DDUI_FORMS = new LinkedHashMap<>();
 
     // This value effectively reduces the conflicts brought by the duplication of ID value inside the Player.class(Nukkit)
     public static int formId = -1;
@@ -179,6 +185,56 @@ public class FormCreator {
             showFormToPlayer(player, FormType.ScriptCustom, script, identifier);
         }
         Server.getInstance().getPluginManager().callEvent(new FormOpenEvent(script, player));
+    }
+
+    public static void showDDUIForm(Player player, String identifier) {
+        if (DDUI_FORMS.containsKey(identifier)) {
+            ScriptForm script = DDUI_FORMS.get(identifier);
+
+            if (player.getGameVersion().getProtocol() < ProtocolInfo.v1_26_10) {
+                if (script instanceof ScriptFormDDUIBase dduiBase && dduiBase.getFallbackCommand() != null) {
+                    String cmd = ReplaceStringUtils.replace(dduiBase.getFallbackCommand(), player);
+                    Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(), cmd);
+                } else {
+                    CustomFormMain.plugin.getLogger().warning("Player " + player.getName() + " cannot open ddui while fallback command is not set, formId: " + identifier);
+                }
+                return;
+            }
+
+            if (!script.isInStartDate(player)) {
+                return;
+            }
+            boolean allowOpen = false;
+            if (script.getOpenPermissionWhitelist().isEmpty() || script.getOpenPermissionWhitelist().contains(player.getName())) {
+                if (!script.getOpenPermissions().contains(PermissionEnum.DEFAULT)) {
+                    for (PermissionEnum openPermission : script.getOpenPermissions()) {
+                        if (openPermission == PermissionEnum.ONLY_USER) {
+                            if (!player.isOp()) {
+                                allowOpen = true;
+                                break;
+                            }
+                        } else if (openPermission == PermissionEnum.OP) {
+                            if (player.isOp()) {
+                                allowOpen = true;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    allowOpen = true;
+                }
+            }
+            if (allowOpen) {
+                if (script.getOpenSound() != null) {
+                    script.getOpenSound().addSound(player);
+                }
+                script.showToPlayer(player, FormType.ScriptCustom, identifier);
+            } else {
+                player.sendMessage(CustomFormMain.language.translateString(player, "command.no_permission"));
+            }
+        } else {
+            player.sendMessage("DDUI form not found: " + identifier);
+        }
     }
 
     /*

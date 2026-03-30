@@ -1,0 +1,31 @@
+type: "custom_form"
+title: "Shop"
+fallback_command: "form show test"
+variables:
+  status:
+    type: "string"
+    default: "Click button to purchase"
+
+components:
+  - type: "header"
+    text: "Item Shop"
+
+  - type: "label"
+    text: "{status}"
+
+  - type: "spacer"
+
+  - type: "button"
+    label: "Buy - 1000 Coins"
+    set_variables:
+      status: "§aPurchase successful!\n§7Thank you!"
+    commands:
+      - "me 233"
+    requirements:
+      chargeable: true
+      data:
+        - - type: "EconomyAPI"
+            cost: 1000
+
+  - type: "close_button"
+    label: "Close"

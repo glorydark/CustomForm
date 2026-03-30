@@ -19,10 +19,15 @@ import glorydark.nukkit.customform.minecartChestMenu.MinecartChestMenuMain;
 import glorydark.nukkit.customform.plugin.FakePlugin;
 import glorydark.nukkit.customform.script.CustomFormScriptManager;
 import glorydark.nukkit.customform.script.ScriptPlayerAPI;
+import glorydark.nukkit.customform.scriptForms.form.ScriptForm;
+import glorydark.nukkit.customform.scriptForms.form.ddui.*;
 import glorydark.nukkit.customform.utils.InventoryUtils;
 import glorydark.nukkit.customform.utils.Tools;
 import glorydark.nukkit.languageapi.utils.LanguageReader;
 import tip.utils.Api;
+
+import cn.nukkit.network.process.DataPacketManager;
+import cn.nukkit.network.protocol.ProtocolInfo;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -160,6 +165,12 @@ public class CustomFormMain extends PluginBase {
                 this.setEnabled(false);
             }
         }
+        File dduiFormDic = new File(path + "/ddui_forms/");
+        if (!dduiFormDic.exists()) {
+            if (!dduiFormDic.mkdirs()) {
+                this.getLogger().warning(language.translateString(null, "plugin.directory.create.failed"));
+            }
+        }
         File minecartChestWindowDic = new File(path + "/minecart_chest_windows/");
         if (!minecartChestWindowDic.exists()) {
             if (!minecartChestWindowDic.mkdirs()) {
@@ -221,6 +232,7 @@ public class CustomFormMain extends PluginBase {
         this.loadItemStringCaches();
         this.loadScriptMineCartWindows(new File(path + "/minecart_chest_windows/"));
         this.loadScriptWindows(new File(path + "/forms/"));
+        this.loadDDUIFormWindows(new File(path + "/ddui_forms/"));
 
         Config config = new Config(path + "/config.yml", Config.YAML);
         SCRIPTS_RUN_ON_START = new ArrayList<>(config.getStringList("scripts_run_on_start"));
@@ -394,6 +406,51 @@ public class CustomFormMain extends PluginBase {
                 CustomFormMain.plugin.getLogger().info(language.translateString(null, "form.loaded", identifier));
             } else {
                 CustomFormMain.plugin.getLogger().error(language.translateString(null, "form.loaded.failed", identifier));
+            }
+        }
+    }
+
+    public void loadDDUIFormWindows(File dic) {
+        if (!dic.exists()) {
+            return;
+        }
+        FormCreator.DDUI_FORMS.clear();
+        for (File file : Objects.requireNonNull(dic.listFiles())) {
+            if (file.isDirectory()) {
+                String subFolder = file.getName() + "/";
+                for (File subFolderFile : Objects.requireNonNull(file.listFiles())) {
+                    loadDDUIFormWindow(subFolderFile, subFolder);
+                }
+            } else {
+                loadDDUIFormWindow(file, "");
+            }
+        }
+        this.getLogger().info("Loaded " + FormCreator.DDUI_FORMS.size() + " DDUI forms.");
+    }
+
+    protected void loadDDUIFormWindow(File file, String prefix) {
+        if (file.isDirectory()) {
+            for (File subFolderFile : Objects.requireNonNull(file.listFiles())) {
+                loadDDUIFormWindow(subFolderFile, prefix + file.getName() + "/");
+            }
+        } else {
+            Map<String, Object> mainMap = FormCreator.convertConfigToMap(file);
+            String identifier = prefix + file.getName().replace(".json", "").replace(".yml", "");
+            String type = (String) mainMap.getOrDefault("type", "custom_form");
+            ScriptForm scriptForm = null;
+            switch (type.toLowerCase()) {
+                case "custom_form":
+                    scriptForm = new ScriptFormDDUICustom(mainMap);
+                    break;
+                case "message_box":
+                    scriptForm = new ScriptFormDDUIMessageBox(mainMap);
+                    break;
+            }
+            if (scriptForm != null) {
+                FormCreator.DDUI_FORMS.put(identifier, scriptForm);
+                this.getLogger().info("Loaded DDUI form: " + identifier);
+            } else {
+                this.getLogger().warning("Failed to load DDUI form: " + identifier);
             }
         }
     }

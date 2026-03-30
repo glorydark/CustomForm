@@ -1,0 +1,18 @@
+type: "message_box"
+title: "Confirm"
+body: "{content}"
+fallback_command: "form show test"
+variables:
+  content:
+    type: "string"
+    default: "Do you want to continue?"
+
+button1:
+  label: "Yes"
+  set_variables:
+    content: "Please click No"
+  close_menu: false
+
+button2:
+  label: "No"
+  close_menu: true
