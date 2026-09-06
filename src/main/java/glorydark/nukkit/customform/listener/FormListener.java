@@ -1,11 +1,6 @@
 package glorydark.nukkit.customform.listener;
 
 import cn.nukkit.Player;
-import cn.nukkit.ddui.DataDrivenScreen;
-import cn.nukkit.ddui.properties.BooleanProperty;
-import cn.nukkit.ddui.properties.DataDrivenProperty;
-import cn.nukkit.ddui.properties.LongProperty;
-import cn.nukkit.ddui.properties.StringProperty;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
@@ -15,15 +10,12 @@ import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.form.window.FormWindowModal;
 import cn.nukkit.form.window.FormWindowSimple;
-import cn.nukkit.network.protocol.ClientboundDataDrivenUICloseScreenPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ModalFormResponsePacket;
-import cn.nukkit.network.protocol.ServerboundDataStorePacket;
 import glorydark.nukkit.customform.CustomFormMain;
 import glorydark.nukkit.customform.factory.FormCreator;
 import glorydark.nukkit.customform.factory.FormType;
 import glorydark.nukkit.customform.scriptForms.form.ScriptForm;
-import glorydark.nukkit.customform.scriptForms.form.ddui.ScriptFormDDUIBase;
 import glorydark.nukkit.customform.utils.CameraUtils;
 
 import java.util.HashMap;
@@ -49,39 +41,6 @@ public class FormListener implements Listener {
                 }
                 dealResponse(player, windowInfo.getFormWindow(), pk.data);
             }
-        } else if (dataPacket instanceof ServerboundDataStorePacket pk) {
-            var update = pk.getUpdate();
-            if (update == null) return;
-
-            DataDrivenScreen screen = DataDrivenScreen.getActiveScreen(player);
-            if (screen == null) return;
-
-            String dataStore = screen.getIdentifier().split(":")[0];
-            if (!dataStore.equals(update.getDataStoreName())) return;
-            if (!screen.getProperty().equals(update.getProperty())) return;
-
-            DataDrivenProperty<?, ?> property = screen.resolvePath(update.getPath());
-            if (property == null) return;
-            if (!property.isClientWritable()) return;
-
-            Object data = update.getData();
-            if (property instanceof LongProperty) {
-                if (data instanceof Number) {
-                    property.triggerListeners(player, ((Number) data).longValue());
-                } else {
-                    property.triggerListeners(player, 0L);
-                }
-            } else if (property instanceof BooleanProperty) {
-                if (data instanceof Boolean) {
-                    property.triggerListeners(player, data);
-                }
-            } else if (property instanceof StringProperty) {
-                if (data instanceof String) {
-                    property.triggerListeners(player, data);
-                }
-            }
-        } else if (dataPacket instanceof ClientboundDataDrivenUICloseScreenPacket) {
-            ScriptFormDDUIBase.closeForm(player);
         }
     }
 

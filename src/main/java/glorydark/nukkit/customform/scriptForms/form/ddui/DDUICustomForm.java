@@ -34,50 +34,50 @@ public class DDUICustomForm extends CustomForm {
     /**
      * TextField with Observable label
      */
-    public DDUICustomForm textFieldWithObservableLabel(Observable<String> label,
-                                                        Observable<String> value,
-                                                        TextFieldOptions options) {
+    public TextFieldElement textFieldWithObservableLabel(Observable<String> label,
+                                                          Observable<String> value,
+                                                          TextFieldOptions options) {
         TextFieldElement element = new TextFieldElement(label.getValue(), value, options, layout);
         element.setLabel(label);
         layout.setProperty(element);
-        return this;
+        return element;
     }
 
     /**
      * Toggle with Observable label
      */
-    public DDUICustomForm toggleWithObservableLabel(Observable<String> label, 
-                                                     Observable<Boolean> toggled, 
-                                                     ToggleOptions options) {
+    public ToggleElement toggleWithObservableLabel(Observable<String> label, 
+                                                   Observable<Boolean> toggled, 
+                                                   ToggleOptions options) {
         ToggleElement element = new ToggleElement(label.getValue(), toggled, options, layout);
         element.setLabel(label);
         layout.setProperty(element);
-        return this;
+        return element;
     }
 
     /**
      * Slider with Observable label
      */
-    public DDUICustomForm sliderWithObservableLabel(Observable<String> label,
-                                                     long min, long max,
-                                                     Observable<Long> value,
-                                                     SliderElementOptions options) {
+    public SliderElement sliderWithObservableLabel(Observable<String> label,
+                                                    long min, long max,
+                                                    Observable<Long> value,
+                                                    SliderElementOptions options) {
         SliderElement element = new SliderElement(label.getValue(), value, min, max, options, layout);
         element.setLabel(label);
         layout.setProperty(element);
-        return this;
+        return element;
     }
 
     /**
      * Dropdown with Observable label
      */
-    public DDUICustomForm dropdownWithObservableLabel(Observable<String> label,
+    public DropdownElement dropdownWithObservableLabel(Observable<String> label,
                                                        List<DropdownElement.Item> items,
                                                        Observable<Long> selected,
                                                        DropdownOptions options) {
         DropdownElement element = new DropdownElement(label.getValue(), items, selected, options, layout);
         element.setLabel(label);
         layout.setProperty(element);
-        return this;
+        return element;
     }
 }

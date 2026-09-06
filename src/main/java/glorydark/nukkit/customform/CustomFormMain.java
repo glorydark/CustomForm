@@ -141,7 +141,7 @@ public class CustomFormMain extends PluginBase {
                     }
                     // hack: to create a file to make constructor believe that this exists.
                     try {
-                        rsNpcConfig = new RsNpcConfig("", config1);
+                        rsNpcConfig = new RsNpcConfig("", config1, null);
                     } catch (RsNpcConfigLoadException | RsNpcLoadException | NoClassDefFoundError ignored) {
                         CustomFormMain.plugin.getLogger().error("Failed to create a RsNpcConfig object! [" + tryTimes + "/10]");
                         return;
